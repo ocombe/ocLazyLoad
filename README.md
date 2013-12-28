@@ -15,7 +15,7 @@ Load modules on demand (lazy load) in AngularJS
 2. Add the module ```oc.lazyLoad``` to your application
 3. Configure the service provider ```$loadOnDemandProvider```
 4. Load on demand using the service or the directive :
-```js
+```javascript
 $ocLazyLoad.load({
 	name: 'TestModule',
 	files: ['testModule.js']
