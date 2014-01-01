@@ -1,7 +1,7 @@
 {
   "name": "ocLazyLoad",
   "main": "ocLazyLoad.min.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/ocombe/ocLazyLoad",
   "authors": [
     "ocombe <olivier.combe@gmail.com>"
