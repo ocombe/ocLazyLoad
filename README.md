@@ -10,7 +10,7 @@ Load modules on demand (lazy load) in AngularJS
 - Load via the service or the directive
 - Use your own async loader (requireJS, script.js ...)
 
-#### Usage
+### Usage
 - Put ocLazyLoad.js into you project
 - Add the module ```oc.lazyLoad``` to your application
 - Configure the service provider ```$loadOnDemandProvider```
