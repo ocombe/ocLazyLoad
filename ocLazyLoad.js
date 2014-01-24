@@ -173,7 +173,7 @@
 					 * @param callback
 					 */
 					function loadTemplate(url, callback) {
-						scope.$apply(function() {
+						scope.$eval(function() {
 							var view;
 
 							if(typeof(view = $templateCache.get(url)) !== 'undefined') {
