@@ -155,7 +155,7 @@
 			return {
 				link: function(scope, element, attr) {
 					var childScope;
-					var onloadExp = attr.onload || '';
+					var onloadExp = scope.$eval(attr.ocLazyLoad).onload || '';
 					
 					/**
 					 * Destroy the current scope of this element and empty the html
