@@ -155,7 +155,8 @@
 			return {
 				link: function(scope, element, attr) {
 					var childScope;
-
+					var onloadExp = scope.$eval(attr.ocLazyLoad).onload || '';
+					
 					/**
 					 * Destroy the current scope of this element and empty the html
 					 */
@@ -173,26 +174,26 @@
 					 * @param callback
 					 */
 					function loadTemplate(url, callback) {
-						scope.$apply(function() {
+						//scope.$eval(function() {
 							var view;
 
 							if(typeof(view = $templateCache.get(url)) !== 'undefined') {
-								scope.$evalAsync(function() {
+								//scope.$evalAsync(function() {
 									callback(view);
-								});
+								//});
 							} else {
 								$http.get(url)
 									.success(function(data) {
 										$templateCache.put('view:' + url, data);
-										scope.$evalAsync(function() {
+										//scope.$evalAsync(function() {
 											callback(data);
-										});
+										//});
 									})
 									.error(function(data) {
 										$log.error('Error load template "' + url + "': " + data);
 									});
 							}
-						});
+						//});
 					}
 
 					scope.$watch(attr.ocLazyLoad, function(moduleName) {
@@ -207,9 +208,11 @@
 
 									var content = element.contents();
 									var linkFn = $compile(content);
-									$timeout(function() {
+									//$timeout(function() {
 										linkFn(childScope);
-									});
+                                        					childScope.$emit('$includeContentLoaded');
+                                        					childScope.$eval(onloadExp);
+									//});
 								});
 							});
 						} else {
