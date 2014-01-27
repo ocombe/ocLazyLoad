@@ -1,10 +1,10 @@
 {
   "name": "ocLazyLoad",
   "main": "ocLazyLoad.min.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/ocombe/ocLazyLoad",
   "authors": [
-    "ocombe <olivier.combe@gmail.com>"
+    "Olivier Combe <olivier.combe@gmail.com>"
   ],
   "description": "Load modules on demand (lazy load) with angularJS",
   "keywords": [
