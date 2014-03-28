@@ -40,92 +40,99 @@
 						return regModules;
 					},
 
-					load: function(name) {
-						var self = this,
-							config,
-							moduleCache = [],
-							deferred = $q.defer();
+					load: function(module) {
+                        var self = this,
+                            config,
+                            moduleCache = [],
+                            deferred = $q.defer(),
+                            moduleName,
+                            errText;
 
-						if(typeof name === 'string') {
-							config = self.getModuleConfig(name);
-						} else if(typeof name === 'object' && typeof name.name !== 'undefined') {
-							config = self.setModuleConfig(name);
-							name = name.name;
-						}
+                        if (typeof module === 'string') {
+                            config = self.getModuleConfig(module);
+                            moduleName = module;
+                        } else if (typeof module === 'object' && module.hasOwnProperty('name') && typeof module.name === 'string') {
+                            config = self.setModuleConfig(module);
+                            moduleName = module.name;
+                        }
 
-						moduleCache.push = function(value) {
-							if(this.indexOf(value) === -1) {
-								Array.prototype.push.apply(this, arguments);
-							}
-						};
+                        if (config === null) {
+                            errText = 'Module "' + moduleName + '" not configured';
+                            $log.error(errText);
+                            throw errText;
+                        }
 
-						if(!config) {
-							var errorText = 'Module "' + name + '" not configured';
-							$log.error(errorText);
-							throw errorText;
-						}
+                        moduleCache.push = function (value) {
+                            if (this.indexOf(value) === -1) {
+                                Array.prototype.push.apply(this, arguments);
+                            }
+                        };
 
-						function loadDependencies(moduleName, allDependencyLoad) {
-							if(regModules.indexOf(moduleName) > -1) {
-								return allDependencyLoad();
-							}
+                        // BB: Extensive modification to introduce promises to the dependency loading
+                        // and to support JIT loading of dependant modules in the module definition itself.
+                        function loadDependencies(module) {
+                            var moduleName,
+                                loadedModule,
+                                requires,
+                                p_list = [],
+                                load_complete;
 
-							var loadedModule = angular.module(moduleName),
-								requires = getRequires(loadedModule);
+                            if (typeof module === 'string') {
+                                moduleName = module;
+                            } else if (typeof module === 'object' && module.hasOwnProperty('name') && typeof module.name === 'string') {
+                                moduleName = module.name;
+                            }
 
-							function onModuleLoad(moduleLoaded) {
-								if(moduleLoaded) {
+                            loadedModule = angular.module(moduleName);
+                            requires = getRequires(loadedModule);
 
-									var index = requires.indexOf(moduleLoaded);
-									if(index > -1) {
-										requires.splice(index, 1);
-									}
-								}
-								if(requires.length === 0) {
-									$timeout(function() {
-										allDependencyLoad(moduleName);
-									});
-								}
-							}
+                            angular.forEach(requires, function (requireEntry) {
+                                var config,
+                                    deferred_dep;
 
-							var requireNeeded = getRequires(loadedModule);
-							angular.forEach(requireNeeded, function(requireModule) {
-								moduleCache.push(requireModule);
+                                if (typeof requireEntry === 'string') {
+                                    config = self.getModuleConfig(requireEntry);
+                                    if (config === null) {
+                                        $log.error('Dependency "', requireEntry, '" not configured, cannot inject into module "', moduleName, '"');
+                                        return;
+                                    }
+                                }
 
-								if(moduleExists(requireModule)) {
-									return onModuleLoad(requireModule);
-								}
+                                if (typeof requireEntry === 'object' && requireEntry.hasOwnProperty('name') && typeof requireEntry.name === 'string') {
+                                    deferred_dep = $q.defer();
+                                    if (requireEntry.files) {
+                                        p_list.push(deferred_dep.promise);
+                                        asyncLoader(requireEntry.files, function () {
+                                            moduleCache.push(requireEntry.name);
+                                            loadDependencies(requireEntry).then(
+                                                function () {
+                                                    deferred_dep.resolve();
+                                                }
+                                            );
+                                        });
+                                    }
+                                }
+                            });
 
-								var requireModuleConfig = self.getConfig(requireModule);
-								if(requireModuleConfig && (typeof requireModuleConfig.files !== 'undefined')) {
-									asyncLoader(requireModuleConfig.files, function() {
-										loadDependencies(requireModule, function requireModuleLoaded(name) {
-											onModuleLoad(name);
-										});
-									});
-								} else {
-									$log.warn('module "' + requireModule + "' not loaded and not configured");
-									onModuleLoad(requireModule);
-								}
-								return null;
-							});
+                            load_complete = $q.defer();
+                            $q.all(p_list).then(function () {
+                                load_complete.resolve();
+                            });
 
-							if(requireNeeded.length === 0) {
-								onModuleLoad();
-							}
-							return null;
-						}
+                            return load_complete.promise;
+                        }
 
-						asyncLoader(config.files, function() {
-							moduleCache.push(name);
-							loadDependencies(name, function() {
-								register(providers, moduleCache, $log);
-								$timeout(function() {
-									deferred.resolve(config);
-								});
-							});
-						});
-						return deferred.promise;
+                        asyncLoader(config.files, function () {
+                            moduleCache.push(moduleName);
+                            loadDependencies(moduleName).then(function () {
+                                register(providers, moduleCache, $log);
+                                $timeout(function () {
+                                    deferred.resolve(config);
+                                });
+                            });
+                        });
+
+                        return deferred.promise;
 					}
 				};
 			}];

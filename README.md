@@ -38,4 +38,20 @@ $ocLazyLoad.load({
 <div oc-lazy-load="{name: 'TestModule', files: ['js/testModule.js'], template: 'partials/testLazyLoad.html'}"></div>
 ```
 
+- Load dependencies by placing a module definition in the dependency injection block of your module
+```javascript
+angular.module('MyModule', [
+    {
+        name: 'TestModule',
+        files: ['/components/TestModule/TestModule.js']
+    },{
+        name: 'Login',
+        files: [
+            '/components/Login/Login.js',
+            '/components/Login/LoginSocial.js'
+        ]
+)
+```
+
+
 See the example in the 'example' folder to know how to integrate ocLazyLoad with your router.
