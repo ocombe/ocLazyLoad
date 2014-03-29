@@ -40,24 +40,44 @@
 						return regModules;
 					},
 
+                    getModuleName: function (module) {
+                        var moduleName;
+                        if (typeof module === 'string') {
+                            moduleName = module;
+                        } else if (typeof module === 'object' && module.hasOwnProperty('name') && typeof module.name === 'string') {
+                            moduleName = module.name;
+                        } else {
+                            moduleName = undefined;
+                        }
+                        return moduleName;
+                    },
+
 					load: function(module) {
                         var self = this,
-                            config,
+                            config = null,
                             moduleCache = [],
                             deferred = $q.defer(),
                             moduleName,
                             errText;
 
+                        moduleName = self.getModuleName(module);
+
+                        // If this module has been loaded before, re-use it.
+                        if (moduleExists(moduleName)) {
+                            moduleCache.push(moduleName);
+                            deferred.resolve();
+                            return deferred.promise;
+                        }
+
+                        // Get or Set a configuration depending on what was passed in
                         if (typeof module === 'string') {
                             config = self.getModuleConfig(module);
-                            moduleName = module;
-                        } else if (typeof module === 'object' && module.hasOwnProperty('name') && typeof module.name === 'string') {
+                        } else if (typeof module === 'object') {
                             config = self.setModuleConfig(module);
-                            moduleName = module.name;
                         }
 
                         if (config === null) {
-                            errText = 'Module "' + moduleName + '" not configured';
+                            errText = 'Module "' + moduleName + '" is not configured, cannot load.';
                             $log.error(errText);
                             throw errText;
                         }
@@ -68,8 +88,6 @@
                             }
                         };
 
-                        // BB: Extensive modification to introduce promises to the dependency loading
-                        // and to support JIT loading of dependant modules in the module definition itself.
                         function loadDependencies(module) {
                             var moduleName,
                                 loadedModule,
@@ -77,12 +95,7 @@
                                 p_list = [],
                                 load_complete;
 
-                            if (typeof module === 'string') {
-                                moduleName = module;
-                            } else if (typeof module === 'object' && module.hasOwnProperty('name') && typeof module.name === 'string') {
-                                moduleName = module.name;
-                            }
-
+                            moduleName = self.getModuleName(module);
                             loadedModule = angular.module(moduleName);
                             requires = getRequires(loadedModule);
 
@@ -90,20 +103,37 @@
                                 var config,
                                     deferred_dep;
 
+                                // If no configuration is provided, try and find one from a previous load.
+                                // If there isn't one, bail and let the normal flow run
                                 if (typeof requireEntry === 'string') {
                                     config = self.getModuleConfig(requireEntry);
                                     if (config === null) {
-                                        $log.error('Dependency "', requireEntry, '" not configured, cannot inject into module "', moduleName, '"');
+                                        moduleCache.push(requireEntry); // We don't know about this module, but something else might, so push it anyway.
                                         return;
                                     }
+                                    requireEntry = config;
                                 }
 
-                                if (typeof requireEntry === 'object' && requireEntry.hasOwnProperty('name') && typeof requireEntry.name === 'string') {
+                                // Check if this dependency has been loaded previously or is already in the moduleCache
+                                if (moduleExists(requireEntry.name) || moduleCache.indexOf(requireEntry.name) !== -1) {
+                                    if (typeof module !== 'string') {
+                                        // The dependency exists, but it's being redefined, not inherited by a simple string reference, raise a warning and ignore the new config.
+                                        // TODO: This could be made smarter. There's no checking here yet to determine if the configurations are actually different.
+                                        $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency "', requireEntry.name, '"\nExisting:', self.getModuleConfig(requireEntry.name), 'Ignored:', requireEntry);
+                                    }
+                                    return;
+                                } else if (typeof requireEntry === 'object') {
+                                    // The dependency doesn't exist in the module cache and is a new conifguration, so store and push it.
+                                    self.setModuleConfig(requireEntry);
+                                    moduleCache.push(requireEntry.name);
+                                }
+
+                                // Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
+                                if (requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
                                     deferred_dep = $q.defer();
                                     if (requireEntry.files) {
                                         p_list.push(deferred_dep.promise);
                                         asyncLoader(requireEntry.files, function () {
-                                            moduleCache.push(requireEntry.name);
                                             loadDependencies(requireEntry).then(
                                                 function () {
                                                     deferred_dep.resolve();
@@ -114,6 +144,7 @@
                                 }
                             });
 
+                            // Create a wrapper promise to watch the promise list and resolve it once everything is done.
                             load_complete = $q.defer();
                             $q.all(p_list).then(function () {
                                 load_complete.resolve();

@@ -4,343 +4,381 @@
  */
 
 (function() {
-	'use strict';
-	var regModules = ['ng', 'ngAnimate'];
+    'use strict';
+    var regModules = ['ng', 'ngAnimate'];
 
-	var ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
+    var ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
 
-	ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
-		function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector) {
+    ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
+        function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector) {
 
-			var modules = {},
-				asyncLoader,
-				providers = {
-					$controllerProvider: $controllerProvider,
-					$compileProvider: $compileProvider,
-					$filterProvider: $filterProvider,
-					$provide: $provide, // other things
-					$injector: $injector
-				};
+            var modules = {},
+                asyncLoader,
+                providers = {
+                    $controllerProvider: $controllerProvider,
+                    $compileProvider: $compileProvider,
+                    $filterProvider: $filterProvider,
+                    $provide: $provide, // other things
+                    $injector: $injector
+                };
 
-			this.$get = ['$timeout', '$log', '$q', function($timeout, $log, $q) {
-				return {
-					getModuleConfig: function(name) {
-						if(!modules[name]) {
-							return null;
-						}
-						return modules[name];
-					},
+            this.$get = ['$timeout', '$log', '$q', function($timeout, $log, $q) {
+                return {
+                    getModuleConfig: function(name) {
+                        if(!modules[name]) {
+                            return null;
+                        }
+                        return modules[name];
+                    },
 
-					setModuleConfig: function(module) {
-						modules[module.name] = module;
-						return module;
-					},
+                    setModuleConfig: function(module) {
+                        modules[module.name] = module;
+                        return module;
+                    },
 
-					getModules: function() {
-						return regModules;
-					},
+                    getModules: function() {
+                        return regModules;
+                    },
 
-					load: function(name) {
-						var self = this,
-							config,
-							moduleCache = [],
-							deferred = $q.defer();
+                    getModuleName: function (module) {
+                        var moduleName;
+                        if (typeof module === 'string') {
+                            moduleName = module;
+                        } else if (typeof module === 'object' && module.hasOwnProperty('name') && typeof module.name === 'string') {
+                            moduleName = module.name;
+                        } else {
+                            moduleName = undefined;
+                        }
+                        return moduleName;
+                    },
 
-						if(typeof name === 'string') {
-							config = self.getModuleConfig(name);
-						} else if(typeof name === 'object' && typeof name.name !== 'undefined') {
-							config = self.setModuleConfig(name);
-							name = name.name;
-						}
+                    load: function(module) {
+                        var self = this,
+                            config = null,
+                            moduleCache = [],
+                            deferred = $q.defer(),
+                            moduleName,
+                            errText;
 
-						moduleCache.push = function(value) {
-							if(this.indexOf(value) === -1) {
-								Array.prototype.push.apply(this, arguments);
-							}
-						};
+                        moduleName = self.getModuleName(module);
 
-						if(!config) {
-							var errorText = 'Module "' + name + '" not configured';
-							$log.error(errorText);
-							throw errorText;
-						}
+                        // If this module has been loaded before, re-use it.
+                        if (moduleExists(moduleName)) {
+                            moduleCache.push(moduleName);
+                            deferred.resolve();
+                            return deferred.promise;
+                        }
 
-						function loadDependencies(moduleName, allDependencyLoad) {
-							if(regModules.indexOf(moduleName) > -1) {
-								return allDependencyLoad();
-							}
+                        // Get or Set a configuration depending on what was passed in
+                        if (typeof module === 'string') {
+                            config = self.getModuleConfig(module);
+                        } else if (typeof module === 'object') {
+                            config = self.setModuleConfig(module);
+                        }
 
-							var loadedModule = angular.module(moduleName),
-								requires = getRequires(loadedModule);
+                        if (config === null) {
+                            errText = 'Module "' + moduleName + '" is not configured, cannot load.';
+                            $log.error(errText);
+                            throw errText;
+                        }
 
-							function onModuleLoad(moduleLoaded) {
-								if(moduleLoaded) {
+                        moduleCache.push = function (value) {
+                            if (this.indexOf(value) === -1) {
+                                Array.prototype.push.apply(this, arguments);
+                            }
+                        };
 
-									var index = requires.indexOf(moduleLoaded);
-									if(index > -1) {
-										requires.splice(index, 1);
-									}
-								}
-								if(requires.length === 0) {
-									$timeout(function() {
-										allDependencyLoad(moduleName);
-									});
-								}
-							}
+                        function loadDependencies(module) {
+                            var moduleName,
+                                loadedModule,
+                                requires,
+                                p_list = [],
+                                load_complete;
 
-							var requireNeeded = getRequires(loadedModule);
-							angular.forEach(requireNeeded, function(requireModule) {
-								moduleCache.push(requireModule);
+                            moduleName = self.getModuleName(module);
+                            loadedModule = angular.module(moduleName);
+                            requires = getRequires(loadedModule);
 
-								if(moduleExists(requireModule)) {
-									return onModuleLoad(requireModule);
-								}
+                            angular.forEach(requires, function (requireEntry) {
+                                var config,
+                                    deferred_dep;
 
-								var requireModuleConfig = self.getConfig(requireModule);
-								if(requireModuleConfig && (typeof requireModuleConfig.files !== 'undefined')) {
-									asyncLoader(requireModuleConfig.files, function() {
-										loadDependencies(requireModule, function requireModuleLoaded(name) {
-											onModuleLoad(name);
-										});
-									});
-								} else {
-									$log.warn('module "' + requireModule + "' not loaded and not configured");
-									onModuleLoad(requireModule);
-								}
-								return null;
-							});
+                                // If no configuration is provided, try and find one from a previous load.
+                                // If there isn't one, bail and let the normal flow run
+                                if (typeof requireEntry === 'string') {
+                                    config = self.getModuleConfig(requireEntry);
+                                    if (config === null) {
+                                        moduleCache.push(requireEntry); // We don't know about this module, but something else might, so push it anyway.
+                                        return;
+                                    }
+                                    requireEntry = config;
+                                }
 
-							if(requireNeeded.length === 0) {
-								onModuleLoad();
-							}
-							return null;
-						}
+                                // Check if this dependency has been loaded previously or is already in the moduleCache
+                                if (moduleExists(requireEntry.name) || moduleCache.indexOf(requireEntry.name) !== -1) {
+                                    if (typeof module !== 'string') {
+                                        // The dependency exists, but it's being redefined, not inherited by a simple string reference, raise a warning and ignore the new config.
+                                        // TODO: This could be made smarter. There's no checking here yet to determine if the configurations are actually different.
+                                        $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency "', requireEntry.name, '"\nExisting:', self.getModuleConfig(requireEntry.name), 'Ignored:', requireEntry);
+                                    }
+                                    return;
+                                } else if (typeof requireEntry === 'object') {
+                                    // The dependency doesn't exist in the module cache and is a new conifguration, so store and push it.
+                                    self.setModuleConfig(requireEntry);
+                                    moduleCache.push(requireEntry.name);
+                                }
 
-						asyncLoader(config.files, function() {
-							moduleCache.push(name);
-							loadDependencies(name, function() {
-								register(providers, moduleCache, $log);
-								$timeout(function() {
-									deferred.resolve(config);
-								});
-							});
-						});
-						return deferred.promise;
-					}
-				};
-			}];
+                                // Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
+                                if (requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
+                                    deferred_dep = $q.defer();
+                                    if (requireEntry.files) {
+                                        p_list.push(deferred_dep.promise);
+                                        asyncLoader(requireEntry.files, function () {
+                                            loadDependencies(requireEntry).then(
+                                                function () {
+                                                    deferred_dep.resolve();
+                                                }
+                                            );
+                                        });
+                                    }
+                                }
+                            });
 
-			this.config = function(config) {
-				if(typeof config.asyncLoader === 'undefined') {
-					throw('You need to define an async loader such as requireJS or script.js');
-				}
+                            // Create a wrapper promise to watch the promise list and resolve it once everything is done.
+                            load_complete = $q.defer();
+                            $q.all(p_list).then(function () {
+                                load_complete.resolve();
+                            });
 
-				asyncLoader = config.asyncLoader;
-				init(angular.element(window.document));
+                            return load_complete.promise;
+                        }
 
-				if(typeof config.modules !== 'undefined') {
-					if(angular.isArray(config.modules)) {
-						angular.forEach(config.modules, function(moduleConfig) {
-							modules[moduleConfig.name] = moduleConfig;
-						});
-					} else {
-						modules[config.modules.name] = config.modules;
-					}
-				}
-			};
-		}]);
+                        asyncLoader(config.files, function () {
+                            moduleCache.push(moduleName);
+                            loadDependencies(moduleName).then(function () {
+                                register(providers, moduleCache, $log);
+                                $timeout(function () {
+                                    deferred.resolve(config);
+                                });
+                            });
+                        });
 
-	ocLazyLoad.directive('ocLazyLoad', ['$http', '$log', '$ocLazyLoad', '$compile', '$timeout', '$templateCache',
-		function($http, $log, $ocLazyLoad, $compile, $timeout, $templateCache) {
-			return {
-				link: function(scope, element, attr) {
-					var childScope;
-					var onloadExp = scope.$eval(attr.ocLazyLoad).onload || '';
+                        return deferred.promise;
+                    }
+                };
+            }];
 
-					/**
-					 * Destroy the current scope of this element and empty the html
-					 */
-					function clearContent() {
-						if(childScope) {
-							childScope.$destroy();
-							childScope = null;
-						}
-						element.html('');
-					}
+            this.config = function(config) {
+                if(typeof config.asyncLoader === 'undefined') {
+                    throw('You need to define an async loader such as requireJS or script.js');
+                }
 
-					/**
-					 * Load a template from cache or url
-					 * @param url
-					 * @param callback
-					 */
-					function loadTemplate(url, callback) {
-						var view;
+                asyncLoader = config.asyncLoader;
+                init(angular.element(window.document));
 
-						if(typeof(view = $templateCache.get(url)) !== 'undefined') {
-							callback(view);
-						} else {
-							$http.get(url)
-								.success(function(data) {
-									$templateCache.put('view:' + url, data);
-									callback(data);
-								})
-								.error(function(data) {
-									$log.error('Error load template "' + url + "': " + data);
-								});
-						}
-					}
+                if(typeof config.modules !== 'undefined') {
+                    if(angular.isArray(config.modules)) {
+                        angular.forEach(config.modules, function(moduleConfig) {
+                            modules[moduleConfig.name] = moduleConfig;
+                        });
+                    } else {
+                        modules[config.modules.name] = config.modules;
+                    }
+                }
+            };
+        }]);
 
-					scope.$watch(attr.ocLazyLoad, function(moduleName) {
-						if(moduleName) {
-							$ocLazyLoad.load(moduleName).then(function(moduleConfig) {
-								if(!moduleConfig.template) {
-									return;
-								}
-								loadTemplate(moduleConfig.template, function(template) {
-									childScope = scope.$new();
-									element.html(template);
+    ocLazyLoad.directive('ocLazyLoad', ['$http', '$log', '$ocLazyLoad', '$compile', '$timeout', '$templateCache',
+        function($http, $log, $ocLazyLoad, $compile, $timeout, $templateCache) {
+            return {
+                link: function(scope, element, attr) {
+                    var childScope;
+                    var onloadExp = scope.$eval(attr.ocLazyLoad).onload || '';
 
-									var content = element.contents();
-									var linkFn = $compile(content);
-									linkFn(childScope);
-									childScope.$emit('$includeContentLoaded');
-									childScope.$eval(onloadExp);
-								});
-							});
-						} else {
-							clearContent();
-						}
-					});
-				}
-			};
-		}]);
+                    /**
+                     * Destroy the current scope of this element and empty the html
+                     */
+                    function clearContent() {
+                        if(childScope) {
+                            childScope.$destroy();
+                            childScope = null;
+                        }
+                        element.html('');
+                    }
 
-	/**
-	 * Get the list of required modules/services/... for this module
-	 * @param module
-	 * @returns {Array}
-	 */
-	function getRequires(module) {
-		var requires = [];
-		angular.forEach(module.requires, function(requireModule) {
-			if(regModules.indexOf(requireModule) === -1) {
-				requires.push(requireModule);
-			}
-		});
-		return requires;
-	}
+                    /**
+                     * Load a template from cache or url
+                     * @param url
+                     * @param callback
+                     */
+                    function loadTemplate(url, callback) {
+                        var view;
 
-	/**
-	 * Check if a module exists
-	 * @param moduleName
-	 * @returns {boolean}
-	 */
-	function moduleExists(moduleName) {
-		try {
-			angular.module(moduleName);
-		} catch(e) {
-			if(/No module/.test(e) || (e.message.indexOf('$injector:nomod') > -1)) {
-				return false;
-			}
-		}
-		return true;
-	}
+                        if(typeof(view = $templateCache.get(url)) !== 'undefined') {
+                            callback(view);
+                        } else {
+                            $http.get(url)
+                                .success(function(data) {
+                                    $templateCache.put('view:' + url, data);
+                                    callback(data);
+                                })
+                                .error(function(data) {
+                                    $log.error('Error load template "' + url + "': " + data);
+                                });
+                        }
+                    }
 
-	/**
-	 * Register a new module and load it
-	 * @param providers
-	 * @param registerModules
-	 * @param $log
-	 * @returns {*}
-	 */
-	function register(providers, registerModules, $log) {
-		var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider;
-		if(registerModules) {
-			var runBlocks = [];
-			for(k = registerModules.length - 1; k >= 0; k--) {
-				moduleName = registerModules[k];
-				regModules.push(moduleName);
-				moduleFn = angular.module(moduleName);
-				runBlocks = runBlocks.concat(moduleFn._runBlocks);
-				try {
-					for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
-						invokeArgs = invokeQueue[i];
+                    scope.$watch(attr.ocLazyLoad, function(moduleName) {
+                        if(moduleName) {
+                            $ocLazyLoad.load(moduleName).then(function(moduleConfig) {
+                                if(!moduleConfig.template) {
+                                    return;
+                                }
+                                loadTemplate(moduleConfig.template, function(template) {
+                                    childScope = scope.$new();
+                                    element.html(template);
 
-						if(providers.hasOwnProperty(invokeArgs[0])) {
-							provider = providers[invokeArgs[0]];
-						} else {
-							return $log.error("unsupported provider " + invokeArgs[0]);
-						}
-						provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
-					}
-				} catch(e) {
-					if(e.message) {
-						e.message += ' from ' + moduleName;
-					}
-					$log.error(e.message);
-					throw e;
-				}
-				registerModules.pop();
-			}
-			angular.forEach(runBlocks, function(fn) {
-				providers.$injector.invoke(fn);
-			});
-		}
-		return null;
-	}
+                                    var content = element.contents();
+                                    var linkFn = $compile(content);
+                                    linkFn(childScope);
+                                    childScope.$emit('$includeContentLoaded');
+                                    childScope.$eval(onloadExp);
+                                });
+                            });
+                        } else {
+                            clearContent();
+                        }
+                    });
+                }
+            };
+        }]);
 
-	/**
-	 * Get the list of existing registered modules
-	 * @param element
-	 */
-	function init(element) {
-		var elements = [element],
-			appElement,
-			module,
-			names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
-			NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/;
+    /**
+     * Get the list of required modules/services/... for this module
+     * @param module
+     * @returns {Array}
+     */
+    function getRequires(module) {
+        var requires = [];
+        angular.forEach(module.requires, function(requireModule) {
+            if(regModules.indexOf(requireModule) === -1) {
+                requires.push(requireModule);
+            }
+        });
+        return requires;
+    }
 
-		function append(elm) {
-			return (elm && elements.push(elm));
-		}
+    /**
+     * Check if a module exists
+     * @param moduleName
+     * @returns {boolean}
+     */
+    function moduleExists(moduleName) {
+        try {
+            angular.module(moduleName);
+        } catch(e) {
+            if(/No module/.test(e) || (e.message.indexOf('$injector:nomod') > -1)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-		angular.forEach(names, function(name) {
-			names[name] = true;
-			append(document.getElementById(name));
-			name = name.replace(':', '\\:');
-			if(element.querySelectorAll) {
-				angular.forEach(element.querySelectorAll('.' + name), append);
-				angular.forEach(element.querySelectorAll('.' + name + '\\:'), append);
-				angular.forEach(element.querySelectorAll('[' + name + ']'), append);
-			}
-		});
+    /**
+     * Register a new module and load it
+     * @param providers
+     * @param registerModules
+     * @param $log
+     * @returns {*}
+     */
+    function register(providers, registerModules, $log) {
+        var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider;
+        if(registerModules) {
+            var runBlocks = [];
+            for(k = registerModules.length - 1; k >= 0; k--) {
+                moduleName = registerModules[k];
+                regModules.push(moduleName);
+                moduleFn = angular.module(moduleName);
+                runBlocks = runBlocks.concat(moduleFn._runBlocks);
+                try {
+                    for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
+                        invokeArgs = invokeQueue[i];
 
-		angular.forEach(elements, function(elm) {
-			if(!appElement) {
-				var className = ' ' + element.className + ' ';
-				var match = NG_APP_CLASS_REGEXP.exec(className);
-				if(match) {
-					appElement = elm;
-					module = (match[2] || '').replace(/\s+/g, ',');
-				} else {
-					angular.forEach(elm.attributes, function(attr) {
-						if(!appElement && names[attr.name]) {
-							appElement = elm;
-							module = attr.value;
-						}
-					});
-				}
-			}
-		});
+                        if(providers.hasOwnProperty(invokeArgs[0])) {
+                            provider = providers[invokeArgs[0]];
+                        } else {
+                            return $log.error("unsupported provider " + invokeArgs[0]);
+                        }
+                        provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
+                    }
+                } catch(e) {
+                    if(e.message) {
+                        e.message += ' from ' + moduleName;
+                    }
+                    $log.error(e.message);
+                    throw e;
+                }
+                registerModules.pop();
+            }
+            angular.forEach(runBlocks, function(fn) {
+                providers.$injector.invoke(fn);
+            });
+        }
+        return null;
+    }
 
-		if(appElement) {
-			(function addReg(module) {
-				if(regModules.indexOf(module) === -1) {
-					regModules.push(module);
-					var mainModule = angular.module(module);
-					angular.forEach(mainModule.requires, addReg);
-				}
-			})(module);
-		}
-	}
+    /**
+     * Get the list of existing registered modules
+     * @param element
+     */
+    function init(element) {
+        var elements = [element],
+            appElement,
+            module,
+            names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
+            NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/;
+
+        function append(elm) {
+            return (elm && elements.push(elm));
+        }
+
+        angular.forEach(names, function(name) {
+            names[name] = true;
+            append(document.getElementById(name));
+            name = name.replace(':', '\\:');
+            if(element.querySelectorAll) {
+                angular.forEach(element.querySelectorAll('.' + name), append);
+                angular.forEach(element.querySelectorAll('.' + name + '\\:'), append);
+                angular.forEach(element.querySelectorAll('[' + name + ']'), append);
+            }
+        });
+
+        angular.forEach(elements, function(elm) {
+            if(!appElement) {
+                var className = ' ' + element.className + ' ';
+                var match = NG_APP_CLASS_REGEXP.exec(className);
+                if(match) {
+                    appElement = elm;
+                    module = (match[2] || '').replace(/\s+/g, ',');
+                } else {
+                    angular.forEach(elm.attributes, function(attr) {
+                        if(!appElement && names[attr.name]) {
+                            appElement = elm;
+                            module = attr.value;
+                        }
+                    });
+                }
+            }
+        });
+
+        if(appElement) {
+            (function addReg(module) {
+                if(regModules.indexOf(module) === -1) {
+                    regModules.push(module);
+                    var mainModule = angular.module(module);
+                    angular.forEach(mainModule.requires, addReg);
+                }
+            })(module);
+        }
+    }
 })();

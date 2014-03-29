@@ -41,13 +41,17 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 	}])
 	.config(['$ocLazyLoadProvider', function($ocLazyLoadProvider) {
 		$ocLazyLoadProvider.config({
-//			modules: [
+			modules: [
+                {
+                    name: 'HelloWorld',
+                    files: ['helloWorldModule.js']
+                }
 //				{
 //					name: 'TestModule',
 //					files: ['testModule.js'],
 //					template: 'partials/testLazyLoad.html'
 //				}
-//			],
+			],
 			asyncLoader: $script
 		});
 	}]);

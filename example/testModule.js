@@ -1,9 +1,13 @@
 'use strict';
 
-angular.module('HelloWorld', []).factory('$message', function() {
-	return "Hello World";
-});
-
-angular.module('TestModule', ['HelloWorld', 'oc.lazyLoad']).controller('LazyLoadCtrl', ['$scope', '$message', function($scope, $message) {
-	$scope.message = $message;
-}]);
+angular.module('TestModule', [
+        'HelloWorld',   // Pre defined in app.js
+        {               // Defined at runtime!
+            name: 'HelloUniverse',
+            files: ['helloUniverseModule.js']
+        }
+    ]).
+    controller('LazyLoadCtrl', ['$scope', '$worldmessage', '$universemessage', function($scope, $worldmessage, $universemessage) {
+	    $scope.worldmessage = $worldmessage;
+        $scope.universemessage = $universemessage;
+    }]);
