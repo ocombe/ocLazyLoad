@@ -40,92 +40,130 @@
 						return regModules;
 					},
 
-					load: function(name) {
-						var self = this,
-							config,
-							moduleCache = [],
-							deferred = $q.defer();
+                    getModuleName: function (module) {
+                        var moduleName;
+                        if (typeof module === 'string') {
+                            moduleName = module;
+                        } else if (typeof module === 'object' && module.hasOwnProperty('name') && typeof module.name === 'string') {
+                            moduleName = module.name;
+                        } else {
+                            moduleName = undefined;
+                        }
+                        return moduleName;
+                    },
 
-						if(typeof name === 'string') {
-							config = self.getModuleConfig(name);
-						} else if(typeof name === 'object' && typeof name.name !== 'undefined') {
-							config = self.setModuleConfig(name);
-							name = name.name;
-						}
+					load: function(module) {
+                        var self = this,
+                            config = null,
+                            moduleCache = [],
+                            deferred = $q.defer(),
+                            moduleName,
+                            errText;
 
-						moduleCache.push = function(value) {
-							if(this.indexOf(value) === -1) {
-								Array.prototype.push.apply(this, arguments);
-							}
-						};
+                        moduleName = self.getModuleName(module);
 
-						if(!config) {
-							var errorText = 'Module "' + name + '" not configured';
-							$log.error(errorText);
-							throw errorText;
-						}
+                        // If this module has been loaded before, re-use it.
+                        if (moduleExists(moduleName)) {
+                            moduleCache.push(moduleName);
+                            deferred.resolve();
+                            return deferred.promise;
+                        }
 
-						function loadDependencies(moduleName, allDependencyLoad) {
-							if(regModules.indexOf(moduleName) > -1) {
-								return allDependencyLoad();
-							}
+                        // Get or Set a configuration depending on what was passed in
+                        if (typeof module === 'string') {
+                            config = self.getModuleConfig(module);
+                        } else if (typeof module === 'object') {
+                            config = self.setModuleConfig(module);
+                        }
 
-							var loadedModule = angular.module(moduleName),
-								requires = getRequires(loadedModule);
+                        if (config === null) {
+                            errText = 'Module "' + moduleName + '" is not configured, cannot load.';
+                            $log.error(errText);
+                            throw errText;
+                        }
 
-							function onModuleLoad(moduleLoaded) {
-								if(moduleLoaded) {
+                        moduleCache.push = function (value) {
+                            if (this.indexOf(value) === -1) {
+                                Array.prototype.push.apply(this, arguments);
+                            }
+                        };
 
-									var index = requires.indexOf(moduleLoaded);
-									if(index > -1) {
-										requires.splice(index, 1);
-									}
-								}
-								if(requires.length === 0) {
-									$timeout(function() {
-										allDependencyLoad(moduleName);
-									});
-								}
-							}
+                        function loadDependencies(module) {
+                            var moduleName,
+                                loadedModule,
+                                requires,
+                                p_list = [],
+                                load_complete;
 
-							var requireNeeded = getRequires(loadedModule);
-							angular.forEach(requireNeeded, function(requireModule) {
-								moduleCache.push(requireModule);
+                            moduleName = self.getModuleName(module);
+                            loadedModule = angular.module(moduleName);
+                            requires = getRequires(loadedModule);
 
-								if(moduleExists(requireModule)) {
-									return onModuleLoad(requireModule);
-								}
+                            angular.forEach(requires, function (requireEntry) {
+                                var config,
+                                    deferred_dep;
 
-								var requireModuleConfig = self.getConfig(requireModule);
-								if(requireModuleConfig && (typeof requireModuleConfig.files !== 'undefined')) {
-									asyncLoader(requireModuleConfig.files, function() {
-										loadDependencies(requireModule, function requireModuleLoaded(name) {
-											onModuleLoad(name);
-										});
-									});
-								} else {
-									$log.warn('module "' + requireModule + "' not loaded and not configured");
-									onModuleLoad(requireModule);
-								}
-								return null;
-							});
+                                // If no configuration is provided, try and find one from a previous load.
+                                // If there isn't one, bail and let the normal flow run
+                                if (typeof requireEntry === 'string') {
+                                    config = self.getModuleConfig(requireEntry);
+                                    if (config === null) {
+                                        moduleCache.push(requireEntry); // We don't know about this module, but something else might, so push it anyway.
+                                        return;
+                                    }
+                                    requireEntry = config;
+                                }
 
-							if(requireNeeded.length === 0) {
-								onModuleLoad();
-							}
-							return null;
-						}
+                                // Check if this dependency has been loaded previously or is already in the moduleCache
+                                if (moduleExists(requireEntry.name) || moduleCache.indexOf(requireEntry.name) !== -1) {
+                                    if (typeof module !== 'string') {
+                                        // The dependency exists, but it's being redefined, not inherited by a simple string reference, raise a warning and ignore the new config.
+                                        // TODO: This could be made smarter. There's no checking here yet to determine if the configurations are actually different.
+                                        $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency "', requireEntry.name, '"\nExisting:', self.getModuleConfig(requireEntry.name), 'Ignored:', requireEntry);
+                                    }
+                                    return;
+                                } else if (typeof requireEntry === 'object') {
+                                    // The dependency doesn't exist in the module cache and is a new conifguration, so store and push it.
+                                    self.setModuleConfig(requireEntry);
+                                    moduleCache.push(requireEntry.name);
+                                }
 
-						asyncLoader(config.files, function() {
-							moduleCache.push(name);
-							loadDependencies(name, function() {
-								register(providers, moduleCache, $log);
-								$timeout(function() {
-									deferred.resolve(config);
-								});
-							});
-						});
-						return deferred.promise;
+                                // Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
+                                if (requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
+                                    deferred_dep = $q.defer();
+                                    if (requireEntry.files) {
+                                        p_list.push(deferred_dep.promise);
+                                        asyncLoader(requireEntry.files, function () {
+                                            loadDependencies(requireEntry).then(
+                                                function () {
+                                                    deferred_dep.resolve();
+                                                }
+                                            );
+                                        });
+                                    }
+                                }
+                            });
+
+                            // Create a wrapper promise to watch the promise list and resolve it once everything is done.
+                            load_complete = $q.defer();
+                            $q.all(p_list).then(function () {
+                                load_complete.resolve();
+                            });
+
+                            return load_complete.promise;
+                        }
+
+                        asyncLoader(config.files, function () {
+                            moduleCache.push(moduleName);
+                            loadDependencies(moduleName).then(function () {
+                                register(providers, moduleCache, $log);
+                                $timeout(function () {
+                                    deferred.resolve(config);
+                                });
+                            });
+                        });
+
+                        return deferred.promise;
 					}
 				};
 			}];
