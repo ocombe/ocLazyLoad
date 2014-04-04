@@ -6,11 +6,14 @@
         <!-- // end lazy load -->
 
         <!-- Templates -->
-        <script type="text/ng-template" id="partials/testLazyLoad.html">
+        <script type="text/ng-template" id="/partials/testLazyLoad.html">
             <div ng-controller="LazyLoadCtrl">
                 Lazy Hello World Test : {{ worldmessage }}<br/>
                 Lazier Hello Universe Test : {{ universemessage}}
             </div>
+
+            <div ng-include="'/partials/testTemplate.html'"></div>
+            <div ng-include="'/partials/testTemplate2.html'"></div>
         </script>
         <!-- // end Templates -->
 
