@@ -5,7 +5,7 @@
 
 (function() {
 	'use strict';
-	var regModules = ['ng', 'ngAnimate'];
+	var regModules = ['ng'];
 
 	var ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
 
@@ -176,7 +176,17 @@
 				asyncLoader = config.asyncLoader;
 				init(angular.element(window.document));
 
-				if(typeof config.modules !== 'undefined') {
+                if(config.loadedModules) {
+                    var addRegModule = function(loadedModule) {
+                        if (regModules.indexOf(loadedModule) < 0) {
+                            regModules.push(loadedModule);
+                            angular.forEach(angular.module(loadedModule).requires, addRegModule);
+                        }
+                    }
+                    angular.forEach(config.loadedModules, addRegModule);
+                }
+
+				if(config.modules) {
 					if(angular.isArray(config.modules)) {
 						angular.forEach(config.modules, function(moduleConfig) {
 							modules[moduleConfig.name] = moduleConfig;
@@ -292,18 +302,19 @@
 	 * @returns {*}
 	 */
 	function register(providers, registerModules, $log) {
-		var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider;
 		if(registerModules) {
-			var runBlocks = [];
+            var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider, runBlocks = [];
 			for(k = registerModules.length - 1; k >= 0; k--) {
 				moduleName = registerModules[k];
+                if (regModules.indexOf(moduleName) > -1) {
+                    continue;
+                }
 				regModules.push(moduleName);
 				moduleFn = angular.module(moduleName);
 				runBlocks = runBlocks.concat(moduleFn._runBlocks);
 				try {
 					for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
 						invokeArgs = invokeQueue[i];
-
 						if(providers.hasOwnProperty(invokeArgs[0])) {
 							provider = providers[invokeArgs[0]];
 						} else {
@@ -318,11 +329,19 @@
 					$log.error(e.message);
 					throw e;
 				}
+                register(providers, moduleFn.requires, $log);
 				registerModules.pop();
 			}
-			angular.forEach(runBlocks, function(fn) {
-				providers.$injector.invoke(fn);
-			});
+            angular.forEach(runBlocks, function(fn) {
+                try {
+                    providers.$injector.invoke(fn);
+                } catch(e) {
+                    if(e.message) {
+                        e.message += ' from ' + moduleName;
+                    }
+                    $log.error(e.message);
+                }
+            });
 		}
 		return null;
 	}
