@@ -1,5 +1,9 @@
 'use strict';
 
-angular.module('HelloWorld', []).factory('$worldmessage', function() {
-    return "Hello World";
+angular.module('HelloWorld', []).run(['$timeout', function($timeout) {
+	$timeout(function() {
+		console.log('hello world');
+	})
+}]).factory('$worldmessage', function() {
+	return "Hello World";
 });
