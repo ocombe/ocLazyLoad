@@ -10,35 +10,35 @@
 	var ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
 
 	ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
-		function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector) {
+        function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector) {
 
-			var modules = {},
-				asyncLoader,
-				providers = {
-					$controllerProvider: $controllerProvider,
-					$compileProvider: $compileProvider,
-					$filterProvider: $filterProvider,
-					$provide: $provide, // other things
-					$injector: $injector
-				};
+            var modules = {},
+                asyncLoader,
+                providers = {
+                    $controllerProvider: $controllerProvider,
+                    $compileProvider: $compileProvider,
+                    $filterProvider: $filterProvider,
+                    $provide: $provide, // other things
+                    $injector: $injector
+                };
 
-			this.$get = ['$timeout', '$log', '$q', function($timeout, $log, $q) {
-				return {
-					getModuleConfig: function(name) {
-						if(!modules[name]) {
-							return null;
-						}
-						return modules[name];
-					},
+            this.$get = ['$timeout', '$log', '$q', function($timeout, $log, $q) {
+                return {
+                    getModuleConfig: function(name) {
+                        if(!modules[name]) {
+                            return null;
+                        }
+                        return modules[name];
+                    },
 
-					setModuleConfig: function(module) {
-						modules[module.name] = module;
-						return module;
-					},
+                    setModuleConfig: function(module) {
+                        modules[module.name] = module;
+                        return module;
+                    },
 
-					getModules: function() {
-						return regModules;
-					},
+                    getModules: function() {
+                        return regModules;
+                    },
 
                     getModuleName: function (module) {
                         var moduleName;
@@ -52,7 +52,7 @@
                         return moduleName;
                     },
 
-					load: function(module) {
+                    load: function(module) {
                         var self = this,
                             config = null,
                             moduleCache = [],
@@ -108,8 +108,8 @@
                                 if (typeof requireEntry === 'string') {
                                     config = self.getModuleConfig(requireEntry);
                                     if (config === null) {
-                                        moduleCache.push(requireEntry); // We don't know about this module, but something else might, so push it anyway.
-                                        return;
+	                                    moduleCache.push(requireEntry); // We don't know about this module, but something else might, so push it anyway.
+	                                    return;
                                     }
                                     requireEntry = config;
                                 }
@@ -117,9 +117,9 @@
                                 // Check if this dependency has been loaded previously or is already in the moduleCache
                                 if (moduleExists(requireEntry.name) || moduleCache.indexOf(requireEntry.name) !== -1) {
                                     if (typeof module !== 'string') {
-                                        // The dependency exists, but it's being redefined, not inherited by a simple string reference, raise a warning and ignore the new config.
-                                        // TODO: This could be made smarter. There's no checking here yet to determine if the configurations are actually different.
-                                        $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency "', requireEntry.name, '"\nExisting:', self.getModuleConfig(requireEntry.name), 'Ignored:', requireEntry);
+	                                    // The dependency exists, but it's being redefined, not inherited by a simple string reference, raise a warning and ignore the new config.
+	                                    // TODO: This could be made smarter. There's no checking here yet to determine if the configurations are actually different.
+	                                    $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency "', requireEntry.name, '"\nExisting:', self.getModuleConfig(requireEntry.name), 'Ignored:', requireEntry);
                                     }
                                     return;
                                 } else if (typeof requireEntry === 'object') {
@@ -132,14 +132,14 @@
                                 if (requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
                                     deferred_dep = $q.defer();
                                     if (requireEntry.files) {
-                                        p_list.push(deferred_dep.promise);
-                                        asyncLoader(requireEntry.files, function () {
-                                            loadDependencies(requireEntry).then(
-                                                function () {
-                                                    deferred_dep.resolve();
-                                                }
-                                            );
-                                        });
+	                                    p_list.push(deferred_dep.promise);
+	                                    asyncLoader(requireEntry.files, function () {
+		                                    loadDependencies(requireEntry).then(
+			                                    function () {
+				                                    deferred_dep.resolve();
+			                                    }
+		                                    );
+	                                    });
                                     }
                                 }
                             });
@@ -164,104 +164,106 @@
                         });
 
                         return deferred.promise;
-					}
-				};
-			}];
+                    }
+                };
+            }];
 
-			this.config = function(config) {
-				if(typeof config.asyncLoader === 'undefined') {
-					throw('You need to define an async loader such as requireJS or script.js');
-				}
+            this.config = function(config) {
+                if(angular.isDefined(config)) {
+                    if(typeof config.asyncLoader === 'undefined') {
+                        throw('You need to define an async loader such as requireJS or script.js');
+                    }
 
-				asyncLoader = config.asyncLoader;
-				init(angular.element(window.document));
+                    asyncLoader = config.asyncLoader;
+                    init(angular.element(window.document));
 
-                if(config.loadedModules) {
-                    var addRegModule = function(loadedModule) {
-                        if (regModules.indexOf(loadedModule) < 0) {
-                            regModules.push(loadedModule);
-                            angular.forEach(angular.module(loadedModule).requires, addRegModule);
+                    if(config.loadedModules) {
+                        var addRegModule = function(loadedModule) {
+                            if(regModules.indexOf(loadedModule) < 0) {
+                                regModules.push(loadedModule);
+                                angular.forEach(angular.module(loadedModule).requires, addRegModule);
+                            }
+                        }
+                        angular.forEach(config.loadedModules, addRegModule);
+                    }
+
+                    if(config.modules) {
+                        if(angular.isArray(config.modules)) {
+                            angular.forEach(config.modules, function(moduleConfig) {
+                                modules[moduleConfig.name] = moduleConfig;
+                            });
+                        } else {
+                            modules[config.modules.name] = config.modules;
                         }
                     }
-                    angular.forEach(config.loadedModules, addRegModule);
                 }
-
-				if(config.modules) {
-					if(angular.isArray(config.modules)) {
-						angular.forEach(config.modules, function(moduleConfig) {
-							modules[moduleConfig.name] = moduleConfig;
-						});
-					} else {
-						modules[config.modules.name] = config.modules;
-					}
-				}
-			};
-		}]);
+            };
+        }]);
 
 	ocLazyLoad.directive('ocLazyLoad', ['$http', '$log', '$ocLazyLoad', '$compile', '$timeout', '$templateCache',
-		function($http, $log, $ocLazyLoad, $compile, $timeout, $templateCache) {
-			return {
-				link: function(scope, element, attr) {
-					var childScope;
-					var onloadExp = scope.$eval(attr.ocLazyLoad).onload || '';
+        function($http, $log, $ocLazyLoad, $compile, $timeout, $templateCache) {
+            return {
+                link: function(scope, element, attr) {
+                    var childScope;
+                    var onloadExp = scope.$eval(attr.ocLazyLoad).onload || '';
 
-					/**
-					 * Destroy the current scope of this element and empty the html
-					 */
-					function clearContent() {
-						if(childScope) {
-							childScope.$destroy();
-							childScope = null;
-						}
-						element.html('');
-					}
+                    /**
+                     * Destroy the current scope of this element and empty the html
+                     */
+                    function clearContent() {
+                        if(childScope) {
+                            childScope.$destroy();
+                            childScope = null;
+                        }
+                        element.html('');
+                    }
 
-					/**
-					 * Load a template from cache or url
-					 * @param url
-					 * @param callback
-					 */
-					function loadTemplate(url, callback) {
-						var view;
+                    /**
+                     * Load a template from cache or url
+                     * @param url
+                     * @param callback
+                     */
+                    function loadTemplate(url, callback) {
+                        var view;
 
-						if(typeof(view = $templateCache.get(url)) !== 'undefined') {
-							callback(view);
-						} else {
-							$http.get(url)
-								.success(function(data) {
-									$templateCache.put('view:' + url, data);
-									callback(data);
-								})
-								.error(function(data) {
-									$log.error('Error load template "' + url + "': " + data);
-								});
-						}
-					}
+                        if(typeof(view = $templateCache.get(url)) !== 'undefined') {
+                            callback(view);
+                        } else {
+                            $http.get(url)
+                                .success(function(data) {
+                                    $templateCache.put('view:' + url, data);
+                                    callback(data);
+                                })
+                                .error(function(data) {
+                                    $log.error('Error load template "' + url + "': " + data);
+                                });
+                        }
+                    }
 
-					scope.$watch(attr.ocLazyLoad, function(moduleName) {
-						if(moduleName) {
-							$ocLazyLoad.load(moduleName).then(function(moduleConfig) {
-								if(!moduleConfig.template) {
-									return;
-								}
-								loadTemplate(moduleConfig.template, function(template) {
-									childScope = scope.$new();
-									element.html(template);
+                    scope.$watch(attr.ocLazyLoad, function(moduleName) {
+                        if(moduleName) {
+                            $ocLazyLoad.load(moduleName).then(function(moduleConfig) {
+                                if(!moduleConfig.template) {
+                                    return;
+                                }
+                                loadTemplate(moduleConfig.template, function(template) {
+                                    childScope = scope.$new();
+                                    element.html(template);
 
-									var content = element.contents();
-									var linkFn = $compile(content);
-									linkFn(childScope);
-									childScope.$emit('$includeContentLoaded');
-									childScope.$eval(onloadExp);
-								});
-							});
-						} else {
-							clearContent();
-						}
-					});
-				}
-			};
-		}]);
+                                    var content = element.contents();
+                                    var linkFn = $compile(content);
+                                    linkFn(childScope);
+                                    childScope.$emit('$includeContentLoaded');
+                                    childScope.$eval(onloadExp);
+                                });
+                            });
+                        } else {
+                            clearContent();
+                        }
+                    });
+                }
+            };
+        }]);
 
 	/**
 	 * Get the list of required modules/services/... for this module
@@ -303,12 +305,12 @@
 	 */
 	function register(providers, registerModules, $log) {
 		if(registerModules) {
-            var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider, runBlocks = [];
+			var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider, runBlocks = [];
 			for(k = registerModules.length - 1; k >= 0; k--) {
 				moduleName = registerModules[k];
-                if (regModules.indexOf(moduleName) > -1) {
-                    continue;
-                }
+				if (regModules.indexOf(moduleName) > -1) {
+					continue;
+				}
 				regModules.push(moduleName);
 				moduleFn = angular.module(moduleName);
 				runBlocks = runBlocks.concat(moduleFn._runBlocks);
@@ -329,19 +331,19 @@
 					$log.error(e.message);
 					throw e;
 				}
-                register(providers, moduleFn.requires, $log);
+//				register(providers, moduleFn.requires, $log);
 				registerModules.pop();
 			}
-            angular.forEach(runBlocks, function(fn) {
-                try {
-                    providers.$injector.invoke(fn);
-                } catch(e) {
-                    if(e.message) {
-                        e.message += ' from ' + moduleName;
-                    }
-                    $log.error(e.message);
-                }
-            });
+			angular.forEach(runBlocks, function(fn) {
+				try {
+					angular.injector(['ng']).invoke(fn);
+				} catch(e) {
+					if(e.message) {
+						e.message += ' from ' + moduleName;
+					}
+					$log.error(e.message);
+				}
+			});
 		}
 		return null;
 	}

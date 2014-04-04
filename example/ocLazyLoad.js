@@ -4,12 +4,12 @@
  */
 
 (function() {
-    'use strict';
-    var regModules = ['ng', 'ngAnimate'];
+	'use strict';
+	var regModules = ['ng'];
 
-    var ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
+	var ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
 
-    ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
+	ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
         function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector) {
 
             var modules = {},
@@ -108,8 +108,8 @@
                                 if (typeof requireEntry === 'string') {
                                     config = self.getModuleConfig(requireEntry);
                                     if (config === null) {
-                                        moduleCache.push(requireEntry); // We don't know about this module, but something else might, so push it anyway.
-                                        return;
+	                                    moduleCache.push(requireEntry); // We don't know about this module, but something else might, so push it anyway.
+	                                    return;
                                     }
                                     requireEntry = config;
                                 }
@@ -117,9 +117,9 @@
                                 // Check if this dependency has been loaded previously or is already in the moduleCache
                                 if (moduleExists(requireEntry.name) || moduleCache.indexOf(requireEntry.name) !== -1) {
                                     if (typeof module !== 'string') {
-                                        // The dependency exists, but it's being redefined, not inherited by a simple string reference, raise a warning and ignore the new config.
-                                        // TODO: This could be made smarter. There's no checking here yet to determine if the configurations are actually different.
-                                        $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency "', requireEntry.name, '"\nExisting:', self.getModuleConfig(requireEntry.name), 'Ignored:', requireEntry);
+	                                    // The dependency exists, but it's being redefined, not inherited by a simple string reference, raise a warning and ignore the new config.
+	                                    // TODO: This could be made smarter. There's no checking here yet to determine if the configurations are actually different.
+	                                    $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency "', requireEntry.name, '"\nExisting:', self.getModuleConfig(requireEntry.name), 'Ignored:', requireEntry);
                                     }
                                     return;
                                 } else if (typeof requireEntry === 'object') {
@@ -132,14 +132,14 @@
                                 if (requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
                                     deferred_dep = $q.defer();
                                     if (requireEntry.files) {
-                                        p_list.push(deferred_dep.promise);
-                                        asyncLoader(requireEntry.files, function () {
-                                            loadDependencies(requireEntry).then(
-                                                function () {
-                                                    deferred_dep.resolve();
-                                                }
-                                            );
-                                        });
+	                                    p_list.push(deferred_dep.promise);
+	                                    asyncLoader(requireEntry.files, function () {
+		                                    loadDependencies(requireEntry).then(
+			                                    function () {
+				                                    deferred_dep.resolve();
+			                                    }
+		                                    );
+	                                    });
                                     }
                                 }
                             });
@@ -169,26 +169,38 @@
             }];
 
             this.config = function(config) {
-                if(typeof config.asyncLoader === 'undefined') {
-                    throw('You need to define an async loader such as requireJS or script.js');
-                }
+	            if(angular.isDefined(config)) {
+		            if(typeof config.asyncLoader === 'undefined') {
+			            throw('You need to define an async loader such as requireJS or script.js');
+		            }
 
-                asyncLoader = config.asyncLoader;
-                init(angular.element(window.document));
+		            asyncLoader = config.asyncLoader;
+		            init(angular.element(window.document));
 
-                if(typeof config.modules !== 'undefined') {
-                    if(angular.isArray(config.modules)) {
-                        angular.forEach(config.modules, function(moduleConfig) {
-                            modules[moduleConfig.name] = moduleConfig;
-                        });
-                    } else {
-                        modules[config.modules.name] = config.modules;
-                    }
-                }
+		            if(config.loadedModules) {
+			            var addRegModule = function(loadedModule) {
+				            if(regModules.indexOf(loadedModule) < 0) {
+					            regModules.push(loadedModule);
+					            angular.forEach(angular.module(loadedModule).requires, addRegModule);
+				            }
+			            }
+			            angular.forEach(config.loadedModules, addRegModule);
+		            }
+
+		            if(config.modules) {
+			            if(angular.isArray(config.modules)) {
+				            angular.forEach(config.modules, function(moduleConfig) {
+					            modules[moduleConfig.name] = moduleConfig;
+				            });
+			            } else {
+				            modules[config.modules.name] = config.modules;
+			            }
+		            }
+	            }
             };
         }]);
 
-    ocLazyLoad.directive('ocLazyLoad', ['$http', '$log', '$ocLazyLoad', '$compile', '$timeout', '$templateCache',
+	ocLazyLoad.directive('ocLazyLoad', ['$http', '$log', '$ocLazyLoad', '$compile', '$timeout', '$templateCache',
         function($http, $log, $ocLazyLoad, $compile, $timeout, $templateCache) {
             return {
                 link: function(scope, element, attr) {
@@ -253,132 +265,141 @@
             };
         }]);
 
-    /**
-     * Get the list of required modules/services/... for this module
-     * @param module
-     * @returns {Array}
-     */
-    function getRequires(module) {
-        var requires = [];
-        angular.forEach(module.requires, function(requireModule) {
-            if(regModules.indexOf(requireModule) === -1) {
-                requires.push(requireModule);
-            }
-        });
-        return requires;
-    }
+	/**
+	 * Get the list of required modules/services/... for this module
+	 * @param module
+	 * @returns {Array}
+	 */
+	function getRequires(module) {
+		var requires = [];
+		angular.forEach(module.requires, function(requireModule) {
+			if(regModules.indexOf(requireModule) === -1) {
+				requires.push(requireModule);
+			}
+		});
+		return requires;
+	}
 
-    /**
-     * Check if a module exists
-     * @param moduleName
-     * @returns {boolean}
-     */
-    function moduleExists(moduleName) {
-        try {
-            angular.module(moduleName);
-        } catch(e) {
-            if(/No module/.test(e) || (e.message.indexOf('$injector:nomod') > -1)) {
-                return false;
-            }
-        }
-        return true;
-    }
+	/**
+	 * Check if a module exists
+	 * @param moduleName
+	 * @returns {boolean}
+	 */
+	function moduleExists(moduleName) {
+		try {
+			angular.module(moduleName);
+		} catch(e) {
+			if(/No module/.test(e) || (e.message.indexOf('$injector:nomod') > -1)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    /**
-     * Register a new module and load it
-     * @param providers
-     * @param registerModules
-     * @param $log
-     * @returns {*}
-     */
-    function register(providers, registerModules, $log) {
-        var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider;
-        if(registerModules) {
-            var runBlocks = [];
-            for(k = registerModules.length - 1; k >= 0; k--) {
-                moduleName = registerModules[k];
-                regModules.push(moduleName);
-                moduleFn = angular.module(moduleName);
-                runBlocks = runBlocks.concat(moduleFn._runBlocks);
-                try {
-                    for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
-                        invokeArgs = invokeQueue[i];
+	/**
+	 * Register a new module and load it
+	 * @param providers
+	 * @param registerModules
+	 * @param $log
+	 * @returns {*}
+	 */
+	function register(providers, registerModules, $log) {
+		if(registerModules) {
+			var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider, runBlocks = [];
+			for(k = registerModules.length - 1; k >= 0; k--) {
+				moduleName = registerModules[k];
+				if (regModules.indexOf(moduleName) > -1) {
+					continue;
+				}
+				regModules.push(moduleName);
+				moduleFn = angular.module(moduleName);
+				runBlocks = runBlocks.concat(moduleFn._runBlocks);
+				try {
+					for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
+						invokeArgs = invokeQueue[i];
+						if(providers.hasOwnProperty(invokeArgs[0])) {
+							provider = providers[invokeArgs[0]];
+						} else {
+							return $log.error("unsupported provider " + invokeArgs[0]);
+						}
+						provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
+					}
+				} catch(e) {
+					if(e.message) {
+						e.message += ' from ' + moduleName;
+					}
+					$log.error(e.message);
+					throw e;
+				}
+//				register(providers, moduleFn.requires, $log);
+				registerModules.pop();
+			}
+			angular.forEach(runBlocks, function(fn) {
+				try {
+					angular.injector(['ng']).invoke(fn);
+				} catch(e) {
+					if(e.message) {
+						e.message += ' from ' + moduleName;
+					}
+					$log.error(e.message);
+				}
+			});
+		}
+		return null;
+	}
 
-                        if(providers.hasOwnProperty(invokeArgs[0])) {
-                            provider = providers[invokeArgs[0]];
-                        } else {
-                            return $log.error("unsupported provider " + invokeArgs[0]);
-                        }
-                        provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
-                    }
-                } catch(e) {
-                    if(e.message) {
-                        e.message += ' from ' + moduleName;
-                    }
-                    $log.error(e.message);
-                    throw e;
-                }
-                registerModules.pop();
-            }
-            angular.forEach(runBlocks, function(fn) {
-                providers.$injector.invoke(fn);
-            });
-        }
-        return null;
-    }
+	/**
+	 * Get the list of existing registered modules
+	 * @param element
+	 */
+	function init(element) {
+		var elements = [element],
+			appElement,
+			module,
+			names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
+			NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/;
 
-    /**
-     * Get the list of existing registered modules
-     * @param element
-     */
-    function init(element) {
-        var elements = [element],
-            appElement,
-            module,
-            names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
-            NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/;
+		function append(elm) {
+			return (elm && elements.push(elm));
+		}
 
-        function append(elm) {
-            return (elm && elements.push(elm));
-        }
+		angular.forEach(names, function(name) {
+			names[name] = true;
+			append(document.getElementById(name));
+			name = name.replace(':', '\\:');
+			if(element.querySelectorAll) {
+				angular.forEach(element.querySelectorAll('.' + name), append);
+				angular.forEach(element.querySelectorAll('.' + name + '\\:'), append);
+				angular.forEach(element.querySelectorAll('[' + name + ']'), append);
+			}
+		});
 
-        angular.forEach(names, function(name) {
-            names[name] = true;
-            append(document.getElementById(name));
-            name = name.replace(':', '\\:');
-            if(element.querySelectorAll) {
-                angular.forEach(element.querySelectorAll('.' + name), append);
-                angular.forEach(element.querySelectorAll('.' + name + '\\:'), append);
-                angular.forEach(element.querySelectorAll('[' + name + ']'), append);
-            }
-        });
+		angular.forEach(elements, function(elm) {
+			if(!appElement) {
+				var className = ' ' + element.className + ' ';
+				var match = NG_APP_CLASS_REGEXP.exec(className);
+				if(match) {
+					appElement = elm;
+					module = (match[2] || '').replace(/\s+/g, ',');
+				} else {
+					angular.forEach(elm.attributes, function(attr) {
+						if(!appElement && names[attr.name]) {
+							appElement = elm;
+							module = attr.value;
+						}
+					});
+				}
+			}
+		});
 
-        angular.forEach(elements, function(elm) {
-            if(!appElement) {
-                var className = ' ' + element.className + ' ';
-                var match = NG_APP_CLASS_REGEXP.exec(className);
-                if(match) {
-                    appElement = elm;
-                    module = (match[2] || '').replace(/\s+/g, ',');
-                } else {
-                    angular.forEach(elm.attributes, function(attr) {
-                        if(!appElement && names[attr.name]) {
-                            appElement = elm;
-                            module = attr.value;
-                        }
-                    });
-                }
-            }
-        });
-
-        if(appElement) {
-            (function addReg(module) {
-                if(regModules.indexOf(module) === -1) {
-                    regModules.push(module);
-                    var mainModule = angular.module(module);
-                    angular.forEach(mainModule.requires, addReg);
-                }
-            })(module);
-        }
-    }
+		if(appElement) {
+			(function addReg(module) {
+				if(regModules.indexOf(module) === -1) {
+					regModules.push(module);
+					var mainModule = angular.module(module);
+					angular.forEach(mainModule.requires, addReg);
+				}
+			})(module);
+		}
+	}
 })();
