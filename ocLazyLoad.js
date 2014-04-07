@@ -71,7 +71,7 @@
 								                                    templates.push(url);
 								                                    deferred.resolve();
 							                                    }).error(function(data) {
-								                                    $log.error('Error load template "' + url + "': " + data);
+								                                    $log.error('Error load template "' + url + '": ' + data);
 							                                    });
 						                                    } else {
 							                                    deferred.resolve();
@@ -208,7 +208,7 @@
 						                                    regModules.push(loadedModule);
 						                                    angular.forEach(angular.module(loadedModule).requires, addRegModule);
 					                                    }
-				                                    }
+				                                    };
 				                                    angular.forEach(config.loadedModules, addRegModule);
 			                                    }
 
@@ -259,7 +259,7 @@
 								                                    callback(data);
 							                                    })
 							                                    .error(function(data) {
-								                                    $log.error('Error load template "' + url + "': " + data);
+								                                    $log.error('Error load template "' + url + '": ' + data);
 							                                    });
 					                                    }
 				                                    }
@@ -344,7 +344,7 @@
 						if(providers.hasOwnProperty(invokeArgs[0])) {
 							provider = providers[invokeArgs[0]];
 						} else {
-							return $log.error("unsupported provider " + invokeArgs[0]);
+							return $log.error('unsupported provider ' + invokeArgs[0]);
 						}
 						provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
 					}
