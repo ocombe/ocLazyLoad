@@ -1,5 +1,5 @@
 # 0.1.1 (08 April 2014)
-* Fixed for bug #8: runBlocks can now load new modules
+* Fix for bug #8: runBlocks can now load new modules
 
 # 0.1.0 (04 April 2014)
 * Added a changelog !
