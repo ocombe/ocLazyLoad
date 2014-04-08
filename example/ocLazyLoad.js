@@ -14,6 +14,7 @@
 
             var modules = {},
                 asyncLoader,
+	            templates = [],
                 providers = {
                     $controllerProvider: $controllerProvider,
                     $compileProvider: $compileProvider,
@@ -22,7 +23,7 @@
                     $injector: $injector
                 };
 
-            this.$get = ['$timeout', '$log', '$q', function($timeout, $log, $q) {
+            this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', function($timeout, $log, $q, $templateCache, $http) {
                 return {
                     getModuleConfig: function(name) {
                         if(!modules[name]) {
@@ -51,6 +52,33 @@
                         }
                         return moduleName;
                     },
+
+	                loadTemplateFile: function(urls, config) {
+		                if(angular.isString(urls)) {
+			                urls = [urls];
+		                }
+		                var promisesList = [];
+		                angular.forEach(urls, function(url) {
+			                var deferred = $q.defer();
+			                promisesList.push(deferred.promise);
+			                if(templates.indexOf(url) === -1 || (angular.isDefined(config) && config.cache === false)) {
+				                $http.get(url, config).success(function(data) {
+					                angular.forEach(angular.element(data), function(node) {
+						                if(node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
+							                $templateCache.put(node.id, node.innerHTML);
+						                }
+					                });
+					                templates.push(url);
+					                deferred.resolve();
+				                }).error(function(data) {
+					                $log.error('Error load template "' + url + "': " + data);
+				                });
+			                } else {
+				                deferred.resolve();
+			                }
+		                });
+		                return $q.all(promisesList);
+	                },
 
                     load: function(module) {
                         var self = this,
@@ -92,7 +120,7 @@
                             var moduleName,
                                 loadedModule,
                                 requires,
-                                p_list = [],
+                                promisesList = [],
                                 load_complete;
 
                             moduleName = self.getModuleName(module);
@@ -101,7 +129,7 @@
 
                             angular.forEach(requires, function (requireEntry) {
                                 var config,
-                                    deferred_dep;
+                                    deferredDep;
 
                                 // If no configuration is provided, try and find one from a previous load.
                                 // If there isn't one, bail and let the normal flow run
@@ -130,15 +158,13 @@
 
                                 // Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
                                 if (requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
-                                    deferred_dep = $q.defer();
+                                    deferredDep = $q.defer();
                                     if (requireEntry.files) {
-	                                    p_list.push(deferred_dep.promise);
+	                                    promisesList.push(deferredDep.promise);
 	                                    asyncLoader(requireEntry.files, function () {
-		                                    loadDependencies(requireEntry).then(
-			                                    function () {
-				                                    deferred_dep.resolve();
-			                                    }
-		                                    );
+		                                    loadDependencies(requireEntry).then(function () {
+			                                    deferredDep.resolve();
+		                                    });
 	                                    });
                                     }
                                 }
@@ -146,7 +172,7 @@
 
                             // Create a wrapper promise to watch the promise list and resolve it once everything is done.
                             load_complete = $q.defer();
-                            $q.all(p_list).then(function () {
+                            $q.all(promisesList).then(function () {
                                 load_complete.resolve();
                             });
 
@@ -169,32 +195,30 @@
             }];
 
             this.config = function(config) {
-	            if(angular.isDefined(config)) {
-		            if(typeof config.asyncLoader === 'undefined') {
-			            throw('You need to define an async loader such as requireJS or script.js');
-		            }
+	            if(typeof config.asyncLoader === 'undefined') {
+		            throw('You need to define an async loader such as requireJS or script.js');
+	            }
 
-		            asyncLoader = config.asyncLoader;
-		            init(angular.element(window.document));
+	            asyncLoader = config.asyncLoader;
+	            init(angular.element(window.document));
 
-		            if(config.loadedModules) {
-			            var addRegModule = function(loadedModule) {
-				            if(regModules.indexOf(loadedModule) < 0) {
-					            regModules.push(loadedModule);
-					            angular.forEach(angular.module(loadedModule).requires, addRegModule);
-				            }
+	            if(config.loadedModules) {
+		            var addRegModule = function(loadedModule) {
+			            if(regModules.indexOf(loadedModule) < 0) {
+				            regModules.push(loadedModule);
+				            angular.forEach(angular.module(loadedModule).requires, addRegModule);
 			            }
-			            angular.forEach(config.loadedModules, addRegModule);
 		            }
+		            angular.forEach(config.loadedModules, addRegModule);
+	            }
 
-		            if(config.modules) {
-			            if(angular.isArray(config.modules)) {
-				            angular.forEach(config.modules, function(moduleConfig) {
-					            modules[moduleConfig.name] = moduleConfig;
-				            });
-			            } else {
-				            modules[config.modules.name] = config.modules;
-			            }
+	            if(config.modules) {
+		            if(angular.isArray(config.modules)) {
+			            angular.forEach(config.modules, function(moduleConfig) {
+				            modules[moduleConfig.name] = moduleConfig;
+			            });
+		            } else {
+			            modules[config.modules.name] = config.modules;
 		            }
 	            }
             };

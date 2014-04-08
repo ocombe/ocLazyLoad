@@ -24,7 +24,6 @@ angular.module('app').config(['$ocLazyLoadProvider', function($ocLazyLoadProvide
 ```
 
 - Load on demand using the service or the directive :
-
 ```javascript
 $ocLazyLoad.load({
 	name: 'TestModule',
@@ -40,18 +39,32 @@ $ocLazyLoad.load({
 
 - Load dependencies by placing a module definition in the dependency injection block of your module
 ```javascript
-angular.module('MyModule', [
-    {
-        name: 'TestModule',
-        files: ['/components/TestModule/TestModule.js']
-    },{
-        name: 'Login',
-        files: [
-            '/components/Login/Login.js',
-            '/components/Login/LoginSocial.js'
-        ]
+angular.module('MyModule', [{
+		name: 'TestModule',
+		files: ['/components/TestModule/TestModule.js']
+	}, {
+		name: 'Login',
+		files: [
+			'/components/Login/Login.js',
+			'/components/Login/LoginSocial.js'
+		]
+	}]
 )
 ```
+
+- Load a template file using ```loadTemplateFile```:
+```javascript
+$ocLazyLoad.loadTemplateFile('partial.html').then(function() {
+	console.log('done');
+});
+```
+You can also load multiple files at the same time, or put multiple template blocks in one file if you prefer.
+```javascript
+$ocLazyLoad.loadTemplateFile(['partial.html, partial2.html']).then(function() {
+	console.log('done');
+});
+```
+You can add a second parameter config if you need to define some configuration for the requests (check: http://docs.angularjs.org/api/ng/service/$http)
 
 
 See the example in the 'example' folder to know how to integrate ocLazyLoad with your router.

@@ -22,7 +22,7 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 			url: "/", // root route
 			views: {
 				"lazyLoadView": {
-					templateUrl: 'partials/testLazyLoad.html'
+					templateUrl: '/partials/testLazyLoad.html'
 				}
 			},
 			resolve: {
@@ -31,6 +31,9 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 						name: 'TestModule',
 						files: ['testModule.js']
 					});
+				}],
+				templateTest: ['$ocLazyLoad', '$templateCache', function($ocLazyLoad, $templateCache) {
+					return $ocLazyLoad.loadTemplateFile(['partials.html', 'partials2.html']);
 				}]
 			}
 		});
