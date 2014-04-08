@@ -23,7 +23,13 @@
 				                                    $injector: $injector
 			                                    };
 
-		                                    this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', function($timeout, $log, $q, $templateCache, $http) {
+		                                    this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', function($timeout, $log, $q, $templateCache, $http, $rootElement) {
+												var instanceInjector;
+												//Make this lazy because at the moment that $get() is called the instance
+												//injector hasn't been assigned to the rootElement yet:
+												providers.getInstanceInjector = function() {
+													return (instanceInjector) ? instanceInjector : (instanceInjector = $rootElement.data('$injector'));
+												}
 			                                    return {
 				                                    getModuleConfig: function(name) {
 					                                    if(!modules[name]) {
@@ -341,12 +347,14 @@
 				try {
 					for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
 						invokeArgs = invokeQueue[i];
-						if(providers.hasOwnProperty(invokeArgs[0])) {
-							provider = providers[invokeArgs[0]];
-						} else {
-							return $log.error('unsupported provider ' + invokeArgs[0]);
+						if (angular.isArray(invokeArgs)) {
+							if(providers.hasOwnProperty(invokeArgs[0])) {
+								provider = providers[invokeArgs[0]];
+							} else {
+								return $log.error('unsupported provider ' + invokeArgs[0]);
+							}
+							provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
 						}
-						provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
 					}
 				} catch(e) {
 					if(e.message) {
@@ -355,12 +363,13 @@
 					$log.error(e.message);
 					throw e;
 				}
-//				register(providers, moduleFn.requires, $log);
+				register(providers, moduleFn.requires, $log);
 				registerModules.pop();
 			}
+			var instanceInjector = providers.getInstanceInjector();
 			angular.forEach(runBlocks, function(fn) {
 				try {
-					angular.injector(['ng']).invoke(fn);
+					instanceInjector.invoke(fn);
 				} catch(e) {
 					if(e.message) {
 						e.message += ' from ' + moduleName;
