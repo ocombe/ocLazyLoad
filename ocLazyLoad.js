@@ -338,7 +338,10 @@
 			var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider, runBlocks = [];
 			for(k = registerModules.length - 1; k >= 0; k--) {
 				moduleName = registerModules[k];
-				if (regModules.indexOf(moduleName) > -1) {
+				if (typeof moduleName !== 'string') {
+					moduleName = getModuleName(moduleName);
+				}
+				if ((!moduleName) || (regModules.indexOf(moduleName) > -1)) {
 					continue;
 				}
 				regModules.push(moduleName);
@@ -379,6 +382,10 @@
 			});
 		}
 		return null;
+	}
+
+	function getModuleName(dependencyObject) {
+		return (dependencyObject.name) ? dependencyObject.name : null;
 	}
 
 	/**
