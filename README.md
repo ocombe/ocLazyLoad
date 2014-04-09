@@ -23,6 +23,16 @@ angular.module('app').config(['$ocLazyLoadProvider', function($ocLazyLoadProvide
 }]);
 ```
 
+- When using angular.bootstrap(...) add the main app module in the configuration:
+```javascript
+angular.module('app').config(['$ocLazyLoadProvider', function($ocLazyLoadProvider) {
+	$ocLazyLoadProvider.config({
+		loadedModules: ['main-app-module-name'],
+		asyncLoader: $script // your async loader: $script.js, requireJS...
+	});
+}]);
+```
+
 - Load on demand using the service or the directive :
 ```javascript
 $ocLazyLoad.load({
