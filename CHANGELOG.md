@@ -1,4 +1,4 @@
-# 0.1.2 (14 Apris 2014)
+# 0.1.2 (14 April 2014)
 * Fix for bug #16: config blocks didn't work for module dependencies
 
 # 0.1.1 (08 April 2014)
