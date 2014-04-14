@@ -346,6 +346,7 @@
 				}
 				regModules.push(moduleName);
 				moduleFn = angular.module(moduleName);
+				register(providers, moduleFn.requires, $log);
 				runBlocks = runBlocks.concat(moduleFn._runBlocks);
 				try {
 					for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
@@ -366,7 +367,6 @@
 					$log.error(e.message);
 					throw e;
 				}
-				register(providers, moduleFn.requires, $log);
 				registerModules.pop();
 			}
 			var instanceInjector = providers.getInstanceInjector();
