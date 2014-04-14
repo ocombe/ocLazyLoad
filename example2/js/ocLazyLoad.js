@@ -29,7 +29,7 @@
 												//injector hasn't been assigned to the rootElement yet:
 												providers.getInstanceInjector = function() {
 													return (instanceInjector) ? instanceInjector : (instanceInjector = $rootElement.data('$injector'));
-												}
+												};
 			                                    return {
 				                                    getModuleConfig: function(name) {
 					                                    if(!modules[name]) {
@@ -127,7 +127,7 @@
 							                                    loadedModule,
 							                                    requires,
 							                                    promisesList = [],
-							                                    load_complete;
+							                                    loadComplete;
 
 						                                    moduleName = self.getModuleName(module);
 						                                    loadedModule = angular.module(moduleName);
@@ -177,12 +177,12 @@
 						                                    });
 
 						                                    // Create a wrapper promise to watch the promise list and resolve it once everything is done.
-						                                    load_complete = $q.defer();
+						                                    loadComplete = $q.defer();
 						                                    $q.all(promisesList).then(function () {
-							                                    load_complete.resolve();
+							                                    loadComplete.resolve();
 						                                    });
 
-						                                    return load_complete.promise;
+						                                    return loadComplete.promise;
 					                                    }
 
 					                                    asyncLoader(config.files, function () {
@@ -338,11 +338,15 @@
 			var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider, runBlocks = [];
 			for(k = registerModules.length - 1; k >= 0; k--) {
 				moduleName = registerModules[k];
-				if (regModules.indexOf(moduleName) > -1) {
+				if (typeof moduleName !== 'string') {
+					moduleName = getModuleName(moduleName);
+				}
+				if ((!moduleName) || (regModules.indexOf(moduleName) > -1)) {
 					continue;
 				}
 				regModules.push(moduleName);
 				moduleFn = angular.module(moduleName);
+				register(providers, moduleFn.requires, $log);
 				runBlocks = runBlocks.concat(moduleFn._runBlocks);
 				try {
 					for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
@@ -363,7 +367,6 @@
 					$log.error(e.message);
 					throw e;
 				}
-				register(providers, moduleFn.requires, $log);
 				registerModules.pop();
 			}
 			var instanceInjector = providers.getInstanceInjector();
@@ -379,6 +382,10 @@
 			});
 		}
 		return null;
+	}
+
+	function getModuleName(dependencyObject) {
+		return (dependencyObject.name) ? dependencyObject.name : null;
 	}
 
 	/**

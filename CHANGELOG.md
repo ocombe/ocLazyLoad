@@ -1,3 +1,6 @@
+# 0.1.2 (14 Apris 2014)
+* Fix for bug #16: config blocks didn't work for module dependencies
+
 # 0.1.1 (08 April 2014)
 * Fix for bug #8: runBlocks can now load new modules (thanks to @rolandzwaga)
 * Added an example that makes use of requirejs and uses ngGrid as a lazy loaded module (thanks to @rolandzwaga)
