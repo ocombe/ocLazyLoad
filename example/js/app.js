@@ -22,18 +22,18 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 			url: "/", // root route
 			views: {
 				"lazyLoadView": {
-					templateUrl: '/partials/testLazyLoad.html'
+					templateUrl: 'partials/testLazyLoad.html'
 				}
 			},
 			resolve: {
 				test: ['$ocLazyLoad', function($ocLazyLoad) {
 					return $ocLazyLoad.load({
 						name: 'TestModule',
-						files: ['testModule.js']
+						files: ['js/testModule.js']
 					});
 				}],
 				templateTest: ['$ocLazyLoad', '$templateCache', function($ocLazyLoad, $templateCache) {
-					return $ocLazyLoad.loadTemplateFile(['partials.html', 'partials2.html']);
+					return $ocLazyLoad.loadTemplateFile(['partials/partials.html', 'partials/partials2.html']);
 				}]
 			}
 		});
@@ -47,11 +47,11 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 			modules: [
                 {
                     name: 'HelloWorld',
-                    files: ['helloWorldModule.js']
+                    files: ['js/helloWorldModule.js']
                 }
 //				{
 //					name: 'TestModule',
-//					files: ['testModule.js'],
+//					files: ['js/testModule.js'],
 //					template: 'partials/testLazyLoad.html'
 //				}
 			],

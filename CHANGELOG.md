@@ -1,3 +1,6 @@
+# 0.1.3 (30 April 2014)
+* Fix for bug #18: merged files and incorrect module loading
+
 # 0.1.2 (14 April 2014)
 * Fix for bug #16: config blocks didn't work for module dependencies
 

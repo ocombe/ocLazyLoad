@@ -4,7 +4,7 @@ angular.module('TestModule', [
         'HelloWorld',   // Pre defined in app.js
         {               // Defined at runtime!
             name: 'HelloUniverse',
-            files: ['helloUniverseModule.js']
+            files: ['js/helloUniverseModule.js']
         }
     ]).
     controller('LazyLoadCtrl', ['$scope', '$worldmessage', '$universemessage', function($scope, $worldmessage, $universemessage) {

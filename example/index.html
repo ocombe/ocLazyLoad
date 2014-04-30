@@ -6,21 +6,21 @@
         <!-- // end lazy load -->
 
         <!-- Templates -->
-        <script type="text/ng-template" id="/partials/testLazyLoad.html">
+        <script type="text/ng-template" id="partials/testLazyLoad.html">
             <div ng-controller="LazyLoadCtrl">
                 Lazy Hello World Test : {{ worldmessage }}<br/>
                 Lazier Hello Universe Test : {{ universemessage}}
             </div>
 
-            <div ng-include="'/partials/testTemplate.html'"></div>
-            <div ng-include="'/partials/testTemplate2.html'"></div>
+            <div ng-include="'partials/testTemplate.html'"></div>
+            <div ng-include="'partials/testTemplate2.html'"></div>
         </script>
         <!-- // end Templates -->
 
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.0/angular-ui-router.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/script.js/2.4.0/script.min.js"></script>
-        <script type="text/javascript" src="ocLazyLoad.js"></script>
-        <script type="text/javascript" src="app.js"></script>
+        <script type="text/javascript" src="js/ocLazyLoad.js"></script>
+        <script type="text/javascript" src="js/app.js"></script>
     </body>
 </html>
