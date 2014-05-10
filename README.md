@@ -34,11 +34,26 @@ angular.module('app').config(['$ocLazyLoadProvider', function($ocLazyLoadProvide
 ```
 
 - Load on demand using the service or the directive :
+
+Single Dependency
 ```javascript
 $ocLazyLoad.load({
 	name: 'TestModule',
 	files: ['testModule.js']
 }).then(function() {
+	console.log('done');
+});
+```
+
+Multiple Dependency
+```javascript
+$ocLazyLoad.loadAll([{
+	name: 'TestModule',
+	files: ['testModule.js']
+},{
+    name: 'AnotherModule',
+    files: ['anotherModule.js']
+}]).then(function() {
 	console.log('done');
 });
 ```

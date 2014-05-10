@@ -31,6 +31,17 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 						name: 'TestModule',
 						files: ['js/testModule.js']
 					});
+                    /* Or, for more than one resource...
+
+                     return $ocLazyLoad.loadAll([{
+                        name: 'TestModule',
+                        files: ['js/testModule.js']
+                     }, {
+                         name: 'HelloGalaxy',
+                         files: ['js/helloGalaxyModule.js']
+                     }]);
+
+                     */
 				}],
 				templateTest: ['$ocLazyLoad', '$templateCache', function($ocLazyLoad, $templateCache) {
 					return $ocLazyLoad.loadTemplateFile(['partials/partials.html', 'partials/partials2.html']);

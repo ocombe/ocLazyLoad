@@ -9,8 +9,8 @@
 
 	var ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
 
-	ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
-		function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector) {
+    ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector', '$animateProvider',
+        function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
 
 			var modules = {},
 				asyncLoader,
@@ -20,8 +20,35 @@
 					$compileProvider: $compileProvider,
 					$filterProvider: $filterProvider,
 					$provide: $provide, // other things
-					$injector: $injector
-				};
+                    $injector: $injector,
+                    $animateProvider: $animateProvider
+                },
+                anchor = document.getElementsByTagName('head')[0];
+
+            if (anchor === null) {
+                anchor = document.getElementsByTagName('body')[0];
+            }
+
+            function buildElement(type, path) {
+                if (filesLoaded.indexOf(path) === -1) {
+                    var el;
+                    // Switch in case more content types are added later (for example a native JS loader!)
+                    switch (type) {
+                        case 'css':
+                            el = document.createElement('link');
+                            el.type = 'text/css';
+                            el.rel = 'stylesheet';
+                            el.href = path;
+                            break;
+                        default:
+                            throw ('Requested type "' + type + '" is not known. Could not inject "' + path + '"');
+                            break;
+                    }
+
+                    filesLoaded.push(path);
+                    anchor.insertBefore(el, anchor.lastChild);
+                }
+            }
 
 			this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', function($timeout, $log, $q, $templateCache, $http, $rootElement) {
 				var instanceInjector;
@@ -157,10 +184,21 @@
 									}
 									return;
 								} else if (typeof requireEntry === 'object') {
-									// The dependency doesn't exist in the module cache and is a new conifguration, so store and push it.
+                                    if (requireEntry.hasOwnProperty('name') && requireEntry['name']) {
+                                        // The dependency doesn't exist in the module cache and is a new configuration, so store and push it.
 									self.setModuleConfig(requireEntry);
-									moduleCache.push(requireEntry.name);
+                                        moduleCache.push(requireEntry['name']);
 								}
+
+                                    // CSS Loading Handler
+                                    if (requireEntry.hasOwnProperty('css') && requireEntry['css'].length !== 0) {
+                                        // Locate the document insertion point
+                                        angular.forEach(requireEntry['css'], function (path) {
+                                            buildElement('css', path);
+                                        });
+                                    }
+                                    // CSS End.
+                                }
 
 								// Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
 								if (requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
@@ -196,6 +234,22 @@
 						});
 
 						return deferred.promise;
+                    },
+
+                    loadAll: function (modules) {
+                        var load_complete = $q.defer(),
+                            p_list = [],
+                            self = this;
+
+                        angular.forEach(modules, function (module) {
+                            p_list.push(self.load(module));
+                        });
+
+                        $q.all(p_list).then(function() {
+                            load_complete.resolve();
+                        });
+
+                        return load_complete.promise;
 					}
 				};
 			}];
@@ -326,6 +380,31 @@
 		return true;
 	}
 
+    function invokeQueue (providers, queue, $log) {
+        if (!queue) {
+            return;
+        }
+
+        var i, ii, args, provider;
+        try {
+            for(i = 0, ii = queue.length; i < ii; i++) {
+                args = queue[i];
+                if (angular.isArray(args)) {
+                    if(providers.hasOwnProperty(args[0])) {
+                        provider = providers[args[0]];
+                    } else {
+                        return $log.error('unsupported provider ' + args[0]);
+                    }
+                    console.log(args[0], args[1], args[2]);
+                    provider[args[1]].apply(provider, args[2]);
+                }
+            }
+        } catch(e) {
+            $log.error(e.message);
+            throw e;
+        }
+    }
+
 	/**
 	 * Register a new module and load it
 	 * @param providers
@@ -335,7 +414,7 @@
 	 */
 	function register(providers, registerModules, $log) {
 		if(registerModules) {
-			var i, ii, k, invokeQueue, moduleName, moduleFn, invokeArgs, provider, runBlocks = [];
+            var k, moduleName, moduleFn, runBlocks = [];
 			for(k = registerModules.length - 1; k >= 0; k--) {
 				moduleName = registerModules[k];
 				if (typeof moduleName !== 'string') {
@@ -348,25 +427,10 @@
 				moduleFn = angular.module(moduleName);
 				register(providers, moduleFn.requires, $log);
 				runBlocks = runBlocks.concat(moduleFn._runBlocks);
-				try {
-					for(invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
-						invokeArgs = invokeQueue[i];
-						if (angular.isArray(invokeArgs)) {
-							if(providers.hasOwnProperty(invokeArgs[0])) {
-								provider = providers[invokeArgs[0]];
-							} else {
-								return $log.error('unsupported provider ' + invokeArgs[0]);
-							}
-							provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
-						}
-					}
-				} catch(e) {
-					if(e.message) {
-						e.message += ' from ' + moduleName;
-					}
-					$log.error(e.message);
-					throw e;
-				}
+
+                invokeQueue(providers, moduleFn._invokeQueue, $log);
+                invokeQueue(providers, moduleFn._configBlocks, $log);
+
 				registerModules.pop();
 			}
 			var instanceInjector = providers.getInstanceInjector();
