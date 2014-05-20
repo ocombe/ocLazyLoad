@@ -47,7 +47,7 @@ $ocLazyLoad.load({
 
 Multiple Dependency
 ```javascript
-$ocLazyLoad.loadAll([{
+$ocLazyLoad.load([{
 	name: 'TestModule',
 	files: ['testModule.js']
 },{

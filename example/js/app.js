@@ -26,22 +26,23 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 				}
 			},
 			resolve: {
-				test: ['$ocLazyLoad', function($ocLazyLoad) {
-					return $ocLazyLoad.load({
+				galaxytest: ['$ocLazyLoad', function($ocLazyLoad) {
+					/*return $ocLazyLoad.load({
 						name: 'TestModule',
 						files: ['js/testModule.js']
-					});
-                    /* Or, for more than one resource...
+					});*/
 
-                     return $ocLazyLoad.loadAll([{
+                    /* Or, for more than one resource...*/
+
+                     return $ocLazyLoad.load([{
                         name: 'TestModule',
                         files: ['js/testModule.js']
                      }, {
                          name: 'HelloGalaxy',
                          files: ['js/helloGalaxyModule.js']
-                     }]);
+                     }])
 
-                     */
+
 				}],
 				templateTest: ['$ocLazyLoad', '$templateCache', function($ocLazyLoad, $templateCache) {
 					return $ocLazyLoad.loadTemplateFile(['partials/partials.html', 'partials/partials2.html']);

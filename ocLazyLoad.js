@@ -117,9 +117,25 @@
 						var self = this,
 							config = null,
 							moduleCache = [],
+                            deferred_list = [],
 							deferred = $q.defer(),
 							moduleName,
 							errText;
+
+                        // If module is an array, break it down
+                        if (angular.isArray(module)) {
+                            // Resubmit each entry as a single module
+                            angular.forEach(module, function (m) {
+                                deferred_list.push(self.load(m));
+                            });
+
+                            // Resolve the promise once everything has loaded
+                            $q.all(deferred_list).then(function() {
+                                deferred.resolve();
+                            });
+
+                            return deferred.promise;
+                        }
 
 						moduleName = self.getModuleName(module);
 
@@ -234,23 +250,7 @@
 						});
 
 						return deferred.promise;
-                    },
-
-                    loadAll: function (modules) {
-                        var load_complete = $q.defer(),
-                            p_list = [],
-                            self = this;
-
-                        angular.forEach(modules, function (module) {
-                            p_list.push(self.load(module));
-                        });
-
-                        $q.all(p_list).then(function() {
-                            load_complete.resolve();
-                        });
-
-                        return load_complete.promise;
-					}
+                    }
 				};
 			}];
 
@@ -395,7 +395,6 @@
                     } else {
                         return $log.error('unsupported provider ' + args[0]);
                     }
-                    console.log(args[0], args[1], args[2]);
                     provider[args[1]].apply(provider, args[2]);
                 }
             }
