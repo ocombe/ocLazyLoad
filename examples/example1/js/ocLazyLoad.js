@@ -1,4 +1,11 @@
 /**
+ * ocLazyLoad - Load modules on demand (lazy load) with angularJS
+ * @version v0.2.0
+ * @link https://github.com/ocombe/ocLazyLoad
+ * @license MIT
+ * @author Olivier Combe <olivier.combe@gmail.com>
+ */
+/**
  * original copyright: Andy Grom (https://github.com/AndyGrom/loadOnDemand)
  * rewrite by: Olivier Combe (https://github.com/ocombe/ocLazyLoad)
  */
@@ -114,13 +121,13 @@
 					},
 
 					load: function(module) {
-                        var self = this,
-                            config = null,
-                            moduleCache = [],
+						var self = this,
+							config = null,
+							moduleCache = [],
                             deferred_list = [],
-                            deferred = $q.defer(),
-                            moduleName,
-                            errText;
+							deferred = $q.defer(),
+							moduleName,
+							errText;
 
                         // If module is an array, break it down
                         if (angular.isArray(module)) {
@@ -202,9 +209,9 @@
 								} else if (typeof requireEntry === 'object') {
                                     if (requireEntry.hasOwnProperty('name') && requireEntry['name']) {
                                         // The dependency doesn't exist in the module cache and is a new configuration, so store and push it.
-									self.setModuleConfig(requireEntry);
+									    self.setModuleConfig(requireEntry);
                                         moduleCache.push(requireEntry['name']);
-								}
+								    }
 
                                     // CSS Loading Handler
                                     if (requireEntry.hasOwnProperty('css') && requireEntry['css'].length !== 0) {
