@@ -1,3 +1,13 @@
+# 0.2.0 (20 May 2014)
+* Added support for $animateProvider #19
+* Added support for CSS Loading (And perhaps other file types in the future) #19
+* Added loadAll function for use when a state requires resolve on more than one asset. #19
+* FIX: Angular JS 1.3.0-beta.8 changed the way config blocks are handled (now invoked last) #19
+* Adopted the MIT license as requested in #20
+* Added a gulpfile to build dist files (and, in the future, to do tests before the build). Run `npm install` to install the new dependencies and `npm build` to build the dist files.
+* **Breaking change** moved the src files to /src and the dist files to /dist. Installations via bower will only see the dist folder
+* Moved the examples to /examples
+
 # 0.1.3 (30 April 2014)
 * Fix for bug #18: merged files and incorrect module loading
 
