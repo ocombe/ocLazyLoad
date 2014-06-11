@@ -6,15 +6,14 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 		$urlRouterProvider.otherwise("/");
 		$locationProvider.hashPrefix('!');
 
-		//		$stateProvider.state('index', {
-		//			url: "/", // root route
-		//			views: {
-		//				"lazyLoadView": {
-		//					//template: '<div oc-lazy-load="\'TestModule\'"></div>'
-		//					template: '<div oc-lazy-load="{name: \'TestModule\', files: [\'testModule.js\'], template: \'partials/testLazyLoad.html\'}"></div>'
-		//				}
-		//			}
-		//		});
+		/*$stateProvider.state('index', {
+			url: "/", // root route
+			views: {
+				"lazyLoadView": {
+					template: '<div oc-lazy-load="{name: \'TestModule\', files: [\'js/testModule.js\'], template: \'partials/partials.html\'}">sujhdjsd</div>'
+				}
+			}
+		});*/
 
 
 		// You can also load via resolve

@@ -1,5 +1,10 @@
 <!-- Templates -->
 <script type="text/ng-template" id="partials/testTemplate2.html">
     <p>This block is also loaded with loadTemplateFile</p>
+    <div oc-lazy-load="{ name: 'app', files: ['js/LateCtrl.js']}">
+        <div ng-controller="LateCtrl">
+            {{ testValue }}
+        </div>
+    </div>
 </script>
 <!-- // end Templates -->
