@@ -292,8 +292,9 @@
                 controller: angular.noop,
                 compile: function(element, attrs) {
                     return function ($scope, $element, $attr, ctrl, $transclude) {
-                        var childScope;
-                        var onloadExp = $scope.$eval($attr.ocLazyLoad).onload || '';
+	                    var childScope,
+		                    evaluated = $scope.$eval($attr.ocLazyLoad),
+		                    onloadExp = evaluated && evaluated.onload ? evaluated.onload : '';
 
                         /**
                          * Destroy the current scope of this element and empty the html
@@ -328,29 +329,29 @@
                             }
                         }
 
-                        $scope.$watch($attr.ocLazyLoad, function(moduleName) {
-                            if(moduleName) {
-                                $ocLazyLoad.load(moduleName).then(function(moduleConfig) {
-                                    if(moduleConfig.template) {
-	                                    console.log(moduleConfig.template);
-	                                    loadTemplate(moduleConfig.template, function(template) {
-		                                    ctrl.template = template;
-		                                    var clone = $transclude($scope, function cloneConnectFn(clone) {
-			                                    $animate.enter(template, null, $element);
-		                                    });
-		                                    $scope.$emit('$includeContentLoaded');
-		                                    $scope.$eval(onloadExp);
-	                                    });
-                                    } else {
-	                                    $transclude($scope, function cloneConnectFn(clone) {
-		                                    $animate.enter(clone, null, $element);
-	                                    });
-                                    }
-                                });
-                            } else {
-                                clearContent();
-                            }
-                        });
+	                    $scope.$watch($attr.ocLazyLoad, function(moduleName) {
+		                    if(angular.isDefined(moduleName)) {
+			                    $ocLazyLoad.load(moduleName).then(function(moduleConfig) {
+				                    if(moduleConfig.template) {
+					                    console.log(moduleConfig.template);
+					                    loadTemplate(moduleConfig.template, function(template) {
+						                    ctrl.template = template;
+						                    var clone = $transclude($scope, function cloneConnectFn(clone) {
+							                    $animate.enter(template, null, $element);
+						                    });
+						                    $scope.$emit('$includeContentLoaded');
+						                    $scope.$eval(onloadExp);
+					                    });
+				                    } else {
+					                    $transclude($scope, function cloneConnectFn(clone) {
+						                    $animate.enter(clone, null, $element);
+					                    });
+				                    }
+			                    });
+		                    } else {
+			                    clearContent();
+		                    }
+	                    }, true);
                     };
                 }
                 /*link: function($scope, $element, $attr) {

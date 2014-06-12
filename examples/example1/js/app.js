@@ -43,7 +43,8 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 
 
 				}],
-				templateTest: ['$ocLazyLoad', '$templateCache', function($ocLazyLoad, $templateCache) {
+				templateTest: ['$ocLazyLoad', '$rootScope', function($ocLazyLoad, $rootScope) {
+					$rootScope.fileRoute = 'js/LateCtrl.js';
 					return $ocLazyLoad.loadTemplateFile(['partials/partials.html', 'partials/partials2.html']);
 				}]
 			}
