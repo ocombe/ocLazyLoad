@@ -32,18 +32,16 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 					});*/
 
                     /* Or, for more than one resource...*/
-
                      return $ocLazyLoad.load([{
                         name: 'TestModule',
                         files: ['js/testModule.js']
                      }, {
                          name: 'HelloGalaxy',
                          files: ['js/helloGalaxyModule.js']
-                     }])
-
-
+                     }]);
 				}],
-				templateTest: ['$ocLazyLoad', '$rootScope', function($ocLazyLoad, $rootScope) {
+				// request galaxytest because LateCtrl is a controler of TestModule
+				templateTest: ['$ocLazyLoad', '$rootScope', 'galaxytest', function($ocLazyLoad, $rootScope, galaxytest) {
 					$rootScope.fileRoute = 'js/LateCtrl.js';
 					return $ocLazyLoad.loadTemplateFile(['partials/partials.html', 'partials/partials2.html']);
 				}]

@@ -340,7 +340,6 @@
 		                    if(angular.isDefined(moduleName)) {
 			                    $ocLazyLoad.load(moduleName).then(function(moduleConfig) {
 				                    if(moduleConfig.template) {
-					                    console.log(moduleConfig.template);
 					                    loadTemplate(moduleConfig.template, function(template) {
 						                    ctrl.template = template;
 						                    var clone = $transclude($scope, function cloneConnectFn(clone) {
@@ -413,7 +412,6 @@
 					} else {
 						return $log.error('unsupported provider ' + args[0]);
 					}
-
 					if(registerInvokeList(args[2][0])) {
 						provider[args[1]].apply(provider, args[2]);
 					}
@@ -480,13 +478,15 @@
 				newInvoke = true;
 				regInvokes.push(invokeList);
 			}
-		} else {
+		} else if(angular.isObject(invokeList)) {
 			angular.forEach(invokeList, function(invoke) {
 				if(angular.isString(invoke) && regInvokes.indexOf(invoke) === -1) {
 					newInvoke = true;
 					regInvokes.push(invoke);
 				}
 			});
+		} else {
+			return true;
 		}
 		return newInvoke;
 	}
@@ -542,7 +542,6 @@
 		if(appElement) {
 			(function addReg(module) {
 				if(regModules.indexOf(module) === -1) {
-					console.log(module);
 					// register existing modules
 					regModules.push(module);
 					var mainModule = angular.module(module);
@@ -560,6 +559,22 @@
 					} catch(e) {
 						$log.error(e.message);
 						throw e;
+					}
+					// register config blocks (angular 1.3+)
+					if(angular.isDefined(mainModule._configBlocks)) {
+						var queue = mainModule._configBlocks,
+							i, len, args;
+						try {
+							for(i = 0, len = queue.length; i < len; i++) {
+								args = queue[i];
+								if(angular.isArray(args)) {
+									registerInvokeList(args[2][0]);
+								}
+							}
+						} catch(e) {
+							$log.error(e.message);
+							throw e;
+						}
 					}
 
 					angular.forEach(mainModule.requires, addReg);
