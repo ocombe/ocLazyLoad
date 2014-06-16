@@ -63,21 +63,9 @@ $ocLazyLoad.load([{
 ```
 
 If you don't load angular files at all, you don't need to define the module name:
-You can also load external libs (not angular):
 ```js
 $ocLazyLoad.load([{
 	files: ['bower_components/bootstrap/dist/js/bootstrap.js']
-}]);
-```
-
-You can also load css and template files:
-```js
-$ocLazyLoad.load([{
-	files: [
-		'bower_components/bootstrap/dist/js/bootstrap.js',
-		'bower_components/bootstrap/dist/css/bootstrap.css',
-		'partials/template1.html'
-	]
 }]);
 ```
 
@@ -87,7 +75,7 @@ Single file:
 $ocLazyLoad.load('bower_components/bootstrap/dist/js/bootstrap.js');
 ```
 
-Multiple files:
+You can also load css and template files:
 ```js
 $ocLazyLoad.load([
 	'bower_components/bootstrap/dist/js/bootstrap.js',
@@ -116,7 +104,10 @@ You can put more than one template script in your template file, just make sure 
 
 The load service comes with a second optional parameter that you can use if you need to define some configuration for the requests (check: https://docs.angularjs.org/api/ng/service/$http#usage) but it only works with the templates (js and css default loaders don't use `$http`).
 ```js
-$ocLazyLoad.load(['partials/template1.html', 'partials/template2.html'], {cache: false, timeout: 5000);
+$ocLazyLoad.load(
+	['partials/template1.html', 'partials/template2.html'],
+	{cache: false, timeout: 5000}
+);
 ```
 
 
@@ -128,7 +119,13 @@ The directive is very similar to the service. Use the same parameters:
 
 You can use variables to store parameters:
 ```js
-$scope.lazyLoadParams = {name: 'TestModule', files: ['js/testModule.js', 'partials/lazyLoadTemplate.html']};
+$scope.lazyLoadParams = {
+	name: 'TestModule',
+	files: [
+		'js/testModule.js',
+		'partials/lazyLoadTemplate.html'
+	]
+};
 ```
 ```html
 <div oc-lazy-load="lazyLoadParams"></div>
@@ -163,69 +160,67 @@ angular.module('app').config(['$ocLazyLoadProvider', function($ocLazyLoadProvide
 
 The options are:
 - `jsLoader`: You can use your own async loader. The one provided with $ocLazyLoad is based on $script.js, but you can use requireJS or any other async loader that works with the following syntax: 
-```js
-$ocLazyLoadProvider.config({
-	jsLoader: function(singleFile or [Array of files], callback);
-});
-```
+	```js
+	$ocLazyLoadProvider.config({
+		jsLoader: function(singleFile or [Array of files], callback);
+	});
+	```
 
 - `cssLoader`: you can also define your own css async loader. The rules and syntax are the same than for jsLoader.
-```js
-$ocLazyLoadProvider.config({
-	cssLoader: function(singleFile or [Array of files], callback);
-});
-```
+	```js
+	$ocLazyLoadProvider.config({
+		cssLoader: function(singleFile or [Array of files], callback);
+	});
+	```
 
 - `templatesLoader`: You can use your template loader. It's similar to the `jsLoader` but it uses an optional config parameter
-```js
-$ocLazyLoadProvider.config({
-	cssLoader: function(singleFile or [Array of files], config, callback);
-});
-```
+	```js
+	$ocLazyLoadProvider.config({
+		cssLoader: function(singleFile or [Array of files], config, callback);
+	});
+	```
 
 - `debug`: $ocLazyLoad returns a promise that can be rejected if there is an error. If you set debug to true, $ocLazyLoad will also log all errors to the console.
-```js
-$ocLazyLoadProvider.config({
-	debug: true
-});
-```
+	```js
+	$ocLazyLoadProvider.config({
+		debug: true
+	});
+	```
 
-- `events`: $ocLazyLoad can broadcast an event when you load a module, a component and a file (js/css/template). It is disabled by default, set events to true to activate it.
-The events are `ocLazyLoad.moduleLoaded`, `ocLazyLoad.componentLoaded`, `ocLazyLoad.fileLoaded`.
-```js
-$ocLazyLoadProvider.config({
-	events: true
-});
-```
-```js
-$scope.$on('ocLazyLoad.moduleLoaded', function(e, module) {
-	console.log('module loaded', module);
-});
-```
+- `events`: $ocLazyLoad can broadcast an event when you load a module, a component and a file (js/css/template). It is disabled by default, set events to true to activate it. The events are `ocLazyLoad.moduleLoaded`, `ocLazyLoad.componentLoaded`, `ocLazyLoad.fileLoaded`.
+	```js
+	$ocLazyLoadProvider.config({
+		events: true
+	});
+	```
+	```js
+	$scope.$on('ocLazyLoad.moduleLoaded', function(e, module) {
+		console.log('module loaded', module);
+	});
+	```
 
 - `loadedModules`: if you use angular.bootstrap(...) to launch your application, you need to define the main app module as a loaded module:
-```js
-angular.bootstrap(document.body, ['test']);
-```
-
-```js
-$ocLazyLoadProvider.config({
-    loadedModules: ['test']
-});
-```
+	```js
+	angular.bootstrap(document.body, ['test']);
+	```
+	```js
+	$ocLazyLoadProvider.config({
+	    loadedModules: ['test']
+	});
+	```
 
 - `modules`: predefine the configuration of your modules for a later use
-```js
-$ocLazyLoadProvider.config({
-    modules: [{
-        name: 'TestModule',
-        files: ['js/TestModule.js']
-    }]
-});
-```
-```js
-$ocLazyLoad.load('TestModule'});
-```
+	```js
+	$ocLazyLoadProvider.config({
+	    modules: [{
+	        name: 'TestModule',
+	        files: ['js/TestModule.js']
+	    }]
+	});
+	```
+	```js
+	$ocLazyLoad.load('TestModule'});
+	```
 
 
 ## With your router
@@ -311,8 +306,8 @@ $stateProvider.state('index', {
 });
 ```
 
----
 
+##Contribute
 If you want to get started and the docs are not enough, see the examples in the 'example' folder !
 
 If you want to contribute, it would be really awesome to add some tests, or more examples :)
