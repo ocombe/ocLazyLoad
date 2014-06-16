@@ -190,6 +190,19 @@ $ocLazyLoadProvider.config({
 });
 ```
 
+- `events`: $ocLazyLoad can broadcast an event when you load a module, a component and a file (js/css/template). It is disabled by default, set events to true to activate it.
+The events are `ocLazyLoad.moduleLoaded`, `ocLazyLoad.componentLoaded`, `ocLazyLoad.fileLoaded`.
+```js
+$ocLazyLoadProvider.config({
+	events: true
+});
+```
+```js
+$scope.$on('ocLazyLoad.moduleLoaded', function(e, module) {
+	console.log('module loaded', module);
+});
+```
+
 - `loadedModules`: if you use angular.bootstrap(...) to launch your application, you need to define the main app module as a loaded module:
 ```js
 angular.bootstrap(document.body, ['test']);

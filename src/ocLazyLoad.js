@@ -3,7 +3,8 @@
 	var regModules = ['ng'],
 		regInvokes = [],
 		filesLoaded = [],
-		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
+		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
+		broadcast = angular.noop;
 
 	ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector', '$animateProvider',
 		function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
@@ -39,6 +40,14 @@
 					return (instanceInjector) ? instanceInjector : (instanceInjector = $rootElement.data('$injector'));
 				};
 
+				broadcast = function broadcast(eventName, params) {
+					//					console.log('broadcast');
+					if(events) {
+						//						console.log(arguments);
+						$rootScope.$broadcast(eventName, params);
+					}
+				}
+
 				/**
 				 * Load a js/css file
 				 * @param type
@@ -71,6 +80,7 @@
 						loaded = 1;
 						if(filesLoaded.indexOf(path) === -1) {
 							filesLoaded.push(path);
+							broadcast('ocLazyLoad.fileLoaded', path);
 						}
 						deferred.resolve();
 					}
@@ -467,6 +477,10 @@
 				if(angular.isDefined(config.debug)) {
 					debug = config.debug;
 				}
+
+				if(angular.isDefined(config.events)) {
+					events = config.events;
+				}
 			};
 		}]);
 
@@ -624,6 +638,7 @@
 				}
 				invokeQueue(providers, moduleFn._invokeQueue);
 				invokeQueue(providers, moduleFn._configBlocks);
+				broadcast('ocLazyLoad.moduleLoaded', moduleName);
 				registerModules.pop();
 			}
 			var instanceInjector = providers.getInstanceInjector();
@@ -644,6 +659,7 @@
 			if(regInvokes.indexOf(invokeList) === -1) {
 				newInvoke = true;
 				regInvokes.push(invokeList);
+				broadcast('ocLazyLoad.componentLoaded', invokeList);
 			}
 		} else if(angular.isObject(invokeList)) {
 			angular.forEach(invokeList, function(invoke) {
