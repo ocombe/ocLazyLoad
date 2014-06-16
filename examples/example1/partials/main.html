@@ -1,0 +1,17 @@
+<div>
+	<h3>Load external libs (not angular-based):</h3>
+	<p><button class="btn btn-info" ng-click="loadBootstrap()" ng-disabled="bootstrapLoaded">Load Bootstrap</button></p>
+	<div oc-lazy-load="bootstrapModule"></div>
+</div>
+
+<div>
+	<h3>Load a module by loading a state:</h3>
+	<p><a ui-sref="modal()" ng-if="!openModal">Go to "modal" state</a></p>
+	<p><button class="btn btn-info" ng-click="openModal()" ng-if="openModal">Open modal</button></p>
+</div>
+
+<div>
+	<h3>Load a complete module with dependencies and templates:</h3>
+	<p><button class="btn btn-info" ng-click="loadGridModule()" ng-disabled="gridLoaded">Load gridModule with ng-grid</button></p>
+	<div ng-include="gridInclude"></div>
+</div>

@@ -1,6 +1,6 @@
 /**
  * ocLazyLoad - Load modules on demand (lazy load) with angularJS
- * @version v0.2.0
+ * @version v0.3.0
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -10,7 +10,8 @@
 	var regModules = ['ng'],
 		regInvokes = [],
 		filesLoaded = [],
-		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
+		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
+		broadcast = angular.noop;
 
 	ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector', '$animateProvider',
 		function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
@@ -26,12 +27,13 @@
 				},
 				anchor = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0],
 				jsLoader, cssLoader, templatesLoader,
-				debug = false;
+				debug = false,
+				events = false;
 
 			// Let's get the list of loaded modules & components
 			init(angular.element(window.document));
 
-			this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', function($timeout, $log, $q, $templateCache, $http, $rootElement) {
+			this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', '$rootScope', function($timeout, $log, $q, $templateCache, $http, $rootElement, $rootScope) {
 				var instanceInjector;
 
 				if(!debug) {
@@ -45,46 +47,57 @@
 					return (instanceInjector) ? instanceInjector : (instanceInjector = $rootElement.data('$injector'));
 				};
 
+				broadcast = function broadcast(eventName, params) {
+					//					console.log('broadcast');
+					if(events) {
+						//						console.log(arguments);
+						$rootScope.$broadcast(eventName, params);
+					}
+				}
+
 				/**
-				 *
+				 * Load a js/css file
 				 * @param type
 				 * @param path
-				 * @returns {jQuery.promise|promise.promise|d.promise|promise|.Deferred.promise|.ready.promise|*}
+				 * @returns promise
 				 */
 				var buildElement = function buildElement(type, path) {
-					var deferred = $q.defer();
-					if(filesLoaded.indexOf(path) === -1) {
-						var el, loaded;
-						// Switch in case more content types are added later (for example a native JS loader!)
-						switch(type) {
-							case 'css':
-								el = document.createElement('link');
-								el.type = 'text/css';
-								el.rel = 'stylesheet';
-								el.href = path;
-								break;
-							case 'js':
-								el = document.createElement('script');
-								el.src = path;
-								break;
-							default:
-								deferred.reject(new Error('Requested type "' + type + '" is not known. Could not inject "' + path + '"'));
-								break;
-						}
-						el.onload = el['onreadystatechange'] = function(e) {
-							if((el['readyState'] && !(/^c|loade/.test(el['readyState']))) || loaded) return;
-							el.onload = el['onreadystatechange'] = null
-							loaded = 1;
-							filesLoaded.push(path);
-							deferred.resolve();
-						}
-						el.onerror = function(e) {
-							deferred.reject(new Error('Unable to load '+path));
-						}
-						el.async = 1;
+					var deferred = $q.defer(),
+						el, loaded;
 
-						anchor.insertBefore(el, anchor.lastChild);
+					// Switch in case more content types are added later (for example a native JS loader!)
+					switch(type) {
+						case 'css':
+							el = document.createElement('link');
+							el.type = 'text/css';
+							el.rel = 'stylesheet';
+							el.href = path;
+							break;
+						case 'js':
+							el = document.createElement('script');
+							el.src = path;
+							break;
+						default:
+							deferred.reject(new Error('Requested type "' + type + '" is not known. Could not inject "' + path + '"'));
+							break;
 					}
+					el.onload = el['onreadystatechange'] = function(e) {
+						if((el['readyState'] && !(/^c|loade/.test(el['readyState']))) || loaded) return;
+						el.onload = el['onreadystatechange'] = null
+						loaded = 1;
+						if(filesLoaded.indexOf(path) === -1) {
+							filesLoaded.push(path);
+							broadcast('ocLazyLoad.fileLoaded', path);
+						}
+						deferred.resolve();
+					}
+					el.onerror = function(e) {
+						console.log('error');
+						deferred.reject(new Error('Unable to load '+path));
+					}
+					el.async = 1;
+					anchor.insertBefore(el, anchor.lastChild);
+
 					return deferred.promise;
 				}
 
@@ -447,7 +460,7 @@
 				}
 
 				// for bootstrap apps, we need to define the main module name
-				if(config.loadedModules) {
+				if(angular.isDefined(config.loadedModules)) {
 					var addRegModule = function(loadedModule) {
 						if(regModules.indexOf(loadedModule) < 0) {
 							regModules.push(loadedModule);
@@ -458,7 +471,7 @@
 				}
 
 				// If we want to define modules configs
-				if(config.modules) {
+				if(angular.isDefined(config.modules)) {
 					if(angular.isArray(config.modules)) {
 						angular.forEach(config.modules, function(moduleConfig) {
 							modules[moduleConfig.name] = moduleConfig;
@@ -470,6 +483,10 @@
 
 				if(angular.isDefined(config.debug)) {
 					debug = config.debug;
+				}
+
+				if(angular.isDefined(config.events)) {
+					events = config.events;
 				}
 			};
 		}]);
@@ -628,6 +645,7 @@
 				}
 				invokeQueue(providers, moduleFn._invokeQueue);
 				invokeQueue(providers, moduleFn._configBlocks);
+				broadcast('ocLazyLoad.moduleLoaded', moduleName);
 				registerModules.pop();
 			}
 			var instanceInjector = providers.getInstanceInjector();
@@ -648,6 +666,7 @@
 			if(regInvokes.indexOf(invokeList) === -1) {
 				newInvoke = true;
 				regInvokes.push(invokeList);
+				broadcast('ocLazyLoad.componentLoaded', invokeList);
 			}
 		} else if(angular.isObject(invokeList)) {
 			angular.forEach(invokeList, function(invoke) {

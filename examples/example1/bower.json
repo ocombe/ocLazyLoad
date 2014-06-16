@@ -1,0 +1,23 @@
+{
+  "name": "example-ocLazyLoad",
+  "version": "0.0.1",
+  "homepage": "https://github.com/ocombe/ocLazyLoad",
+  "authors": [
+    "ocombe <olivier.combe@gmail.com>"
+  ],
+  "main": "js/app.js",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-ui-router": "~0.2.10",
+    "ocModal": "~0.1.4",
+    "bootstrap": "~3.1.1"
+  }
+}

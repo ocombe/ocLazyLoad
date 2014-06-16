@@ -1,3 +1,15 @@
+# 0.3.0 (17 June 2014)
+
+## Features
+
+- $ocLazyLoad will now reject promises on errors
+- Use the parameter `debug` to show log messages in the console
+- JS / CSS / Template loaders are available by default in $ocLazyLoad but you can overwrite them with the config
+- Better doc (finally! \o/)
+- Example1 is now much better !
+- Events broadcasted on module / component / file load (#21)
+
+
 # 0.2.0 (20 May 2014)
 * Added support for $animateProvider #19
 * Added support for CSS Loading (And perhaps other file types in the future) #19
