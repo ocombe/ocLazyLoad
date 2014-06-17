@@ -26,8 +26,7 @@ angular.module('app').controller('AppCtrl', ['$scope', '$ocLazyLoad', '$timeout'
 			name: 'gridModule',
 			files: [
 				'js/gridModule.js',
-				'partials/grid.html',
-				'css/ng-grid.css'
+				'partials/grid.html'
 			]
 		}).then(function success(data) {
 			console.log('loaded', data);
