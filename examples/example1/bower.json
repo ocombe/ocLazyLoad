@@ -17,8 +17,8 @@
   ],
   "dependencies": {
     "angular-ui-router": "~0.2.10",
-    "ocModal": "~0.1.4",
-    "bootstrap": "~3.1.1",
+    "ocModal": "~0.1.6",
+    "bootstrap": "~3.2.0",
     "ng-grid": "~2.0.11"
   }
 }
