@@ -2,7 +2,8 @@ angular.module('test', ['oc.lazyLoad'])
 	.config(['$ocLazyLoadProvider', function($ocLazyLoadProvider) {
 		$ocLazyLoadProvider.config({
 			loadedModules: ['test'],
-			asyncLoader: requirejs
+			jsLoader: requirejs,
+			debug: true
 		});
 }])
 	.controller('mainController', ['$scope', '$ocLazyLoad', function($scope, $ocLazyLoad) {

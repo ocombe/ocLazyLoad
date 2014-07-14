@@ -94,90 +94,99 @@
 					return deferred.promise;
 				}
 
-				/**
-				 * jsLoader function
-				 * @type Function
-				 * @param paths array list of js files to load
-				 * @param callback to call when everything is loaded. We use a callback and not a promise
-				 * because the user can overwrite jsLoader and it will probably not use promises :(
-				 */
-				jsLoader = jsLoader || function(paths, callback) {
-					var promises = [];
-					angular.forEach(paths, function loading(path) {
-						promises.push(buildElement('js', path));
-					});
-					$q.all(promises).then(function success() {
-						callback();
-					}, function error(err) {
-						callback(err);
-					});
+				if(angular.isUndefined(jsLoader)) {
+					/**
+					 * jsLoader function
+					 * @type Function
+					 * @param paths array list of js files to load
+					 * @param callback to call when everything is loaded. We use a callback and not a promise
+					 * because the user can overwrite jsLoader and it will probably not use promises :(
+					 */
+					jsLoader = function(paths, callback) {
+						var promises = [];
+						angular.forEach(paths, function loading(path) {
+							promises.push(buildElement('js', path));
+						});
+						$q.all(promises).then(function success() {
+							callback();
+						}, function error(err) {
+							callback(err);
+						});
+					}
+					jsLoader.ocLazyLoadLoader = true;
 				}
 
-				/**
-				 * cssLoader function
-				 * @type Function
-				 * @param paths array list of css files to load
-				 * @param callback to call when everything is loaded. We use a callback and not a promise
-				 * because the user can overwrite cssLoader and it will probably not use promises :(
-				 */
-				cssLoader = cssLoader || function(paths, callback) {
-					var promises = [];
-					angular.forEach(paths, function loading(path) {
-						promises.push(buildElement('css', path));
-					});
-					$q.all(promises).then(function success() {
-						callback();
-					}, function error(err) {
-						callback(err);
-					});
+				if(angular.isUndefined(cssLoader)) {
+					/**
+					 * cssLoader function
+					 * @type Function
+					 * @param paths array list of css files to load
+					 * @param callback to call when everything is loaded. We use a callback and not a promise
+					 * because the user can overwrite cssLoader and it will probably not use promises :(
+					 */
+					cssLoader = function(paths, callback) {
+						var promises = [];
+						angular.forEach(paths, function loading(path) {
+							promises.push(buildElement('css', path));
+						});
+						$q.all(promises).then(function success() {
+							callback();
+						}, function error(err) {
+							callback(err);
+						});
+					}
+					cssLoader.ocLazyLoadLoader = true;
 				}
 
-				/**
-				 * templatesLoader function
-				 * @type Function
-				 * @param paths array list of css files to load
-				 * @param params object config parameters for $http
-				 * @param callback to call when everything is loaded. We use a callback and not a promise
-				 * because the user can overwrite templatesLoader and it will probably not use promises :(
-				 */
-				templatesLoader = templatesLoader || function(paths, params, callback) {
-					if(angular.isString(paths)) {
-						paths = [paths];
-					}
-					if(angular.isFunction(params)) {
-						callback = params;
-						params = {};
-					}
-					if(angular.isUndefined(params)) {
-						params = {};
-					}
-					var promises = [];
-					angular.forEach(paths, function(url) {
-						var deferred = $q.defer();
-						promises.push(deferred.promise);
-						if(templates.indexOf(url) === -1 || (angular.isDefined(params) && params.cache === false)) {
-							$http.get(url, params).success(function(data) {
-								angular.forEach(angular.element(data), function(node) {
-									if(node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
-										$templateCache.put(node.id, node.innerHTML);
-									}
-								});
-								templates.push(url);
-								deferred.resolve();
-							}).error(function(data) {
-								var err = 'Error load template "' + url + '": ' + data;
-								$log.error(err);
-								deferred.reject(new Error(err));
-							});
-						} else {
-							deferred.resolve();
+				if(angular.isUndefined(templatesLoader)) {
+					/**
+					 * templatesLoader function
+					 * @type Function
+					 * @param paths array list of css files to load
+					 * @param params object config parameters for $http
+					 * @param callback to call when everything is loaded. We use a callback and not a promise
+					 * because the user can overwrite templatesLoader and it will probably not use promises :(
+					 */
+					templatesLoader = function(paths, params, callback) {
+						if(angular.isString(paths)) {
+							paths = [paths];
 						}
-					});
-					return $q.all(promises).then(function success() {
-						callback();
-					}, function error(err) {
-						callback(err);
-					});;
+						if(angular.isFunction(params)) {
+							callback = params;
+							params = {};
+						}
+						if(angular.isUndefined(params)) {
+							params = {};
+						}
+						var promises = [];
+						angular.forEach(paths, function(url) {
+							var deferred = $q.defer();
+							promises.push(deferred.promise);
+							if(templates.indexOf(url) === -1 || (angular.isDefined(params) && params.cache === false)) {
+								$http.get(url, params).success(function(data) {
+									angular.forEach(angular.element(data), function(node) {
+										if(node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
+											$templateCache.put(node.id, node.innerHTML);
+										}
+									});
+									templates.push(url);
+									deferred.resolve();
+								}).error(function(data) {
+									var err = 'Error load template "' + url + '": ' + data;
+									$log.error(err);
+									deferred.reject(new Error(err));
+								});
+							} else {
+								deferred.resolve();
+							}
+						});
+						return $q.all(promises).then(function success() {
+							callback();
+						}, function error(err) {
+							callback(err);
+						});
+					}
+					templatesLoader.ocLazyLoadLoader = true;
 				}
 
 				var filesLoader = function(paths, params) {
@@ -199,7 +208,7 @@
 					if(cssFiles.length > 0) {
 						var cssDeferred = $q.defer();
 						cssLoader(cssFiles, function(err) {
-							if(angular.isDefined(err)) {
+							if(angular.isDefined(err) && cssLoader.hasOwnProperty('ocLazyLoadLoader')) {
 								$log.error(err);
 								cssDeferred.reject(err);
 							} else {
@@ -212,7 +221,7 @@
 					if(templatesFiles.length > 0) {
 						var templatesDeferred = $q.defer();
 						templatesLoader(templatesFiles, params, function(err) {
-							if(angular.isDefined(err)) {
+							if(angular.isDefined(err) && templatesLoader.hasOwnProperty('ocLazyLoadLoader')) {
 								$log.error(err);
 								templatesDeferred.reject(err);
 							} else {
@@ -225,7 +234,7 @@
 					if(jsFiles.length > 0) {
 						var jsDeferred = $q.defer();
 						jsLoader(jsFiles, function(err) {
-							if(angular.isDefined(err)) {
+							if(angular.isDefined(err) && jsLoader.hasOwnProperty('ocLazyLoadLoader')) {
 								$log.error(err);
 								jsDeferred.reject(err);
 							} else {
