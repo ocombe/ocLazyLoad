@@ -9,14 +9,12 @@
 	'use strict';
 	var regModules = ['ng'],
 		regInvokes = [],
-		filesLoaded = [],
 		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
 		broadcast = angular.noop;
 
 	ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector', '$animateProvider',
 		function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
 			var modules = {},
-				templates = [],
 				providers = {
 					$controllerProvider: $controllerProvider,
 					$compileProvider: $compileProvider,
@@ -33,8 +31,9 @@
 			// Let's get the list of loaded modules & components
 			init(angular.element(window.document));
 
-			this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', '$rootScope', function($timeout, $log, $q, $templateCache, $http, $rootElement, $rootScope) {
-				var instanceInjector;
+			this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', '$rootScope', '$cacheFactory', function($timeout, $log, $q, $templateCache, $http, $rootElement, $rootScope, $cacheFactory) {
+				var instanceInjector,
+					filesCache = $cacheFactory('ocLazyLoad');
 
 				if(!debug) {
 					$log = {};
@@ -48,9 +47,7 @@
 				};
 
 				broadcast = function broadcast(eventName, params) {
-					//					console.log('broadcast');
 					if(events) {
-						//						console.log(arguments);
 						$rootScope.$broadcast(eventName, params);
 					}
 				}
@@ -61,21 +58,32 @@
 				 * @param path
 				 * @returns promise
 				 */
-				var buildElement = function buildElement(type, path) {
+				var buildElement = function buildElement(type, path, params) {
 					var deferred = $q.defer(),
-						el, loaded;
+						el, loaded,
+						cacheBuster = function cacheBuster(url) {
+							var dc = new Date().getTime();
+							if(url.indexOf('?') != -1) {
+								if(url.substring(0, url.length - 1) === '&') {
+									return url + '_dc=' + dc;
+								}
+								return url + '&_dc=' + dc;
+							} else {
+								return url + '?_dc=' + dc;
+							}
+						};
 
-					// Switch in case more content types are added later (for example a native JS loader!)
+					// Switch in case more content types are added later
 					switch(type) {
 						case 'css':
 							el = document.createElement('link');
 							el.type = 'text/css';
 							el.rel = 'stylesheet';
-							el.href = path;
+							el.href = params.cache === false ? cacheBuster(path) : path;
 							break;
 						case 'js':
 							el = document.createElement('script');
-							el.src = path;
+							el.src = params.cache === false ? cacheBuster(path) : path;
 							break;
 						default:
 							deferred.reject(new Error('Requested type "' + type + '" is not known. Could not inject "' + path + '"'));
@@ -85,14 +93,13 @@
 						if((el['readyState'] && !(/^c|loade/.test(el['readyState']))) || loaded) return;
 						el.onload = el['onreadystatechange'] = null
 						loaded = 1;
-						if(filesLoaded.indexOf(path) === -1) {
-							filesLoaded.push(path);
-							broadcast('ocLazyLoad.fileLoaded', path);
+						if(angular.isUndefined(filesCache.get(path))) {
+							filesCache.put(path, true);
 						}
+						broadcast('ocLazyLoad.fileLoaded', path);
 						deferred.resolve();
 					}
 					el.onerror = function(e) {
-						console.log('error');
 						deferred.reject(new Error('Unable to load '+path));
 					}
 					el.async = 1;
@@ -101,90 +108,92 @@
 					return deferred.promise;
 				}
 
-				/**
-				 * jsLoader function
-				 * @type Function
-				 * @param paths array list of js files to load
-				 * @param callback to call when everything is loaded. We use a callback and not a promise
-				 * because the user can overwrite jsLoader and it will probably not use promises :(
-				 */
-				jsLoader = jsLoader || function(paths, callback) {
-					var promises = [];
-					angular.forEach(paths, function loading(path) {
-						promises.push(buildElement('js', path));
-					});
-					$q.all(promises).then(function success() {
-						callback();
-					}, function error(err) {
-						callback(err);
-					});
+				if(angular.isUndefined(jsLoader)) {
+					/**
+					 * jsLoader function
+					 * @type Function
+					 * @param paths array list of js files to load
+					 * @param callback to call when everything is loaded. We use a callback and not a promise
+					 * @param params object config parameters
+					 * because the user can overwrite jsLoader and it will probably not use promises :(
+					 */
+					jsLoader = function(paths, callback, params) {
+						var promises = [];
+						angular.forEach(paths, function loading(path) {
+							promises.push(buildElement('js', path, params));
+						});
+						$q.all(promises).then(function success() {
+							callback();
+						}, function error(err) {
+							callback(err);
+						});
+					}
+					jsLoader.ocLazyLoadLoader = true;
 				}
 
-				/**
-				 * cssLoader function
-				 * @type Function
-				 * @param paths array list of css files to load
-				 * @param callback to call when everything is loaded. We use a callback and not a promise
-				 * because the user can overwrite cssLoader and it will probably not use promises :(
-				 */
-				cssLoader = cssLoader || function(paths, callback) {
-					var promises = [];
-					angular.forEach(paths, function loading(path) {
-						promises.push(buildElement('css', path));
-					});
-					$q.all(promises).then(function success() {
-						callback();
-					}, function error(err) {
-						callback(err);
-					});
+				if(angular.isUndefined(cssLoader)) {
+					/**
+					 * cssLoader function
+					 * @type Function
+					 * @param paths array list of css files to load
+					 * @param callback to call when everything is loaded. We use a callback and not a promise
+					 * @param params object config parameters
+					 * because the user can overwrite cssLoader and it will probably not use promises :(
+					 */
+					cssLoader = function(paths, callback, params) {
+						var promises = [];
+						angular.forEach(paths, function loading(path) {
+							promises.push(buildElement('css', path, params));
+						});
+						$q.all(promises).then(function success() {
+							callback();
+						}, function error(err) {
+							callback(err);
+						});
+					}
+					cssLoader.ocLazyLoadLoader = true;
 				}
 
-				/**
-				 * templatesLoader function
-				 * @type Function
-				 * @param paths array list of css files to load
-				 * @param params object config parameters for $http
-				 * @param callback to call when everything is loaded. We use a callback and not a promise
-				 * because the user can overwrite templatesLoader and it will probably not use promises :(
-				 */
-				templatesLoader = templatesLoader || function(paths, params, callback) {
-					if(angular.isString(paths)) {
-						paths = [paths];
-					}
-					if(angular.isFunction(params)) {
-						callback = params;
-						params = {};
-					}
-					if(angular.isUndefined(params)) {
-						params = {};
-					}
-					var promises = [];
-					angular.forEach(paths, function(url) {
-						var deferred = $q.defer();
-						promises.push(deferred.promise);
-						if(templates.indexOf(url) === -1 || (angular.isDefined(params) && params.cache === false)) {
+				if(angular.isUndefined(templatesLoader)) {
+					/**
+					 * templatesLoader function
+					 * @type Function
+					 * @param paths array list of css files to load
+					 * @param callback to call when everything is loaded. We use a callback and not a promise
+					 * @param params object config parameters for $http
+					 * because the user can overwrite templatesLoader and it will probably not use promises :(
+					 */
+					templatesLoader = function(paths, callback, params) {
+						if(angular.isString(paths)) {
+							paths = [paths];
+						}
+						var promises = [];
+						angular.forEach(paths, function(url) {
+							var deferred = $q.defer();
+							promises.push(deferred.promise);
 							$http.get(url, params).success(function(data) {
 								angular.forEach(angular.element(data), function(node) {
 									if(node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
 										$templateCache.put(node.id, node.innerHTML);
 									}
 								});
-								templates.push(url);
+								if(angular.isUndefined(filesCache.get(url))) {
+									filesCache.put(url, true);
+								}
 								deferred.resolve();
 							}).error(function(data) {
 								var err = 'Error load template "' + url + '": ' + data;
 								$log.error(err);
 								deferred.reject(new Error(err));
 							});
-						} else {
-							deferred.resolve();
-						}
-					});
-					return $q.all(promises).then(function success() {
-						callback();
-					}, function error(err) {
-						callback(err);
-					});;
+						});
+						return $q.all(promises).then(function success() {
+							callback();
+						}, function error(err) {
+							callback(err);
+						});
+					}
+					templatesLoader.ocLazyLoadLoader = true;
 				}
 
 				var filesLoader = function(paths, params) {
@@ -194,51 +203,53 @@
 						promises = [];
 
 					angular.forEach(paths, function(path) {
-						if(/\.css[^\.]*$/.test(path)) {
-							cssFiles.push(path);
-						} else if(/\.(htm|html)[^\.]*$/.test(path)) {
-							templatesFiles.push(path);
-						} else {
-							jsFiles.push(path);
+						if(angular.isUndefined(filesCache.get(path)) || params.cache === false) {
+							if(/\.css[^\.]*$/.test(path)) {
+								cssFiles.push(path);
+							} else if(/\.(htm|html)[^\.]*$/.test(path)) {
+								templatesFiles.push(path);
+							} else {
+								jsFiles.push(path);
+							}
 						}
 					});
 
 					if(cssFiles.length > 0) {
 						var cssDeferred = $q.defer();
 						cssLoader(cssFiles, function(err) {
-							if(angular.isDefined(err)) {
+							if(angular.isDefined(err) && cssLoader.hasOwnProperty('ocLazyLoadLoader')) {
 								$log.error(err);
 								cssDeferred.reject(err);
 							} else {
 								cssDeferred.resolve();
 							}
-						});
+						}, params);
 						promises.push(cssDeferred.promise);
 					}
 
 					if(templatesFiles.length > 0) {
 						var templatesDeferred = $q.defer();
-						templatesLoader(templatesFiles, params, function(err) {
-							if(angular.isDefined(err)) {
+						templatesLoader(templatesFiles, function(err) {
+							if(angular.isDefined(err) && templatesLoader.hasOwnProperty('ocLazyLoadLoader')) {
 								$log.error(err);
 								templatesDeferred.reject(err);
 							} else {
 								templatesDeferred.resolve();
 							}
-						});
+						}, params);
 						promises.push(templatesDeferred.promise);
 					}
 
 					if(jsFiles.length > 0) {
 						var jsDeferred = $q.defer();
 						jsLoader(jsFiles, function(err) {
-							if(angular.isDefined(err)) {
+							if(angular.isDefined(err) && jsLoader.hasOwnProperty('ocLazyLoadLoader')) {
 								$log.error(err);
 								jsDeferred.reject(err);
 							} else {
 								jsDeferred.resolve();
 							}
-						});
+						}, params);
 						promises.push(jsDeferred.promise);
 					}
 
@@ -276,11 +287,15 @@
 							moduleName,
 							errText;
 
+						if(angular.isUndefined(params)) {
+							params = {};
+						}
+
 						// If module is an array, break it down
 						if(angular.isArray(module)) {
 							// Resubmit each entry as a single module
 							angular.forEach(module, function(m) {
-								deferredList.push(self.load(m));
+								deferredList.push(self.load(m, params));
 							});
 
 							// Resolve the promise once everything has loaded
@@ -402,7 +417,7 @@
 								// Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
 								if(requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
 									if(requireEntry.files) {
-										promisesList.push(filesLoader(requireEntry.files).then(function() {
+										promisesList.push(filesLoader(requireEntry.files, params).then(function() {
 											return loadDependencies(requireEntry)
 										}));
 									}
@@ -413,7 +428,7 @@
 							return $q.all(promisesList);
 						}
 
-						filesLoader(config.files).then(function success() {
+						filesLoader(config.files, params).then(function success() {
 							if(moduleName === null) {
 								deferred.resolve(module);
 							} else {
