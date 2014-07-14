@@ -102,7 +102,8 @@ You can put more than one template script in your template file, just make sure 
 </script>
 ```
 
-The load service comes with a second optional parameter that you can use if you need to define some configuration for the requests (check: https://docs.angularjs.org/api/ng/service/$http#usage) but it only works with the templates (js and css default loaders don't use `$http`).
+The load service comes with a second optional parameter that you can use if you need to define some configuration for the requests (check: https://docs.angularjs.org/api/ng/service/$http#usage).
+The parameter `cache: false` works for all native loaders (**all requests are cached by default**), other parameters only works with the templates for now (js and css default loaders don't use `$http`).
 ```js
 $ocLazyLoad.load(
 	['partials/template1.html', 'partials/template2.html'],
