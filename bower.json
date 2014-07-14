@@ -23,5 +23,8 @@
     "src",
     "gulpfile.js",
     "package.json"
-  ]
+  ],
+  "dependencies": {
+    "angular": "~1.2.20"
+  }
 }
