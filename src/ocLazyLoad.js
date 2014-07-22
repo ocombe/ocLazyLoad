@@ -288,7 +288,9 @@
 						if(angular.isArray(module)) {
 							// Resubmit each entry as a single module
 							angular.forEach(module, function(m) {
-								deferredList.push(self.load(m, params));
+                                if (m) {
+                                    deferredList.push(self.load(m, params));
+                                }
 							});
 
 							// Resolve the promise once everything has loaded
