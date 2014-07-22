@@ -393,9 +393,8 @@
                                             return self.getModuleConfig(requireEntry.name).files.indexOf(n) < 0
                                         });
                                         if (diff.length !== 0) {
-
                                             $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency. "', requireEntry.name, '"\n Additional Files Loaded:', diff);
-                                            promisesList.push(filesLoader(diff).then(function () {
+                                            promisesList.push(filesLoader(diff, params).then(function () {
                                                 return loadDependencies(requireEntry);
                                             }));
                                         }
