@@ -201,7 +201,7 @@
 								cssFiles.push(path);
 							} else if(/\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
 								templatesFiles.push(path);
-							} else if (/\.(js)[^\.]*$/.test(path) && jsFiles.indexOf(path) === -1) {
+							} else if (jsFiles.indexOf(path) === -1) {
 								jsFiles.push(path);
 							}
 						}
