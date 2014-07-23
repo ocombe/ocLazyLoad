@@ -1,6 +1,6 @@
 /**
  * ocLazyLoad - Load modules on demand (lazy load) with angularJS
- * @version v0.3.0
+ * @version v0.3.1
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -204,11 +204,11 @@
 
 					angular.forEach(paths, function(path) {
 						if(angular.isUndefined(filesCache.get(path)) || params.cache === false) {
-							if(/\.css[^\.]*$/.test(path)) {
+							if(/\.css[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
 								cssFiles.push(path);
-							} else if(/\.(htm|html)[^\.]*$/.test(path)) {
+							} else if(/\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
 								templatesFiles.push(path);
-							} else {
+							} else if (/\.(js)[^\.]*$/.test(path) && jsFiles.indexOf(path) === -1) {
 								jsFiles.push(path);
 							}
 						}
@@ -295,7 +295,9 @@
 						if(angular.isArray(module)) {
 							// Resubmit each entry as a single module
 							angular.forEach(module, function(m) {
-								deferredList.push(self.load(m, params));
+                                if (m) {
+                                    deferredList.push(self.load(m, params));
+                                }
 							});
 
 							// Resolve the promise once everything has loaded
@@ -360,6 +362,7 @@
 							var moduleName,
 								loadedModule,
 								requires,
+                                diff,
 								promisesList = [];
 
 							moduleName = getModuleName(module);
@@ -392,10 +395,17 @@
 								// Check if this dependency has been loaded previously or is already in the moduleCache
 								if(moduleExists(requireEntry.name) || moduleCache.indexOf(requireEntry.name) !== -1) {
 									if(typeof module !== 'string') {
-										// The dependency exists, but it's being redefined, not inherited by a simple string reference, raise a warning and ignore the new config.
-										// TODO: This could be made smarter. There's no checking here yet to determine if the configurations are actually different.
-										$log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency "', requireEntry.name, '"\nExisting:', self.getModuleConfig(requireEntry.name), 'Ignored:', requireEntry);
-									}
+                                        // compare against the already loaded module to see if the new definition adds any new files
+                                        diff = requireEntry.files.filter(function (n) {
+                                            return self.getModuleConfig(requireEntry.name).files.indexOf(n) < 0
+                                        });
+                                        if (diff.length !== 0) {
+                                            $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency. "', requireEntry.name, '"\n Additional Files Loaded:', diff);
+                                            promisesList.push(filesLoader(diff, params).then(function () {
+                                                return loadDependencies(requireEntry);
+                                            }));
+                                        }
+                                    }
 									return;
 								} else if(typeof requireEntry === 'object') {
 									if(requireEntry.hasOwnProperty('name') && requireEntry['name']) {
@@ -408,7 +418,7 @@
 									if(requireEntry.hasOwnProperty('css') && requireEntry['css'].length !== 0) {
 										// Locate the document insertion point
 										angular.forEach(requireEntry['css'], function(path) {
-											buildElement('css', path);
+											buildElement('css', path, params);
 										});
 									}
 									// CSS End.
@@ -460,17 +470,24 @@
 			}];
 
 			this.config = function(config) {
-				jsLoader = config.jsLoader || config.asyncLoader;
-
-				if(angular.isDefined() && !angular.isFunction(jsLoader)) {
-					throw('The js loader needs to be a function');
+				if(angular.isDefined(config.jsLoader) || angular.isDefined(config.asyncLoader)) {
+					if(!angular.isFunction(jsLoader)) {
+						throw('The js loader needs to be a function');
+					}
+					jsLoader = config.jsLoader || config.asyncLoader;
 				}
 
 				if(angular.isDefined(config.cssLoader)) {
+					if(!angular.isFunction(cssLoader)) {
+						throw('The css loader needs to be a function');
+					}
 					cssLoader = config.cssLoader;
 				}
 
 				if(angular.isDefined(config.templatesLoader)) {
+					if(!angular.isFunction(templatesLoader)) {
+						throw('The template loader needs to be a function');
+					}
 					templatesLoader = config.templatesLoader;
 				}
 

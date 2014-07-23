@@ -1,3 +1,18 @@
+<a name="0.3.2"></a>
+# 0.3.2 (2014-07-23)
+
+
+## Bug Fixes
+
+- allow $ocLazyLoadProvider.config to be called multiple times
+ ([c590579c](https://github.com/ocombe/ocLazyLoad/commit/c590579c9512e0dd3fae2c33c0aefc0bb0f7ca7e),
+ [#43](https://github.com/ocombe/ocLazyLoad/issues/43))
+- prevent duplicate loadings
+ ([12bc6b2b](https://github.com/ocombe/ocLazyLoad/commit/12bc6b2b2d1561517d56c14c56c15c332d578344),
+ [#35](https://github.com/ocombe/ocLazyLoad/issues/35),
+ [#38](https://github.com/ocombe/ocLazyLoad/issues/38))
+
+
 <a name="0.3.1"></a>
 # 0.3.1 (2014-07-14)
 
