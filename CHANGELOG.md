@@ -1,3 +1,18 @@
+<a name="0.3.3"></a>
+# 0.3.3 (2014-07-23)
+
+
+## Bug Fixes
+
+- don't execute config blocks multiple times by default
+ ([e2fec59e](https://github.com/ocombe/ocLazyLoad/commit/e2fec59ee7ff1e95e7e78ef8397c4fe500d8e7c0),
+ [#43](https://github.com/ocombe/ocLazyLoad/issues/43), [#41](https://github.com/ocombe/ocLazyLoad/issues/41))
+- don't test for .js in path because of requirejs
+ ([6045214b](https://github.com/ocombe/ocLazyLoad/commit/6045214b6a4cc2d9dee1c1f2f89946687d963828))
+- test order
+ ([8412cb43](https://github.com/ocombe/ocLazyLoad/commit/8412cb431bfc742f2c4151e5b089f3313a70035e))
+
+
 <a name="0.3.2"></a>
 # 0.3.2 (2014-07-23)
 
