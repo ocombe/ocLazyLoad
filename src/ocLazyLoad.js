@@ -2,6 +2,7 @@
 	'use strict';
 	var regModules = ['ng'],
 		regInvokes = [],
+		regConfigs = [],
 		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
 		broadcast = angular.noop;
 
@@ -189,13 +190,15 @@
 					templatesLoader.ocLazyLoadLoader = true;
 				}
 
-				var filesLoader = function(paths, params) {
+				var filesLoader = function(config, params) {
 					var cssFiles = [],
 						templatesFiles = [],
 						jsFiles = [],
 						promises = [];
 
-					angular.forEach(paths, function(path) {
+					angular.extend(params || {}, config);
+
+					angular.forEach(params.files, function(path) {
 						if(angular.isUndefined(filesCache.get(path)) || params.cache === false) {
 							if(/\.css[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
 								cssFiles.push(path);
@@ -268,7 +271,7 @@
 
 					// deprecated
 					loadTemplateFile: function(paths, params) {
-						return filesLoader(paths, params);
+						return filesLoader({files: paths}, params);
 					},
 
 					load: function(module, params) {
@@ -394,7 +397,9 @@
                                         });
                                         if (diff.length !== 0) {
                                             $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency. "', requireEntry.name, '"\n Additional Files Loaded:', diff);
-                                            promisesList.push(filesLoader(diff, params).then(function () {
+	                                        var c = angular.copy(requireEntry);
+	                                        c.files = diff;
+                                            promisesList.push(filesLoader(c, params).then(function () {
                                                 return loadDependencies(requireEntry);
                                             }));
                                         }
@@ -420,7 +425,7 @@
 								// Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
 								if(requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
 									if(requireEntry.files) {
-										promisesList.push(filesLoader(requireEntry.files, params).then(function() {
+										promisesList.push(filesLoader(requireEntry, params).then(function() {
 											return loadDependencies(requireEntry)
 										}));
 									}
@@ -431,14 +436,14 @@
 							return $q.all(promisesList);
 						}
 
-						filesLoader(config.files, params).then(function success() {
+						filesLoader(config, params).then(function success() {
 							if(moduleName === null) {
 								deferred.resolve(module);
 							} else {
 								moduleCache.push(moduleName);
 								loadDependencies(moduleName).then(function success() {
 									try {
-										register(providers, moduleCache);
+										register(providers, moduleCache, params);
 									} catch(e) {
 										$log.error(e.message);
 										deferred.reject(e);
@@ -624,7 +629,7 @@
 		}
 	}
 
-	function invokeQueue(providers, queue) {
+	function invokeQueue(providers, queue, moduleName, reconfig) {
 		if(!queue) {
 			return;
 		}
@@ -638,7 +643,11 @@
 				} else {
 					throw new Error('unsupported provider ' + args[0]);
 				}
-				if(registerInvokeList(args[2][0])) {
+				var invoked = regConfigs.indexOf(moduleName);
+				if(registerInvokeList(args[2][0]) && (args[1] !== 'invoke' || (args[1] === 'invoke' && (!invoked || reconfig)))) {
+					if(!invoked) {
+						regConfigs.push(moduleName);
+					}
 					provider[args[1]].apply(provider, args[2]);
 				}
 			}
@@ -651,7 +660,7 @@
 	 * @param registerModules
 	 * @returns {*}
 	 */
-	function register(providers, registerModules) {
+	function register(providers, registerModules, params) {
 		if(registerModules) {
 			var k, moduleName, moduleFn, runBlocks = [];
 			for(k = registerModules.length - 1; k >= 0; k--) {
@@ -665,11 +674,11 @@
 				moduleFn = angular.module(moduleName);
 				if(regModules.indexOf(moduleName) === -1) { // new module
 					regModules.push(moduleName);
-					register(providers, moduleFn.requires);
+					register(providers, moduleFn.requires, params);
 					runBlocks = runBlocks.concat(moduleFn._runBlocks);
 				}
-				invokeQueue(providers, moduleFn._invokeQueue);
-				invokeQueue(providers, moduleFn._configBlocks);
+				invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);
+				invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
 				broadcast('ocLazyLoad.moduleLoaded', moduleName);
 				registerModules.pop();
 			}

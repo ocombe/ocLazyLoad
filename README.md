@@ -102,8 +102,32 @@ You can put more than one template script in your template file, just make sure 
 </script>
 ```
 
-The load service comes with a second optional parameter that you can use if you need to define some configuration for the requests (check: https://docs.angularjs.org/api/ng/service/$http#usage).
-The parameter `cache: false` works for all native loaders (**all requests are cached by default**), other parameters only works with the templates for now (js and css default loaders don't use `$http`).
+There is two ways to define config options for the load function. You can use a second optional parameter that will define configs for all the modules that you will load, or you can define optional parameters to each module.
+For example, those are equivalents:
+```js
+$ocLazyLoad.load([{
+	name: 'TestModule',
+	files: ['testModule.js', 'bower_components/bootstrap/dist/js/bootstrap.js'],
+	cache: false
+},{
+    name: 'AnotherModule',
+    files: ['anotherModule.js']
+    cache: false
+}]);
+```
+And
+```js
+$ocLazyLoad.load([{
+	name: 'TestModule',
+	files: ['testModule.js', 'bower_components/bootstrap/dist/js/bootstrap.js']
+},{
+    name: 'AnotherModule',
+    files: ['anotherModule.js']
+}],
+{cache: false});
+```
+
+If you load a template with the native template loader, you can use any parameter from the $http service (check: https://docs.angularjs.org/api/ng/service/$http#usage).
 ```js
 $ocLazyLoad.load(
 	['partials/template1.html', 'partials/template2.html'],
@@ -111,6 +135,25 @@ $ocLazyLoad.load(
 );
 ```
 
+The existing parameters that you can use are `cache` and `reconfig`.
+The parameter `cache: false` works for all native loaders (**all requests are cached by default**):
+
+```js
+$ocLazyLoad.load({
+	name: 'TestModule',
+	cache: false,
+	files: ['testModule.js', 'bower_components/bootstrap/dist/js/bootstrap.js']
+});
+```
+
+By default, if you reload a module, the config block won't be invoked again (because often it will lead to unexpected results). But if you really need to execute the config function again, use the parameter `reconfig: true`:
+```js
+$ocLazyLoad.load({
+	name: 'TestModule',
+	reconfig: true,
+	files: ['testModule.js', 'bower_components/bootstrap/dist/js/bootstrap.js']
+});
+```
 
 ### Directive
 The directive is very similar to the service. Use the same parameters:
