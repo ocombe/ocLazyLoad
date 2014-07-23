@@ -463,17 +463,24 @@
 			}];
 
 			this.config = function(config) {
-				jsLoader = config.jsLoader || config.asyncLoader;
-
-				if(angular.isDefined() && !angular.isFunction(jsLoader)) {
-					throw('The js loader needs to be a function');
+				if(angular.isDefined(config.jsLoader) || angular.isDefined(config.asyncLoader)) {
+					if(!angular.isFunction(jsLoader)) {
+						throw('The js loader needs to be a function');
+					}
+					jsLoader = config.jsLoader || config.asyncLoader;
 				}
 
 				if(angular.isDefined(config.cssLoader)) {
+					if(!angular.isFunction(cssLoader)) {
+						throw('The css loader needs to be a function');
+					}
 					cssLoader = config.cssLoader;
 				}
 
 				if(angular.isDefined(config.templatesLoader)) {
+					if(!angular.isFunction(templatesLoader)) {
+						throw('The template loader needs to be a function');
+					}
 					templatesLoader = config.templatesLoader;
 				}
 
