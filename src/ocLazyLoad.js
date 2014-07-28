@@ -411,7 +411,8 @@
 
                                         // Push everything to the file loader, it will weed out the duplicates.
                                         promisesList.push(filesLoader(requireEntry.files, params).then(function () {
-                                            return loadDependencies(requireEntry);
+                                            // Load the dependencies in the next cycle. Failure to do so randomly causes a module not found error in the try/catch above.
+                                            return $timeout(function () { return loadDependencies(requireEntry); });
                                         }));
                                     }
 									return;
