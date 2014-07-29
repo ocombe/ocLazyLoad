@@ -396,8 +396,8 @@
 									requireEntry = config;
 								}
 
-								// Check if this dependency has been loaded previously or is already in the moduleCache
-								if(moduleExists(requireEntry.name) || moduleCache.indexOf(requireEntry.name) !== -1) {
+								// Check if this dependency has been loaded previously
+								if(moduleExists(requireEntry.name)) {
 									if(typeof module !== 'string') {
                                         // compare against the already loaded module to see if the new definition adds any new files
                                         diff = requireEntry.files.filter(function (n) {
@@ -411,8 +411,7 @@
 
                                         // Push everything to the file loader, it will weed out the duplicates.
                                         promisesList.push(filesLoader(requireEntry.files, params).then(function () {
-                                            // Load the dependencies in the next cycle. Failure to do so randomly causes a module not found error in the try/catch above.
-                                            return $timeout(function () { return loadDependencies(requireEntry); });
+                                            return loadDependencies(requireEntry);
                                         }));
                                     }
 									return;
