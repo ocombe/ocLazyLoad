@@ -33,6 +33,7 @@
 					$log = {};
 					$log['error'] = angular.noop;
 					$log['warn'] = angular.noop;
+					$log['info'] = angular.noop;
 				}
 
 				// Make this lazy because at the moment that $get() is called the instance injector hasn't been assigned to the rootElement yet
@@ -43,6 +44,9 @@
 				broadcast = function broadcast(eventName, params) {
 					if(events) {
 						$rootScope.$broadcast(eventName, params);
+					}
+					if(debug) {
+						$log.info(eventName, params);
 					}
 				}
 
