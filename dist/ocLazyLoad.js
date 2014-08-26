@@ -655,7 +655,7 @@
 					throw new Error('unsupported provider ' + args[0]);
 				}
 				var invoked = regConfigs.indexOf(moduleName);
-				if(registerInvokeList(args[2][0]) && (args[1] !== 'invoke' || (args[1] === 'invoke' && (invoked === -1 || reconfig)))) {
+				if(registerInvokeList(args[2][0]) && (args[1] !== 'invoke' || (args[1] === 'invoke' && invoked === -1)) || (args[1] === 'invoke' && reconfig)) {
 					if(invoked === -1) {
 						regConfigs.push(moduleName);
 					}
