@@ -15,7 +15,7 @@ Load modules on demand (lazy load) in AngularJS
 ## Usage
 - Put ocLazyLoad.js into you project
 
-- Add the module ```oc.lazyLoad``` to your application
+- Add the module ```oc.lazyLoad``` to your application (you can install it with `bower install oclazyload` or `npm install oclazyload`)
 
 - Load on demand:
 With $ocLazyLoad you can load angular modules, but if you want to load controllers / services / filters / ... without defining a new module it's entirely possible, just use the name an existing module (your app name for example).
