@@ -1,3 +1,18 @@
+<a name="0.3.5"></a>
+# 0.3.5 (2014-08-26)
+
+
+## Bug Fixes
+
+- fixed cases where the config block would not be called
+ ([1e29c9d4](https://github.com/ocombe/ocLazyLoad/commit/1e29c9d438d494cd053cd7533921e02e3fe5e5d0),
+ [#5](https://github.com/ocombe/ocLazyLoad/issues/5)).
+ The config block would not be called if:
+  - defined multiple times (only the first 1 would be invoked)
+  - defined with an auto injected module: ['...', function() {}]
+  - defined after another component: angular.module().controler().config()
+
+
 <a name="0.3.4"></a>
 # 0.3.4 (2014-08-26)
 
