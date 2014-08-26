@@ -58,7 +58,7 @@ var App = angular.module('app', ['ui.router', 'oc.lazyLoad'])
 		return $locationProvider.html5Mode(false);
 	}])
 	.config(['$ocLazyLoadProvider', function($ocLazyLoadProvider) {
-		// We confiture ocLazyLoad to use the lib script.js as the async loader
+		// We configure ocLazyLoad to use the lib script.js as the async loader
 		$ocLazyLoadProvider.config({
 			debug: true,
 			events: true,

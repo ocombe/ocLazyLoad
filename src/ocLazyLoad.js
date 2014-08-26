@@ -642,17 +642,39 @@
 		for(i = 0, len = queue.length; i < len; i++) {
 			args = queue[i];
 			if(angular.isArray(args)) {
-				if(providers.hasOwnProperty(args[0])) {
-					provider = providers[args[0]];
-				} else {
-					throw new Error('unsupported provider ' + args[0]);
-				}
-				var invoked = regConfigs.indexOf(moduleName);
-				if(registerInvokeList(args[2][0]) && (args[1] !== 'invoke' || (args[1] === 'invoke' && invoked === -1)) || (args[1] === 'invoke' && reconfig)) {
-					if(invoked === -1) {
-						regConfigs.push(moduleName);
+				if(providers !== null) {
+					if(providers.hasOwnProperty(args[0])) {
+						provider = providers[args[0]];
+					} else {
+						throw new Error('unsupported provider ' + args[0]);
 					}
-					provider[args[1]].apply(provider, args[2]);
+				}
+				var isNew = registerInvokeList(args[2][0]);
+				if(args[1] !== 'invoke') {
+					if(isNew && angular.isDefined(provider)) {
+						provider[args[1]].apply(provider, args[2]);
+					}
+				} else { // config block
+					var callInvoke = function(fct) {
+						var invoked = regConfigs.indexOf(moduleName+'-'+fct);
+						if(invoked === -1 || reconfig) {
+							if(invoked === -1) {
+								regConfigs.push(moduleName+'-'+fct);
+							}
+							if(angular.isDefined(provider)) {
+								provider[args[1]].apply(provider, args[2]);
+							}
+						}
+					}
+					if(angular.isFunction(args[2][0])) {
+						callInvoke(args[2][0]);
+					} else if(angular.isArray(args[2][0])) {
+						for(var j = 0, jlen = args[2][0].length; j < jlen; j++) {
+							if(angular.isFunction(args[2][0][j])) {
+								callInvoke(args[2][0][j]);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -739,7 +761,7 @@
 	function init(element) {
 		var elements = [element],
 			appElement,
-			module,
+			moduleName,
 			names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
 			NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/;
 
@@ -765,12 +787,12 @@
 				var match = NG_APP_CLASS_REGEXP.exec(className);
 				if(match) {
 					appElement = elm;
-					module = (match[2] || '').replace(/\s+/g, ',');
+					moduleName = (match[2] || '').replace(/\s+/g, ',');
 				} else {
 					angular.forEach(elm.attributes, function(attr) {
 						if(!appElement && names[attr.name]) {
 							appElement = elm;
-							module = attr.value;
+							moduleName = attr.value;
 						}
 					});
 				}
@@ -778,37 +800,19 @@
 		});
 
 		if(appElement) {
-			(function addReg(module) {
-				if(regModules.indexOf(module) === -1) {
+			(function addReg(moduleName) {
+				if(regModules.indexOf(moduleName) === -1) {
 					// register existing modules
-					regModules.push(module);
-					var mainModule = angular.module(module);
+					regModules.push(moduleName);
+					var mainModule = angular.module(moduleName);
 
 					// register existing components (directives, services, ...)
-					var queue = mainModule._invokeQueue,
-						i, len, args;
-					for(i = 0, len = queue.length; i < len; i++) {
-						args = queue[i];
-						if(angular.isArray(args)) {
-							registerInvokeList(args[2][0]);
-						}
-					}
-
-					// register config blocks (angular 1.3+)
-					if(angular.isDefined(mainModule._configBlocks)) {
-						var queue = mainModule._configBlocks,
-							i, len, args;
-						for(i = 0, len = queue.length; i < len; i++) {
-							args = queue[i];
-							if(angular.isArray(args)) {
-								registerInvokeList(args[2][0]);
-							}
-						}
-					}
+					invokeQueue(null, mainModule._invokeQueue, moduleName);
+					invokeQueue(null, mainModule._configBlocks, moduleName); // angular 1.3+
 
 					angular.forEach(mainModule.requires, addReg);
 				}
-			})(module);
+			})(moduleName);
 		}
 	}
 

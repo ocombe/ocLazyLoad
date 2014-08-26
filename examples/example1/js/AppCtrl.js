@@ -1,12 +1,12 @@
 angular.module('app').controller('AppCtrl', ['$scope', '$ocLazyLoad', '$timeout', function($scope, $ocLazyLoad, $timeout) {
 	$scope.$on('ocLazyLoad.moduleLoaded', function(e, module) {
-		console.log('module loaded', module);
+		console.log('event module loaded', module);
 	});
 	$scope.$on('ocLazyLoad.componentLoaded', function(e, component) {
-		console.log('component loaded', component);
+		console.log('event component loaded', component);
 	});
 	$scope.$on('ocLazyLoad.fileLoaded', function(e, file) {
-		console.log('file loaded', file);
+		console.log('event file loaded', file);
 	});
 	$scope.loadBootstrap = function() {
 		var unbind = $scope.$on('ocLazyLoad.fileLoaded', function(e, file) {

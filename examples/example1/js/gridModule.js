@@ -9,4 +9,10 @@ angular.module('gridModule', [{name: 'ngGrid', files: [
 		{name: "Nephi", age: 29},
 		{name: "Enos", age: 34}];
 	$scope.gridOptions = { data: 'myData' };
-}]);
+}]).config(function() {
+	console.warn('config gridModule');
+}).config(['$ocLazyLoadProvider', function($ocLazyLoadProvider) {
+	console.warn('config 2 gridModule');
+}]).run(function() {
+	console.warn('run gridModule');
+});
