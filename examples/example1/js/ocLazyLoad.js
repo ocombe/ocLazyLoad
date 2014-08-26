@@ -68,7 +68,7 @@
 						el, loaded,
 						cacheBuster = function cacheBuster(url) {
 							var dc = new Date().getTime();
-							if(url.indexOf('?') != -1) {
+							if(url.indexOf('?') >= 0) {
 								if(url.substring(0, url.length - 1) === '&') {
 									return url + '_dc=' + dc;
 								}
@@ -655,8 +655,8 @@
 					throw new Error('unsupported provider ' + args[0]);
 				}
 				var invoked = regConfigs.indexOf(moduleName);
-				if(registerInvokeList(args[2][0]) && (args[1] !== 'invoke' || (args[1] === 'invoke' && (!invoked || reconfig)))) {
-					if(!invoked) {
+				if(registerInvokeList(args[2][0]) && (args[1] !== 'invoke' || (args[1] === 'invoke' && (invoked === -1 || reconfig)))) {
+					if(invoked === -1) {
 						regConfigs.push(moduleName);
 					}
 					provider[args[1]].apply(provider, args[2]);
