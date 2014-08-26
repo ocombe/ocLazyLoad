@@ -1,6 +1,6 @@
 /**
  * ocLazyLoad - Load modules on demand (lazy load) with angularJS
- * @version v0.3.3
+ * @version v0.3.4
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>

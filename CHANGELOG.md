@@ -1,3 +1,26 @@
+<a name="0.3.4"></a>
+# 0.3.4 (2014-08-26)
+
+
+## Bug Fixes
+
+- make sure reconfig:true always run all invoke blocks
+ ([361ae6b7](https://github.com/ocombe/ocLazyLoad/commit/361ae6b7d319cb5ada1ab022a6761d4a67a31b58),
+ [#54](https://github.com/ocombe/ocLazyLoad/issues/54))
+- the config/run blocks were not invoked without reconfig: true
+ ([300882a0](https://github.com/ocombe/ocLazyLoad/commit/300882a016e4f9d538e322be9718f21740048296),
+ [#5](https://github.com/ocombe/ocLazyLoad/issues/5))
+- indexOf polyfill for IE8
+ ([5f71c09c](https://github.com/ocombe/ocLazyLoad/commit/5f71c09cad4255932e84c760b07d16a4a2b016d9),
+ [#52](https://github.com/ocombe/ocLazyLoad/issues/52))
+
+
+## Features
+
+- more log messages for debug
+ ([bcbca814](https://github.com/ocombe/ocLazyLoad/commit/bcbca814049863b4dd7a6c5c1071efd760094966))
+
+
 <a name="0.3.3"></a>
 # 0.3.3 (2014-07-23)
 
