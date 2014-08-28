@@ -26,9 +26,9 @@ If you decide to use ocLazyLoad with requireJS, you must declare the bootstraped
 
 ###### More examples
 You can find two basic examples in the example folder. If you need more, check out those links:
-- [Lazy loading with requirejs, ocLazyLoad and ui-router using the templateProvider](http://plnkr.co/edit/OGvi01?p=preview)
-- [Lazy loading with requirejs, ocLazyLoad and ui-router using the uiRouterDecorator](http://plnkr.co/edit/6CLDsz?p=preview)
-- [Lazy Loading ui-router states with requirejs, ocLazyLoad and ui-router-extras futureStates](http://bardo.io/posts/oclazyload-future-states/)
+- [Lazy loading with requirejs, ocLazyLoad and ui-router using the templateProvider](http://plnkr.co/edit/OGvi01?p=preview) - by @gilbox
+- [Lazy loading with requirejs, ocLazyLoad and ui-router using the uiRouterDecorator](http://plnkr.co/edit/6CLDsz?p=preview) - by @gilbox
+- [Lazy Loading ui-router states with requirejs, ocLazyLoad and ui-router-extras futureStates](http://bardo.io/posts/oclazyload-future-states/) - by @kbdaitch
 - [Lazy loading Angular modules with ocLazyLoad](https://egghead.io/lessons/angularjs-lazy-loading-angular-modules-with-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/)
 
 ### Service
