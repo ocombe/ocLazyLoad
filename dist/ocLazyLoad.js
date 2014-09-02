@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v0.3.4
+ * @version v0.3.5
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -78,6 +78,13 @@
 							}
 						};
 
+                    // Store the promise early so the file load can be detected by other parallel lazy loads
+                    // (ie: multiple routes on one page) a 'true' value isn't sufficient
+                    // as it causes false positive load results.
+                    if(angular.isUndefined(filesCache.get(path))) {
+                        filesCache.put(path, deferred.promise);
+                    }
+
 					// Switch in case more content types are added later
 					switch(type) {
 						case 'css':
@@ -98,9 +105,6 @@
 						if((el['readyState'] && !(/^c|loade/.test(el['readyState']))) || loaded) return;
 						el.onload = el['onreadystatechange'] = null
 						loaded = 1;
-						if(angular.isUndefined(filesCache.get(path))) {
-							filesCache.put(path, true);
-						}
 						broadcast('ocLazyLoad.fileLoaded', path);
 						deferred.resolve();
 					}
@@ -205,12 +209,14 @@
 					var cssFiles = [],
 						templatesFiles = [],
 						jsFiles = [],
-						promises = [];
+						promises = [],
+                        cachePromise = null;
 
 					angular.extend(params || {}, config);
 
 					angular.forEach(params.files, function(path) {
-						if(angular.isUndefined(filesCache.get(path)) || params.cache === false) {
+                        cachePromise = filesCache.get(path);
+						if(angular.isUndefined(cachePromise) || params.cache === false) {
 							if(/\.css[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
 								cssFiles.push(path);
 							} else if(/\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
@@ -218,7 +224,9 @@
 							} else if (jsFiles.indexOf(path) === -1) {
 								jsFiles.push(path);
 							}
-						}
+						} else if (cachePromise) {
+                            promises.push(cachePromise);
+                        }
 					});
 
 					if(cssFiles.length > 0) {
@@ -399,21 +407,23 @@
 									requireEntry = config;
 								}
 
-								// Check if this dependency has been loaded previously or is already in the moduleCache
-								if(moduleExists(requireEntry.name) || moduleCache.indexOf(requireEntry.name) !== -1) {
+								// Check if this dependency has been loaded previously
+								if(moduleExists(requireEntry.name)) {
 									if(typeof module !== 'string') {
                                         // compare against the already loaded module to see if the new definition adds any new files
                                         diff = requireEntry.files.filter(function (n) {
-                                            return self.getModuleConfig(requireEntry.name).files.indexOf(n) < 0
+                                            return self.getModuleConfig(requireEntry.name).files.indexOf(n) < 0;
                                         });
+
+                                        // If the module was redefined, advise via the console
                                         if (diff.length !== 0) {
                                             $log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency. "', requireEntry.name, '"\n Additional Files Loaded:', diff);
-	                                        var c = angular.copy(requireEntry);
-	                                        c.files = diff;
-                                            promisesList.push(filesLoader(c, params).then(function () {
-                                                return loadDependencies(requireEntry);
-                                            }));
                                         }
+
+                                        // Push everything to the file loader, it will weed out the duplicates.
+                                        promisesList.push(filesLoader(requireEntry.files, params).then(function () {
+                                            return loadDependencies(requireEntry);
+                                        }));
                                     }
 									return;
 								} else if(typeof requireEntry === 'object') {
@@ -437,7 +447,7 @@
 								if(requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
 									if(requireEntry.files) {
 										promisesList.push(filesLoader(requireEntry, params).then(function() {
-											return loadDependencies(requireEntry)
+											return loadDependencies(requireEntry);
 										}));
 									}
 								}
