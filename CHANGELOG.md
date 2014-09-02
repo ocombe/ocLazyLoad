@@ -1,3 +1,19 @@
+<a name="0.3.6"></a>
+# 0.3.6 (2014-09-02)
+
+
+## Bug Fixes
+
+- concurrency lazy loads (thanks @BenBlazely)
+ ([4899ea1a](https://github.com/ocombe/ocLazyLoad/commit/4899ea1a09bee145f70aec3dd964f885060422d8),
+ [#44](https://github.com/ocombe/ocLazyLoad/issues/44))
+
+
+## Documentation
+
+- added a few links to other examples
+
+
 <a name="0.3.5"></a>
 # 0.3.5 (2014-08-26)
 
