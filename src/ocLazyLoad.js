@@ -3,6 +3,7 @@
 	var regModules = ['ng'],
 		regInvokes = [],
 		regConfigs = [],
+		justLoaded = [],
 		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
 		broadcast = angular.noop;
 
@@ -457,6 +458,7 @@
 								moduleCache.push(moduleName);
 								loadDependencies(moduleName).then(function success() {
 									try {
+										justLoaded = [];
 										register(providers, moduleCache, params);
 									} catch(e) {
 										$log.error(e.message);
@@ -704,7 +706,7 @@
 				if(typeof moduleName !== 'string') {
 					moduleName = getModuleName(moduleName);
 				}
-				if(!moduleName) {
+				if(!moduleName || justLoaded.indexOf(moduleName) !== -1) {
 					continue;
 				}
 				moduleFn = angular.module(moduleName);
@@ -717,6 +719,7 @@
 				invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
 				broadcast('ocLazyLoad.moduleLoaded', moduleName);
 				registerModules.pop();
+				justLoaded.push(moduleName);
 			}
 			var instanceInjector = providers.getInstanceInjector();
 			angular.forEach(runBlocks, function(fn) {
