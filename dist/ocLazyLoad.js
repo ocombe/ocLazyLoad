@@ -10,6 +10,7 @@
 	var regModules = ['ng'],
 		regInvokes = [],
 		regConfigs = [],
+		justLoaded = [],
 		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
 		broadcast = angular.noop;
 
@@ -464,6 +465,7 @@
 								moduleCache.push(moduleName);
 								loadDependencies(moduleName).then(function success() {
 									try {
+										justLoaded = [];
 										register(providers, moduleCache, params);
 									} catch(e) {
 										$log.error(e.message);
@@ -711,19 +713,21 @@
 				if(typeof moduleName !== 'string') {
 					moduleName = getModuleName(moduleName);
 				}
-				if(!moduleName) {
+				if(!moduleName || justLoaded.indexOf(moduleName) !== -1) {
 					continue;
 				}
+				var newModule = regModules.indexOf(moduleName) === -1;
 				moduleFn = angular.module(moduleName);
-				if(regModules.indexOf(moduleName) === -1) { // new module
+				if(newModule) { // new module
 					regModules.push(moduleName);
 					register(providers, moduleFn.requires, params);
 					runBlocks = runBlocks.concat(moduleFn._runBlocks);
 				}
 				invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);
 				invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
-				broadcast('ocLazyLoad.moduleLoaded', moduleName);
+				broadcast(newModule ? 'ocLazyLoad.moduleLoaded' : 'ocLazyLoad.moduleReloaded', moduleName);
 				registerModules.pop();
+				justLoaded.push(moduleName);
 			}
 			var instanceInjector = providers.getInstanceInjector();
 			angular.forEach(runBlocks, function(fn) {
@@ -739,17 +743,19 @@
 	 */
 	function registerInvokeList(invokeList) {
 		var newInvoke = false;
+		var onInvoke = function(invokeName) {
+			newInvoke = true;
+			regInvokes.push(invokeName);
+			broadcast('ocLazyLoad.componentLoaded', invokeName);
+		}
 		if(angular.isString(invokeList)) {
 			if(regInvokes.indexOf(invokeList) === -1) {
-				newInvoke = true;
-				regInvokes.push(invokeList);
-				broadcast('ocLazyLoad.componentLoaded', invokeList);
+				onInvoke(invokeList);
 			}
 		} else if(angular.isObject(invokeList)) {
 			angular.forEach(invokeList, function(invoke) {
 				if(angular.isString(invoke) && regInvokes.indexOf(invoke) === -1) {
-					newInvoke = true;
-					regInvokes.push(invoke);
+					onInvoke(invoke);
 				}
 			});
 		} else {
