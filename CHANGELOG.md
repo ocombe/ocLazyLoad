@@ -1,3 +1,20 @@
+<a name="0.3.7"></a>
+# 0.3.7 (2014-09-10)
+
+
+## Bug Fixes
+
+- don't reload a dependency that was just loaded
+ ([6752bb94](https://github.com/ocombe/ocLazyLoad/commit/6752bb948093f196311572530d814231dc2dcd3a),
+ [#64](https://github.com/ocombe/ocLazyLoad/issues/64))
+
+
+## Features
+
+- new event ocLazyLoad.moduleReloaded
+ ([5010d144](https://github.com/ocombe/ocLazyLoad/commit/5010d144d1b250424be2bcfa98faf50c6782bf96))
+
+
 <a name="0.3.6"></a>
 # 0.3.6 (2014-09-02)
 
