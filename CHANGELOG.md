@@ -1,3 +1,14 @@
+<a name="0.3.8"></a>
+# 0.3.8 (2014-09-25)
+
+
+## Bug Fixes
+
+- reject on load error
+ ([d83f52b5](https://github.com/ocombe/ocLazyLoad/commit/d83f52b56a77a5cdb230260c497ee2db7283e077),
+ [#66](https://github.com/ocombe/ocLazyLoad/issues/66))
+
+
 <a name="0.3.7"></a>
 # 0.3.7 (2014-09-10)
 

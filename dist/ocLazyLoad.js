@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v0.3.7
+ * @version v0.3.8
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -317,9 +317,11 @@
 							});
 
 							// Resolve the promise once everything has loaded
-							$q.all(deferredList).then(function() {
+							$q.all(deferredList).then(function success() {
 								deferred.resolve(module);
-							});
+							}, function error(err) {
+                                deferred.reject(err);
+                            });
 
 							return deferred.promise;
 						}
