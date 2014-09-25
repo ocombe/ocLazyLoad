@@ -310,9 +310,11 @@
 							});
 
 							// Resolve the promise once everything has loaded
-							$q.all(deferredList).then(function() {
+							$q.all(deferredList).then(function success() {
 								deferred.resolve(module);
-							});
+							}, function error(err) {
+                                deferred.reject(err);
+                            });
 
 							return deferred.promise;
 						}
