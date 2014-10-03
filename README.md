@@ -29,7 +29,8 @@ You can find two basic examples in the example folder. If you need more, check o
 - [Lazy loading with requirejs, ocLazyLoad and ui-router using the templateProvider](http://plnkr.co/edit/OGvi01?p=preview) - by @gilbox
 - [Lazy loading with requirejs, ocLazyLoad and ui-router using the uiRouterDecorator](http://plnkr.co/edit/6CLDsz?p=preview) - by @gilbox
 - [Lazy Loading ui-router states with requirejs, ocLazyLoad and ui-router-extras futureStates](http://bardo.io/posts/oclazyload-future-states/) - by @kbdaitch
-- [Lazy loading Angular modules with ocLazyLoad](https://egghead.io/lessons/angularjs-lazy-loading-angular-modules-with-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/)
+- [Lazy loading Angular modules with ocLazyLoad](https://egghead.io/lessons/angularjs-lazy-loading-angular-modules-with-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/) - part 1
+- [Lazy Loading modules with ui-router and ocLazyLoad](https://egghead.io/lessons/angularjs-lazy-loading-modules-with-ui-router-and-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/) - part 2
 
 ### Service
 You can include `$ocLazyLoad` and use the function `load` which returns a promise. It supports single dependency (object) or multiple dependencies (array of objects).
