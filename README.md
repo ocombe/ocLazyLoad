@@ -29,9 +29,7 @@ You can find two basic examples in the example folder. If you need more, check o
 - [Lazy loading with requirejs, ocLazyLoad and ui-router using the templateProvider](http://plnkr.co/edit/OGvi01?p=preview) - by @gilbox
 - [Lazy loading with requirejs, ocLazyLoad and ui-router using the uiRouterDecorator](http://plnkr.co/edit/6CLDsz?p=preview) - by @gilbox
 - Lazy Loading ui-router states with requirejs, ocLazyLoad and ui-router-extras futureStates, [part 1](http://bardo.io/posts/oclazyload-future-states/) / [part 2](http://bardo.io/posts/ng-deferred-bootstrap-like-with-oclazyload/) - by @kbdaitch
-- [Lazy loading Angular modules with ocLazyLoad](https://egghead.io/lessons/angularjs-lazy-loading-angular-modules-with-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/) - part 1 - **pro**
-- [Lazy Loading modules with ui-router and ocLazyLoad](https://egghead.io/lessons/angularjs-lazy-loading-modules-with-ui-router-and-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/) - part 2 - **pro**
-- [Simple Lazy Loaded Angular Module Syntax with ocLazyLoad](https://egghead.io/lessons/angularjs-simple-lazy-loaded-angular-module-syntax-with-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/) - part 3 - **free**
+- Lazy loading Angular modules with ocLazyLoad, [part 1](https://egghead.io/lessons/angularjs-lazy-loading-angular-modules-with-oclazyload) / [part 2](https://egghead.io/lessons/angularjs-lazy-loading-modules-with-ui-router-and-oclazyload) / [part 3](https://egghead.io/lessons/angularjs-simple-lazy-loaded-angular-module-syntax-with-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/)
 
 ### Service
 You can include `$ocLazyLoad` and use the function `load` which returns a promise. It supports single dependency (object) or multiple dependencies (array of objects).
