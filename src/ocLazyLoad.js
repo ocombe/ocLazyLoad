@@ -791,10 +791,10 @@
 			names[name] = true;
 			append(document.getElementById(name));
 			name = name.replace(':', '\\:');
-			if(element.querySelectorAll) {
-				angular.forEach(element.querySelectorAll('.' + name), append);
-				angular.forEach(element.querySelectorAll('.' + name + '\\:'), append);
-				angular.forEach(element.querySelectorAll('[' + name + ']'), append);
+			if(element[0].querySelectorAll) {
+				angular.forEach(element[0].querySelectorAll('.' + name), append);
+				angular.forEach(element[0].querySelectorAll('.' + name + '\\:'), append);
+				angular.forEach(element[0].querySelectorAll('[' + name + ']'), append);
 			}
 		});
 
