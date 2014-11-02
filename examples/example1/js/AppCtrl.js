@@ -1,9 +1,9 @@
 angular.module('app').controller('AppCtrl', ['$scope', '$ocLazyLoad', '$timeout', function($scope, $ocLazyLoad, $timeout) {
-	$scope.$on('ocLazyLoad.moduleLoaded', function(e, module) {
-		console.log('event module loaded', module);
+	$scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
+		console.log('event module loaded', params);
 	});
-	$scope.$on('ocLazyLoad.componentLoaded', function(e, component) {
-		console.log('event component loaded', component);
+	$scope.$on('ocLazyLoad.componentLoaded', function(e, params) {
+		console.log('event component loaded', params);
 	});
 	$scope.$on('ocLazyLoad.fileLoaded', function(e, file) {
 		console.log('event file loaded', file);
