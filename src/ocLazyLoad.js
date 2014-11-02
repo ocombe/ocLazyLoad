@@ -748,8 +748,8 @@
 		}
 		var onInvoke = function(invokeName) {
 			newInvoke = true;
-			broadcast('ocLazyLoad.componentLoaded', invokeName);
 			regInvokes[moduleName][type].push(invokeName);
+			broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
 		}
 		if(angular.isString(invokeList) && regInvokes[moduleName][type].indexOf(invokeList) === -1) {
 			onInvoke(invokeList);
