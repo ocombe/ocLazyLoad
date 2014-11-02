@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v0.3.8
+ * @version v0.3.9
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -8,7 +8,7 @@
 (function() {
 	'use strict';
 	var regModules = ['ng'],
-		regInvokes = [],
+		regInvokes = {},
 		regConfigs = [],
 		justLoaded = [],
 		ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
@@ -670,7 +670,7 @@
 						throw new Error('unsupported provider ' + args[0]);
 					}
 				}
-				var isNew = registerInvokeList(args[2][0]);
+				var isNew = registerInvokeList(args, moduleName);
 				if(args[1] !== 'invoke') {
 					if(isNew && angular.isDefined(provider)) {
 						provider[args[1]].apply(provider, args[2]);
@@ -740,23 +740,29 @@
 
 	/**
 	 * Register an invoke
-	 * @param invokeList
+	 * @param args
 	 * @returns {*}
 	 */
-	function registerInvokeList(invokeList) {
-		var newInvoke = false;
+	function registerInvokeList(args, moduleName) {
+		var invokeList = args[2][0],
+			type = args[1],
+			newInvoke = false;
+		if(angular.isUndefined(regInvokes[moduleName])) {
+			regInvokes[moduleName] = {};
+		}
+		if(angular.isUndefined(regInvokes[moduleName][type])) {
+			regInvokes[moduleName][type] = [];
+		}
 		var onInvoke = function(invokeName) {
 			newInvoke = true;
-			regInvokes.push(invokeName);
-			broadcast('ocLazyLoad.componentLoaded', invokeName);
+			regInvokes[moduleName][type].push(invokeName);
+			broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
 		}
-		if(angular.isString(invokeList)) {
-			if(regInvokes.indexOf(invokeList) === -1) {
-				onInvoke(invokeList);
-			}
+		if(angular.isString(invokeList) && regInvokes[moduleName][type].indexOf(invokeList) === -1) {
+			onInvoke(invokeList);
 		} else if(angular.isObject(invokeList)) {
 			angular.forEach(invokeList, function(invoke) {
-				if(angular.isString(invoke) && regInvokes.indexOf(invoke) === -1) {
+				if(angular.isString(invoke) && regInvokes[moduleName][type].indexOf(invoke) === -1) {
 					onInvoke(invoke);
 				}
 			});
@@ -798,10 +804,10 @@
 			names[name] = true;
 			append(document.getElementById(name));
 			name = name.replace(':', '\\:');
-			if(element.querySelectorAll) {
-				angular.forEach(element.querySelectorAll('.' + name), append);
-				angular.forEach(element.querySelectorAll('.' + name + '\\:'), append);
-				angular.forEach(element.querySelectorAll('[' + name + ']'), append);
+			if(element[0].querySelectorAll) {
+				angular.forEach(element[0].querySelectorAll('.' + name), append);
+				angular.forEach(element[0].querySelectorAll('.' + name + '\\:'), append);
+				angular.forEach(element[0].querySelectorAll('[' + name + ']'), append);
 			}
 		});
 

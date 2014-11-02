@@ -1,3 +1,38 @@
+<a name="0.3.9"></a>
+# 0.3.9 (2014-11-02)
+
+
+## Bug Fixes
+
+- allow components with the same name from different types/modules
+ ([f981c337](https://github.com/ocombe/ocLazyLoad/commit/f981c33749e4e61fa4dfd7c3c41df9beffcbf734),
+ [#67](https://github.com/ocombe/ocLazyLoad/issues/67))
+- initial modules not registered
+ ([bcf50004](https://github.com/ocombe/ocLazyLoad/commit/bcf50004b8a1172aff4c769746fdcb9e5d5d9cba),
+ [#58](https://github.com/ocombe/ocLazyLoad/issues/58), [#71](https://github.com/ocombe/ocLazyLoad/issues/71), [#73](https://github.com/ocombe/ocLazyLoad/issues/73), [#77](https://github.com/ocombe/ocLazyLoad/issues/77))
+- add support for angular 1.3 in bower
+ ([bda921b6](https://github.com/ocombe/ocLazyLoad/commit/bda921b68ce30645d992982325adc4eebfdcd361),
+ [#76](https://github.com/ocombe/ocLazyLoad/issues/76))
+
+
+## Features
+
+- broadcast for componentLoaded event provides more info (module name and type)
+ ([d41b9f53](https://github.com/ocombe/ocLazyLoad/commit/d41b9f53a46ff8c97b780d4c24f6f64e16017b89))
+- example1 now uses ui-grid instead of ng-grid
+ ([e7cf1e83](https://github.com/ocombe/ocLazyLoad/commit/e7cf1e83ff1453ee5adb8112052d393f9dc09e27))
+
+
+## Documentation
+
+- added link to a new article by @kbdaitch
+ ([cc6b41db](https://github.com/ocombe/ocLazyLoad/commit/cc6b41db5e0dbcfe68754df325bf9f09e5709bf2))
+- added a link to a new lesson from egghead.io
+ ([e231f3cb](https://github.com/ocombe/ocLazyLoad/commit/e231f3cbfd6fb3338479a5f4d8a9ce00d374646e))
+- added a link to a new lesson from egghead.io
+ ([9b3c48e4](https://github.com/ocombe/ocLazyLoad/commit/9b3c48e49800dd3ed6a01dad7c1d958f8625eddb))
+
+
 <a name="0.3.8"></a>
 # 0.3.8 (2014-09-25)
 
