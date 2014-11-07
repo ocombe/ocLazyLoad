@@ -156,7 +156,8 @@
 
 						if(usePatch){
 							var tries = 500; // * 20 = 10000 miliseconds
-							(function(){
+
+							var checkElement = function checkElement(){
 								try {
 									el.sheet.cssRules;
 								} catch (e) {
@@ -165,12 +166,13 @@
 										el.onload = el['onreadystatechange'] = el.onerror = null;
 										deferred.reject(new Error('Timeout: ' + path));
 									} else {
-										setTimeout(arguments.callee, 20);
+										setTimeout(checkElement, 20);
 									}
 									return;
 								}
 								el.onload();
-							})();
+							}
+							checkElement();
 						}
 					}
 					// END PATCH
