@@ -26,9 +26,11 @@
 			// Let's get the list of loaded modules & components
 			init(angular.element(window.document));
 
-			this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', '$rootScope', '$cacheFactory', function($timeout, $log, $q, $templateCache, $http, $rootElement, $rootScope, $cacheFactory) {
+			this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', '$rootScope', '$cacheFactory', '$interval', function($timeout, $log, $q, $templateCache, $http, $rootElement, $rootScope, $cacheFactory, $interval) {
 				var instanceInjector,
-					filesCache = $cacheFactory('ocLazyLoad');
+					filesCache = $cacheFactory('ocLazyLoad'),
+					uaCssChecked = false,
+					useCssLoadPatch = false;
 
 				if(!debug) {
 					$log = {};
@@ -109,64 +111,44 @@
 					anchor.insertBefore(el, anchor.lastChild);
 
 					/*
-						The event load or readystatechange don't fire in:
+						The event load or readystatechange doesn't fire in:
 						- iOS < 6       (default mobile browser)
 						- Android < 4.4 (default mobile browser)
 						- Safari < 6    (desktop browser)
-
-						Then use a patch found in:
-						https://github.com/kof/xLazyLoader/blob/master/src/jquery.xLazyLoader.js#L163
-						but applied to browsers with the problem
 					*/
+					if(type == 'css') {
+						if(!uaCssChecked) {
+							var ua = navigator.userAgent.toLowerCase();
 
-					// BEGIN PATCH
-					if(type == 'css'){
-						var ua = navigator.userAgent.toLowerCase(); 
-						var usePatch = false;
-
-						// iOS < 6
-						if (/iP(hone|od|ad)/.test(navigator.platform)) {
-							var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-							var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
-							usePatch = iOSVersion < 6;
-						}
-
-						if(!usePatch){
-							// Android < 4.4
-							if( ua.indexOf("android") > -1 ){
-								var androidVersion = parseFloat(ua.slice(ua.indexOf("android")+8)); 
-								usePatch = androidVersion < 4.4;
-							}
-						}
-
-						if(!usePatch){
-							// Safari < 6
-							if (ua.indexOf('safari') > -1 && ua.indexOf('chrome') == -1) {
+							// iOS < 6
+							if(/iP(hone|od|ad)/.test(navigator.platform)) {
+								var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+								var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
+								useCssLoadPatch = iOSVersion < 6;
+							} else if(ua.indexOf("android") > -1) { // Android < 4.4
+								var androidVersion = parseFloat(ua.slice(ua.indexOf("android") + 8));
+								useCssLoadPatch = androidVersion < 4.4;
+							} else if(ua.indexOf('safari') > -1 && ua.indexOf('chrome') == -1) {
 								var safariVersion = parseFloat(ua.match(/version\/([\.\d]+)/i)[1]);
-								usePatch = safariVersion < 6;
+								useCssLoadPatch = safariVersion < 6;
 							}
 						}
 
-						if(usePatch){
-							var tries = 500; // * 20 = 10000 miliseconds
-							(function(){
+						if(useCssLoadPatch) {
+							var tries = 1000; // * 20 = 20000 miliseconds
+							var interval = $interval(function() {
 								try {
 									el.sheet.cssRules;
-								} catch (e) {
-									tries--;
-									if( tries <= 0 ){
-										el.onload = el['onreadystatechange'] = el.onerror = null;
-										deferred.reject(new Error('Timeout: ' + path));
-									} else {
-										setTimeout(arguments.callee, 20);
+									$interval.cancel(interval);
+									el.onload();
+								} catch(e) {
+									if(--tries <= 0) {
+										el.onerror();
 									}
-									return;
 								}
-								el.onload();
-							})();
+							}, 20);
 						}
 					}
-					// END PATCH
 
 					return deferred.promise;
 				}
