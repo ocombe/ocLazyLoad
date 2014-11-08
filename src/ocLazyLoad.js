@@ -108,6 +108,66 @@
 					el.async = 1;
 					anchor.insertBefore(el, anchor.lastChild);
 
+					/*
+						The event load or readystatechange don't fire in:
+						- iOS < 6       (default mobile browser)
+						- Android < 4.4 (default mobile browser)
+						- Safari < 6    (desktop browser)
+
+						Then use a patch found in:
+						https://github.com/kof/xLazyLoader/blob/master/src/jquery.xLazyLoader.js#L163
+						but applied to browsers with the problem
+					*/
+
+					// BEGIN PATCH
+					if(type == 'css'){
+						var ua = navigator.userAgent.toLowerCase(); 
+						var usePatch = false;
+
+						// iOS < 6
+						if (/iP(hone|od|ad)/.test(navigator.platform)) {
+							var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+							var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
+							usePatch = iOSVersion < 6;
+						}
+
+						if(!usePatch){
+							// Android < 4.4
+							if( ua.indexOf("android") > -1 ){
+								var androidVersion = parseFloat(ua.slice(ua.indexOf("android")+8)); 
+								usePatch = androidVersion < 4.4;
+							}
+						}
+
+						if(!usePatch){
+							// Safari < 6
+							if (ua.indexOf('safari') > -1 && ua.indexOf('chrome') == -1) {
+								var safariVersion = parseFloat(ua.match(/version\/([\.\d]+)/i)[1]);
+								usePatch = safariVersion < 6;
+							}
+						}
+
+						if(usePatch){
+							var tries = 500; // * 20 = 10000 miliseconds
+							(function(){
+								try {
+									el.sheet.cssRules;
+								} catch (e) {
+									tries--;
+									if( tries <= 0 ){
+										el.onload = el['onreadystatechange'] = el.onerror = null;
+										deferred.reject(new Error('Timeout: ' + path));
+									} else {
+										setTimeout(arguments.callee, 20);
+									}
+									return;
+								}
+								el.onload();
+							})();
+						}
+					}
+					// END PATCH
+
 					return deferred.promise;
 				}
 
