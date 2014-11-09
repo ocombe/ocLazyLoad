@@ -247,13 +247,14 @@
             templatesFiles = [],
             jsFiles = [],
             promises = [],
-            cachePromise = null;
+            cachePromise = null,
+            localParams = {};
 
-          angular.extend(params || {}, config);
+          angular.extend(localParams, params || {}, config);
 
           var pushFile = function(path) {
             cachePromise = filesCache.get(path);
-            if(angular.isUndefined(cachePromise) || params.cache === false) {
+            if(angular.isUndefined(cachePromise) || localParams.cache === false) {
               if(/\.css[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
                 cssFiles.push(path);
               } else if(/\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
@@ -266,10 +267,10 @@
             }
           }
 
-          if(params.serie) {
-            pushFile(params.files.shift());
+          if(localParams.serie) {
+            pushFile(localParams.files.shift());
           } else {
-            angular.forEach(params.files, function(path) {
+            angular.forEach(localParams.files, function(path) {
               pushFile(path);
             });
           }
@@ -283,7 +284,7 @@
               } else {
                 cssDeferred.resolve();
               }
-            }, params);
+            }, localParams);
             promises.push(cssDeferred.promise);
           }
 
@@ -296,7 +297,7 @@
               } else {
                 templatesDeferred.resolve();
               }
-            }, params);
+            }, localParams);
             promises.push(templatesDeferred.promise);
           }
 
@@ -309,11 +310,11 @@
               } else {
                 jsDeferred.resolve();
               }
-            }, params);
+            }, localParams);
             promises.push(jsDeferred.promise);
           }
 
-          if(params.serie && params.files.length > 0) {
+          if(localParams.serie && localParams.files.length > 0) {
             return $q.all(promises).then(function success() {
               return filesLoader(config, params);
             });
