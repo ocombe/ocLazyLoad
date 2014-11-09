@@ -308,27 +308,77 @@
         }
 
         return {
-          getModuleConfig: function(name) {
-            if(!modules[name]) {
+          /**
+           * Let you get a module config object
+           * @param moduleName String the name of the module
+           * @returns {*}
+           */
+          getModuleConfig: function(moduleName) {
+            if(!angular.isString(moduleName)) {
+              throw new Error('You need to give the name of the module to get');
+            }
+            if(!modules[moduleName]) {
               return null;
             }
-            return modules[name];
+            return modules[moduleName];
           },
 
-          setModuleConfig: function(module) {
-            modules[module.name] = module;
-            return module;
+          /**
+           * Let you define a module config object
+           * @param moduleConfig Object the module config object
+           * @returns {*}
+           */
+          setModuleConfig: function(moduleConfig) {
+            if(!angular.isObject(moduleConfig)) {
+              throw new Error('You need to give the module config object to set');
+            }
+            modules[moduleConfig.name] = moduleConfig;
+            return moduleConfig;
           },
 
+          /**
+           * Returns the list of loaded modules
+           * @returns {string[]}
+           */
           getModules: function() {
             return regModules;
           },
 
-          // deprecated
-          loadTemplateFile: function(paths, params) {
-            return filesLoader({files: paths}, params);
+          /**
+           * Let you check if a module has been loaded into Angular or not
+           * @param modulesNames String/Object a module name, or a list of module names
+           * @returns {boolean}
+           */
+          isLoaded: function(modulesNames) {
+            var moduleLoaded = function(module) {
+              var isLoaded = regModules.indexOf(module) > -1;
+              if(!isLoaded) {
+                isLoaded = !!moduleExists(module);
+              }
+              return isLoaded;
+            }
+            if(angular.isString(modulesNames)) {
+              modulesNames = [modulesNames];
+            }
+            if(angular.isArray(modulesNames)) {
+              var i, len;
+              for(i = 0, len = modulesNames.length; i < len; i++) {
+                if(!moduleLoaded(modulesNames[i])) {
+                  return false;
+                }
+              }
+              return true;
+            } else {
+              throw new Error('You need to define the module(s) name(s)');
+            }
           },
 
+          /**
+           * Load a module or a list of modules into Angular
+           * @param module Mixed the name of a predefined module config object, or a module config object, or an array of either
+           * @param params Object optional parameters
+           * @returns promise
+           */
           load: function(module, params) {
             var self = this,
               config = null,

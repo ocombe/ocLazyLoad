@@ -366,6 +366,18 @@ $stateProvider.state('index', {
 ```
 
 
+##Other functions
+`$ocLazyLoad` provides a few other functions that might help you in a few specific cases:
+
+- `setModuleConfig(moduleConfig)`: Let you define a module config object
+
+- `getModuleConfig(moduleName)`: Let you get a module config object
+
+- `getModules()`: Returns the list of loaded modules
+
+- `isLoaded(modulesNames)`: Let you check if a module (or a list of modules) has been loaded into Angular or not
+
+
 ##Contribute
 If you want to get started and the docs are not enough, see the examples in the 'example' folder !
 
