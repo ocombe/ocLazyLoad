@@ -254,14 +254,13 @@
             templatesFiles = [],
             jsFiles = [],
             promises = [],
-            cachePromise = null,
-            localParams = {};
+            cachePromise = null;
 
-          angular.extend(localParams, params || {}, config);
+          angular.extend(params || {}, config);
 
           var pushFile = function(path) {
             cachePromise = filesCache.get(path);
-            if(angular.isUndefined(cachePromise) || localParams.cache === false) {
+            if(angular.isUndefined(cachePromise) || params.cache === false) {
               if(/\.css[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
                 cssFiles.push(path);
               } else if(/\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
@@ -274,10 +273,10 @@
             }
           }
 
-          if(localParams.serie) {
-            pushFile(localParams.files.shift());
+          if(params.serie) {
+            pushFile(params.files.shift());
           } else {
-            angular.forEach(localParams.files, function(path) {
+            angular.forEach(params.files, function(path) {
               pushFile(path);
             });
           }
@@ -291,7 +290,7 @@
               } else {
                 cssDeferred.resolve();
               }
-            }, localParams);
+            }, params);
             promises.push(cssDeferred.promise);
           }
 
@@ -304,7 +303,7 @@
               } else {
                 templatesDeferred.resolve();
               }
-            }, localParams);
+            }, params);
             promises.push(templatesDeferred.promise);
           }
 
@@ -317,11 +316,11 @@
               } else {
                 jsDeferred.resolve();
               }
-            }, localParams);
+            }, params);
             promises.push(jsDeferred.promise);
           }
 
-          if(localParams.serie && localParams.files.length > 0) {
+          if(params.serie && params.files.length > 0) {
             return $q.all(promises).then(function success() {
               return filesLoader(config, params);
             });
@@ -484,6 +483,9 @@
               }
             }
 
+            var localParams = {};
+            angular.extend(localParams, params, config);
+
             var loadDependencies = function loadDependencies(module) {
               var moduleName,
                 loadedModule,
@@ -532,7 +534,7 @@
                     }
 
                     // Push everything to the file loader, it will weed out the duplicates.
-                    promisesList.push(filesLoader(requireEntry.files, params).then(function() {
+                    promisesList.push(filesLoader(requireEntry.files, localParams).then(function() {
                       return loadDependencies(requireEntry);
                     }));
                   }
@@ -548,7 +550,7 @@
                   if(requireEntry.hasOwnProperty('css') && requireEntry['css'].length !== 0) {
                     // Locate the document insertion point
                     angular.forEach(requireEntry['css'], function(path) {
-                      buildElement('css', path, params);
+                      buildElement('css', path, localParams);
                     });
                   }
                   // CSS End.
@@ -557,7 +559,7 @@
                 // Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
                 if(requireEntry.hasOwnProperty('files') && requireEntry.files.length !== 0) {
                   if(requireEntry.files) {
-                    promisesList.push(filesLoader(requireEntry, params).then(function() {
+                    promisesList.push(filesLoader(requireEntry, localParams).then(function() {
                       return loadDependencies(requireEntry);
                     }));
                   }
@@ -568,7 +570,7 @@
               return $q.all(promisesList);
             }
 
-            filesLoader(config, params).then(function success() {
+            filesLoader(config, localParams).then(function success() {
               if(moduleName === null) {
                 deferred.resolve(module);
               } else {
@@ -576,7 +578,7 @@
                 loadDependencies(moduleName).then(function success() {
                   try {
                     justLoaded = [];
-                    register(providers, moduleCache, params);
+                    register(providers, moduleCache, localParams);
                   } catch(e) {
                     $log.error(e.message);
                     deferred.reject(e);
