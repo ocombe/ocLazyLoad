@@ -1,39 +1,35 @@
-angular.module('app').controller('AppCtrl', ['$scope', '$ocLazyLoad', '$timeout', function($scope, $ocLazyLoad, $timeout) {
-	$scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
-		console.log('event module loaded', params);
-	});
-	$scope.$on('ocLazyLoad.componentLoaded', function(e, params) {
-		console.log('event component loaded', params);
-	});
-	$scope.$on('ocLazyLoad.fileLoaded', function(e, file) {
-		console.log('event file loaded', file);
-	});
-	$scope.loadBootstrap = function() {
-		var unbind = $scope.$on('ocLazyLoad.fileLoaded', function(e, file) {
-			if(file === 'bower_components/bootstrap/dist/css/bootstrap.css') {
-				$scope.bootstrapLoaded = true;
-				unbind();
-			}
-		});
-		$scope.bootstrapModule = [
-			'bower_components/bootstrap/dist/js/bootstrap.js',
-			'bower_components/bootstrap/dist/css/bootstrap.css'
-		];
-	}
+angular.module('app').controller('AppCtrl', function($scope, $ocLazyLoad) {
+  $scope.$on('ocLazyLoad.moduleLoaded', function(e, params) {
+    console.log('event module loaded', params);
+  });
+  $scope.$on('ocLazyLoad.componentLoaded', function(e, params) {
+    console.log('event component loaded', params);
+  });
+  $scope.$on('ocLazyLoad.fileLoaded', function(e, file) {
+    console.log('event file loaded', file);
+  });
+  $scope.loadBootstrap = function() {
+    // use events to know when the files are loaded
+    var unbind = $scope.$on('ocLazyLoad.fileLoaded', function(e, file) {
+      if(file === 'bower_components/bootstrap/dist/css/bootstrap.css') {
+        $scope.bootstrapLoaded = true;
+        unbind();
+      }
+    });
+    // we could use .then here instead of events
+    $ocLazyLoad.load([
+      'bower_components/bootstrap/dist/js/bootstrap.js',
+      'bower_components/bootstrap/dist/css/bootstrap.css'
+    ]);
+  }
 
-	$scope.loadGridModule = function() {
-		$ocLazyLoad.load({
-			name: 'gridModule',
-			files: [
-				'js/gridModule.js',
-				'partials/grid.html'
-			]
-		}).then(function success(data) {
-			console.log('loaded', data);
-			$scope.gridInclude = 'gridTemplate';
-			$scope.gridLoaded = true;
-		}, function error(err) {
-			console.log(err);
-		});
-	}
-}])
+  $scope.loadGridModule = function() {
+    $ocLazyLoad.load().then(function success(data) {
+      console.log('loaded', data);
+      $scope.gridInclude = 'gridTemplate';
+      $scope.gridLoaded = true;
+    }, function error(err) {
+      console.log(err);
+    });
+  }
+})

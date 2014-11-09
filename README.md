@@ -165,9 +165,15 @@ $ocLazyLoad.load({
 ```
 
 ### Directive
-The directive is very similar to the service. Use the same parameters:
+The directive usage is very similar to the service. The main interest here is that the content will be included and compiled once your modules have been loaded.
+This means that you can use directives that will be lazy loaded inside the oc-lazy-load directive.
+
+Use the same parameters than the service:
 ```html
-<div oc-lazy-load="{name: 'TestModule', files: ['js/testModule.js', 'partials/lazyLoadTemplate.html']}"></div>
+<div oc-lazy-load="{name: 'TestModule', files: ['js/testModule.js', 'partials/lazyLoadTemplate.html']}">
+	// Use a directive from TestModule
+	<test-directive></test-directive>
+</div>
 ```
 
 You can use variables to store parameters:

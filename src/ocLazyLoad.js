@@ -581,69 +581,31 @@
       };
     }]);
 
-  ocLazyLoad.directive('ocLazyLoad', ['$http', '$log', '$ocLazyLoad', '$compile', '$timeout', '$templateCache', '$animate',
-    function($http, $log, $ocLazyLoad, $compile, $timeout, $templateCache, $animate) {
+  ocLazyLoad.directive('ocLazyLoad', ['$ocLazyLoad', '$compile', '$animate', '$parse',
+    function($ocLazyLoad, $compile, $animate, $parse) {
       return {
         restrict: 'A',
         terminal: true,
-        priority: 401, // 1 more than ngInclude
-        transclude: 'element',
-        controller: angular.noop,
+        priority: 1000,
         compile: function(element, attrs) {
-          return function($scope, $element, $attr, ctrl, $transclude) {
-            var childScope,
-              evaluated = $scope.$eval($attr.ocLazyLoad),
-              onloadExp = evaluated && evaluated.onload ? evaluated.onload : '';
+          // we store the content and remove it before compilation
+          var content = element[0].innerHTML;
+          element.html('');
 
-            /**
-             * Destroy the current scope of this element and empty the html
-             */
-            function clearContent() {
-              if(childScope) {
-                childScope.$destroy();
-                childScope = null;
-              }
-              $element.html('');
-            }
-
-            /**
-             * Load a template from cache or url
-             * @param url
-             * @param callback
-             */
-            function loadTemplate(url, callback) {
-              var view;
-
-              if(typeof(view = $templateCache.get(url)) !== 'undefined') {
-                callback(view);
-              } else {
-                $http.get(url)
-                  .success(function(data) {
-                    $templateCache.put('view:' + url, data);
-                    callback(data);
-                  })
-                  .error(function(data) {
-                    $log.error('Error load template "' + url + '": ' + data);
-                  });
-              }
-            }
-
-            $scope.$watch($attr.ocLazyLoad, function(moduleName) {
+          return function($scope, $element, $attr) {
+            var model = $parse($attr.ocLazyLoad);
+            $scope.$watch(function() {
+              // it can be a module name (string), an object, an array, or a scope reference to any of this
+              return model($scope) || $attr.ocLazyLoad;
+            }, function(moduleName) {
               if(angular.isDefined(moduleName)) {
                 $ocLazyLoad.load(moduleName).then(function(moduleConfig) {
-                  $transclude($scope, function cloneConnectFn(clone) {
-                    $animate.enter(clone, null, $element);
-                  });
+                  $animate.enter($compile(content)($scope), null, $element);
                 });
-              } else {
-                clearContent();
               }
             }, true);
           };
         }
-        /*link: function($scope, $element, $attr) {
-
-         }*/
       };
     }]);
 

@@ -1,7 +1,6 @@
 <div>
 	<h3>Load external libs (not angular-based):</h3>
 	<p><button class="btn btn-info" ng-click="loadBootstrap()" ng-disabled="bootstrapLoaded">Load Bootstrap</button></p>
-	<div oc-lazy-load="bootstrapModule"></div>
 </div>
 
 <div>
@@ -11,7 +10,13 @@
 </div>
 
 <div>
-	<h3>Load a complete module with dependencies and templates:</h3>
-	<p><button class="btn btn-info" ng-click="loadGridModule()" ng-disabled="gridLoaded">Load gridModule with ng-grid</button></p>
-	<div ng-include="gridInclude"></div>
+	<h3>Autoload a complete module with dependencies and templates using the directive:</h3>
+
+	<!-- gridModule has been defined in the app config -->
+	<div oc-lazy-load="gridModule">
+		<div ng-controller="GridModuleCtrl">
+			<span>{{test}}</span><br/>
+			<div ui-grid="gridOptions" class="gridStyle"></div>
+		</div>
+	</div>
 </div>
