@@ -1,3 +1,14 @@
+<a name="0.4.2"></a>
+# 0.4.2 (2014-11-10)
+
+
+## Bug Fixes
+
+- extend config to params for the register method
+ ([31157941](https://github.com/ocombe/ocLazyLoad/commit/31157941ccabfa8f8c55edc00dc2b5758bf073b2),
+ [#89](https://github.com/ocombe/ocLazyLoad/issues/89))
+
+
 <a name="0.4.1"></a>
 # 0.4.1 (2014-11-09)
 
