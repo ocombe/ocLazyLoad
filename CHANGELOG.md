@@ -1,3 +1,17 @@
+<a name="0.4.1"></a>
+# 0.4.1 (2014-11-09)
+
+
+## Bug Fixes
+
+- keep global params pristine when loading files
+ ([6b2306b7](https://github.com/ocombe/ocLazyLoad/commit/6b2306b71543542c9b592766644c7bba1297bae4),
+ [#89](https://github.com/ocombe/ocLazyLoad/issues/89))
+- defining new run blocks will replace previous ones
+ ([af2627b5](https://github.com/ocombe/ocLazyLoad/commit/af2627b5e627b2b4d83cdd043eff68b1c1430740),
+ [#89](https://github.com/ocombe/ocLazyLoad/issues/89))
+
+
 <a name="0.4.0"></a>
 # 0.4.0 (2014-11-09)
 
