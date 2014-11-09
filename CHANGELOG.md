@@ -1,3 +1,22 @@
+<a name="0.3.10"></a>
+# 0.3.10 (2014-11-09)
+
+
+## Bug Fixes
+
+- fix for error:[$compile:multidir] Multiple directives
+ ([61fd4dd3](https://github.com/ocombe/ocLazyLoad/commit/61fd4dd3b8131245d33eb2314dcf37a9188a6728),
+ [#84](https://github.com/ocombe/ocLazyLoad/issues/84),
+ [#78](https://github.com/ocombe/ocLazyLoad/issues/78),
+ [#73](https://github.com/ocombe/ocLazyLoad/issues/73),
+ [#58](https://github.com/ocombe/ocLazyLoad/issues/58))
+- css onload patch for some old browsers
+ ([14ce3406](https://github.com/ocombe/ocLazyLoad/commit/14ce34066e0e865c8fa86f663d38e046f7a32abb))
+- content inside the oc-lazy-load directive is now compiled on load
+ ([9962e2ef](https://github.com/ocombe/ocLazyLoad/commit/9962e2ef163e9449e295dd3297f6019267a0e0e1),
+ [#80](https://github.com/ocombe/ocLazyLoad/issues/80))
+
+
 <a name="0.3.9"></a>
 # 0.3.9 (2014-11-02)
 
