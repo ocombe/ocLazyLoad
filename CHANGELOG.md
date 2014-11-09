@@ -1,3 +1,20 @@
+<a name="0.4.0"></a>
+# 0.4.0 (2014-11-09)
+
+
+## Features
+
+- new parameter `serie` to load files in serie
+ ([4ae7a3f3](https://github.com/ocombe/ocLazyLoad/commit/4ae7a3f3de6ad4de74baa6cc771aee556bce812e),
+ [#47](https://github.com/ocombe/ocLazyLoad/issues/47), [#86](https://github.com/ocombe/ocLazyLoad/issues/86))
+- new parameter `rerun` to rerun the run blocks
+ ([26a64a38](https://github.com/ocombe/ocLazyLoad/commit/26a64a38b0c21b6ca28cfa7e512b0b290fdca619),
+ [#89](https://github.com/ocombe/ocLazyLoad/issues/89))
+- new function: `isLoaded` to check if a module has been loaded
+ ([364c9e9f](https://github.com/ocombe/ocLazyLoad/commit/364c9e9ffd8350e5ca46a708bd3846ea6de9421c),
+ [#79](https://github.com/ocombe/ocLazyLoad/issues/79))
+
+
 <a name="0.3.10"></a>
 # 0.3.10 (2014-11-09)
 
