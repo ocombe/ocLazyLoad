@@ -770,6 +770,8 @@
         if(newModule) { // new module
           regModules.push(moduleName);
           register(providers, moduleFn.requires, params);
+        }
+        if(newModule || params.rerun) {
           runBlocks = runBlocks.concat(moduleFn._runBlocks);
         }
         invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);

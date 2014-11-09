@@ -164,6 +164,15 @@ $ocLazyLoad.load({
 });
 ```
 
+The same problem might happen with run blocks, use `rerun: true` to rerun the run blocks:
+```js
+$ocLazyLoad.load({
+	name: 'TestModule',
+	rerun: true,
+	files: ['testModule.js', 'bower_components/bootstrap/dist/js/bootstrap.js']
+});
+```
+
 ### Directive
 The directive usage is very similar to the service. The main interest here is that the content will be included and compiled once your modules have been loaded.
 This means that you can use directives that will be lazy loaded inside the oc-lazy-load directive.
