@@ -4,6 +4,7 @@
     regInvokes = {},
     regConfigs = [],
     justLoaded = [],
+    runBlocks = {},
     ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
     broadcast = angular.noop;
 
@@ -770,7 +771,7 @@
    */
   function register(providers, registerModules, params) {
     if(registerModules) {
-      var k, moduleName, moduleFn, runBlocks = [];
+      var k, r, moduleName, moduleFn, tempRunBlocks = [];
       for(k = registerModules.length - 1; k >= 0; k--) {
         moduleName = registerModules[k];
         if(typeof moduleName !== 'string') {
@@ -785,8 +786,15 @@
           regModules.push(moduleName);
           register(providers, moduleFn.requires, params);
         }
-        if(newModule || params.rerun) {
-          runBlocks = runBlocks.concat(moduleFn._runBlocks);
+        if(moduleFn._runBlocks.length > 0) {
+          // new run blocks detected! Replace the old ones (if existing)
+          runBlocks[moduleName] = [];
+          while(moduleFn._runBlocks.length > 0) {
+            runBlocks[moduleName].push(moduleFn._runBlocks.shift());
+          }
+        }
+        if(angular.isDefined(runBlocks[moduleName]) && (newModule || params.rerun)) {
+          tempRunBlocks = tempRunBlocks.concat(runBlocks[moduleName]);
         }
         invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);
         invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
@@ -794,8 +802,9 @@
         registerModules.pop();
         justLoaded.push(moduleName);
       }
+      // execute the run blocks at the end
       var instanceInjector = providers.getInstanceInjector();
-      angular.forEach(runBlocks, function(fn) {
+      angular.forEach(tempRunBlocks, function(fn) {
         instanceInjector.invoke(fn);
       });
     }
