@@ -250,7 +250,7 @@
 
           angular.extend(params || {}, config);
 
-          angular.forEach(params.files, function(path) {
+          var pushFile = function(path) {
             cachePromise = filesCache.get(path);
             if(angular.isUndefined(cachePromise) || params.cache === false) {
               if(/\.css[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
@@ -263,7 +263,15 @@
             } else if(cachePromise) {
               promises.push(cachePromise);
             }
-          });
+          }
+
+          if(params.serie) {
+            pushFile(params.files.shift());
+          } else {
+            angular.forEach(params.files, function(path) {
+              pushFile(path);
+            });
+          }
 
           if(cssFiles.length > 0) {
             var cssDeferred = $q.defer();
@@ -304,7 +312,13 @@
             promises.push(jsDeferred.promise);
           }
 
-          return $q.all(promises);
+          if(params.serie && params.files.length > 0) {
+            return $q.all(promises).then(function success() {
+              return filesLoader(config, params);
+            });
+          } else {
+            return $q.all(promises);
+          }
         }
 
         return {
@@ -649,7 +663,7 @@
               return model($scope) || $attr.ocLazyLoad;
             }, function(moduleName) {
               if(angular.isDefined(moduleName)) {
-                $ocLazyLoad.load(moduleName).then(function(moduleConfig) {
+                $ocLazyLoad.load(moduleName).then(function success(moduleConfig) {
                   $animate.enter($compile(content)($scope), null, $element);
                 });
               }

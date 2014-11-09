@@ -144,7 +144,7 @@ $ocLazyLoad.load(
 );
 ```
 
-The existing parameters that you can use are `cache` and `reconfig`.
+The existing parameters that you can use are `cache`, `reconfig`, `rerun` and `serie`.
 The parameter `cache: false` works for all native loaders (**all requests are cached by default**):
 
 ```js
@@ -170,6 +170,18 @@ $ocLazyLoad.load({
 	name: 'TestModule',
 	rerun: true,
 	files: ['testModule.js', 'bower_components/bootstrap/dist/js/bootstrap.js']
+});
+```
+
+By default the native loaders will load your files in parallel. If you need to load your files in serie, you can use `serie: true`:
+```js
+$ocLazyLoad.load({
+	name: 'mgcrea.ngStrap',
+	serie: true,
+	files: [
+		'bower_components/angular-strap/dist/angular-strap.js',
+		'bower_components/angular-strap/dist/angular-strap.tpl.js'
+	]
 });
 ```
 
