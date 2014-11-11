@@ -1,5 +1,11 @@
 var gulp = require('gulp');
 
+gulp.task('karma', function(callback) {
+	var conf = require('./karma.conf.js').conf;
+	conf.singleRun = true;
+	return require('karma-as-promised').server.start(conf);
+});
+
 var build = function(newVer) {
 	var rename = require('gulp-rename'),
 		uglify = require('gulp-uglify'),
@@ -25,7 +31,7 @@ var build = function(newVer) {
 		.pipe(gulp.dest('dist'));
 }
 
-gulp.task('build', function() {
+gulp.task('build', ['karma'], function() {
 	return build();
 });
 
@@ -69,7 +75,7 @@ var makeChangelog = function(newVer) {
 		concat = require('gulp-concat'),
 		clean = require('gulp-clean');
 
-	stream.queue(gulp.src('').pipe(exec('node ./src/changelog.js ' + newVer, {pipeStdout: true})));
+	stream.queue(gulp.src('').pipe(exec('node ./changelog.js ' + newVer, {pipeStdout: true})));
 	stream.queue(gulp.src('CHANGELOG.md').pipe(clean()));
 
 	return stream.done()
@@ -84,7 +90,7 @@ gulp.task('changelog', function(event) {
 	return promptBump(makeChangelog);
 })
 
-gulp.task('release', function() {
+gulp.task('release', ['karma'], function() {
 	var jeditor = require("gulp-json-editor");
 
 	return promptBump(function(newVer) {

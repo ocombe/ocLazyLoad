@@ -6,7 +6,7 @@
  *
  * Installation:
  * >> cd <ocLazyLoad-repo>
- * >> ln -s ../../src/validate-commit-msg.js .git/hooks/commit-msg
+ * >> ln -s ../../validate-commit-msg.js .git/hooks/commit-msg
  */
 var fs = require('fs');
 var util = require('util');

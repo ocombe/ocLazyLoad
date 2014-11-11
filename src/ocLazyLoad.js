@@ -605,24 +605,24 @@
 
       this.config = function(config) {
         if(angular.isDefined(config.jsLoader) || angular.isDefined(config.asyncLoader)) {
-          jsLoader = config.jsLoader || config.asyncLoader;
-          if(!angular.isFunction(jsLoader)) {
+          if(!angular.isFunction(config.jsLoader || config.asyncLoader)) {
             throw('The js loader needs to be a function');
           }
+          jsLoader = config.jsLoader || config.asyncLoader;
         }
 
         if(angular.isDefined(config.cssLoader)) {
-          cssLoader = config.cssLoader;
-          if(!angular.isFunction(cssLoader)) {
+          if(!angular.isFunction(config.cssLoader)) {
             throw('The css loader needs to be a function');
           }
+          cssLoader = config.cssLoader;
         }
 
         if(angular.isDefined(config.templatesLoader)) {
-          templatesLoader = config.templatesLoader;
-          if(!angular.isFunction(templatesLoader)) {
+          if(!angular.isFunction(config.templatesLoader)) {
             throw('The template loader needs to be a function');
           }
+          templatesLoader = config.templatesLoader;
         }
 
         // for bootstrap apps, we need to define the main module name

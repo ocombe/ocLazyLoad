@@ -1,0 +1,9 @@
+**/.*
+examples/
+src/
+tests/
+bower.json
+changelog.js
+gulpfile.js
+validate-commit-msg.js
+karma.conf.js
