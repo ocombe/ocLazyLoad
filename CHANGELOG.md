@@ -1,3 +1,22 @@
+<a name="0.5.0"></a>
+# 0.5.0 (2014-11-11)
+
+
+## Features
+
+- added a new param `insertBefore`
+ ([c4f10385](https://github.com/ocombe/ocLazyLoad/commit/c4f10385cb6a9122c3a03d28b1bb6837710cc3f7),
+ [#91](https://github.com/ocombe/ocLazyLoad/issues/91))
+- started unit tests
+ ([dcc4ff63](https://github.com/ocombe/ocLazyLoad/commit/dcc4ff639df23a1b934899b020a483e47e6ab290))
+
+
+## Documentation
+
+- updated loaders signatures
+ ([ba022894](https://github.com/ocombe/ocLazyLoad/commit/ba022894841222989cf699f07fe21f04f7ad3307))
+
+
 <a name="0.4.2"></a>
 # 0.4.2 (2014-11-10)
 

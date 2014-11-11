@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v0.4.2
+ * @version v0.5.0
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -116,7 +116,15 @@
             deferred.reject(new Error('Unable to load ' + path));
           }
           el.async = 1;
-          anchor.insertBefore(el, anchor.lastChild);
+
+          var insertBeforeElem = anchor.lastChild;
+		  if(params.insertBefore) {
+		    var element = angular.element(params.insertBefore);
+		    if(element && element.length > 0) {
+			  insertBeforeElem = element[0];
+		    }
+		  }
+          anchor.insertBefore(el, insertBeforeElem);
 
           /*
            The event load or readystatechange doesn't fire in:
@@ -604,24 +612,24 @@
 
       this.config = function(config) {
         if(angular.isDefined(config.jsLoader) || angular.isDefined(config.asyncLoader)) {
-          jsLoader = config.jsLoader || config.asyncLoader;
-          if(!angular.isFunction(jsLoader)) {
+          if(!angular.isFunction(config.jsLoader || config.asyncLoader)) {
             throw('The js loader needs to be a function');
           }
+          jsLoader = config.jsLoader || config.asyncLoader;
         }
 
         if(angular.isDefined(config.cssLoader)) {
-          cssLoader = config.cssLoader;
-          if(!angular.isFunction(cssLoader)) {
+          if(!angular.isFunction(config.cssLoader)) {
             throw('The css loader needs to be a function');
           }
+          cssLoader = config.cssLoader;
         }
 
         if(angular.isDefined(config.templatesLoader)) {
-          templatesLoader = config.templatesLoader;
-          if(!angular.isFunction(templatesLoader)) {
+          if(!angular.isFunction(config.templatesLoader)) {
             throw('The template loader needs to be a function');
           }
+          templatesLoader = config.templatesLoader;
         }
 
         // for bootstrap apps, we need to define the main module name
