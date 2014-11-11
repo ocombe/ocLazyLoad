@@ -109,7 +109,15 @@
             deferred.reject(new Error('Unable to load ' + path));
           }
           el.async = 1;
-          anchor.insertBefore(el, anchor.lastChild);
+
+          var insertBeforeElem = anchor.lastChild;
+		  if(params.insertBefore) {
+		    var element = angular.element(params.insertBefore);
+		    if(element && element.length > 0) {
+			  insertBeforeElem = element[0];
+		    }
+		  }
+          anchor.insertBefore(el, insertBeforeElem);
 
           /*
            The event load or readystatechange doesn't fire in:

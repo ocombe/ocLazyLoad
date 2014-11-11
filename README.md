@@ -144,7 +144,7 @@ $ocLazyLoad.load(
 );
 ```
 
-The existing parameters that you can use are `cache`, `reconfig`, `rerun` and `serie`.
+The existing parameters that you can use are `cache`, `reconfig`, `rerun`, `serie` and `insertBefore`.
 The parameter `cache: false` works for all native loaders (**all requests are cached by default**):
 
 ```js
@@ -182,6 +182,15 @@ $ocLazyLoad.load({
 		'bower_components/angular-strap/dist/angular-strap.js',
 		'bower_components/angular-strap/dist/angular-strap.tpl.js'
 	]
+});
+```
+
+The files, by default, will be inserted before the last child of the `head` element. You can override this by using `insertBefore: 'cssSelector'`:
+```js
+$ocLazyLoad.load({
+	name: 'TestModule',
+	insertBefore: '#load_css_before',
+	files: ['bower_components/bootstrap/dist/css/bootstrap.css']
 });
 ```
 
