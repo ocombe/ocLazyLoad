@@ -242,21 +242,21 @@ The options are:
 - `jsLoader`: You can use your own async loader. The one provided with $ocLazyLoad is based on $script.js, but you can use requireJS or any other async loader that works with the following syntax: 
 	```js
 	$ocLazyLoadProvider.config({
-		jsLoader: function(singleFile or [Array of files], callback);
+		jsLoader: function([Array of files], callback, params);
 	});
 	```
 
 - `cssLoader`: you can also define your own css async loader. The rules and syntax are the same than for jsLoader.
 	```js
 	$ocLazyLoadProvider.config({
-		cssLoader: function(singleFile or [Array of files], callback);
+		cssLoader: function([Array of files], callback, params);
 	});
 	```
 
 - `templatesLoader`: You can use your template loader. It's similar to the `jsLoader` but it uses an optional config parameter
 	```js
 	$ocLazyLoadProvider.config({
-		cssLoader: function(singleFile or [Array of files], config, callback);
+		cssLoader: function([Array of files], callback, params);
 	});
 	```
 
