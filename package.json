@@ -10,7 +10,7 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "karma start tests/unit/karma.conf.js",
+    "test": "karma start karma.conf.js",
     "build": "gulp build"
   },
   "repository": {

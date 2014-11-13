@@ -19,7 +19,8 @@ module.exports.conf = {
     'bower_components/angular-mocks/angular-mocks.js',
     'src/**/*.js',
     'tests/unit/**/*.spec.js',
-    'tests/unit/**/*.mock.js'
+    'tests/unit/**/*.mock.js',
+    {pattern: 'tests/unit/lazyLoad/**/*.js', included: false}
   ],
 
 

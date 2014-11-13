@@ -2,15 +2,17 @@
 describe('Module: oc.lazyLoad', function() {
   'use strict';
 
-  var $ocLazyLoad;
+  var $ocLazyLoad,
+    $rootScope;
 
   describe('with app1', function() {
 
     beforeEach(function() {
       module('app1');
 
-      inject(function(_$ocLazyLoad_) {
+      inject(function(_$ocLazyLoad_, _$rootScope_) {
         $ocLazyLoad = _$ocLazyLoad_;
+        $rootScope = _$rootScope_;
       });
     });
 
@@ -49,6 +51,20 @@ describe('Module: oc.lazyLoad', function() {
       expect($ocLazyLoad.setModuleConfig({name: 'test2'})).toEqual({name: 'test2'});
       expect($ocLazyLoad.getModuleConfig('test2')).toEqual({name: 'test2'}); // check if set worked
     });
+
+    it('should be able to lazy load a module', function(done) {
+      $ocLazyLoad.load({
+        name:'testModule',
+        files:['/base/tests/unit/lazyLoad/testModule.js']
+      }).then(function(){
+        done();
+      }, function(err){
+        throw err;
+      });
+      setInterval(function() {
+        $rootScope.$digest();
+      }, 10);
+    })
 
   });
 

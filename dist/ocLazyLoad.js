@@ -34,7 +34,7 @@
       // Let's get the list of loaded modules & components
       init(angular.element(window.document));
 
-      this.$get = ['$timeout', '$log', '$q', '$templateCache', '$http', '$rootElement', '$rootScope', '$cacheFactory', '$interval', function($timeout, $log, $q, $templateCache, $http, $rootElement, $rootScope, $cacheFactory, $interval) {
+      this.$get = ['$log', '$q', '$templateCache', '$http', '$rootElement', '$rootScope', '$cacheFactory', '$interval', function($log, $q, $templateCache, $http, $rootElement, $rootScope, $cacheFactory, $interval) {
         var instanceInjector,
           filesCache = $cacheFactory('ocLazyLoad'),
           uaCssChecked = false,
@@ -49,7 +49,7 @@
 
         // Make this lazy because at the moment that $get() is called the instance injector hasn't been assigned to the rootElement yet
         providers.getInstanceInjector = function() {
-          return (instanceInjector) ? instanceInjector : (instanceInjector = $rootElement.data('$injector'));
+          return (instanceInjector) ? instanceInjector : (instanceInjector = ($rootElement.data('$injector') || angular.injector()));
         };
 
         broadcast = function broadcast(eventName, params) {
@@ -118,12 +118,12 @@
           el.async = 1;
 
           var insertBeforeElem = anchor.lastChild;
-		  if(params.insertBefore) {
-		    var element = angular.element(params.insertBefore);
-		    if(element && element.length > 0) {
-			  insertBeforeElem = element[0];
-		    }
-		  }
+          if(params.insertBefore) {
+            var element = angular.element(params.insertBefore);
+            if(element && element.length > 0) {
+              insertBeforeElem = element[0];
+            }
+          }
           anchor.insertBefore(el, insertBeforeElem);
 
           /*
@@ -592,13 +592,9 @@
                     deferred.reject(e);
                     return;
                   }
-                  $timeout(function() {
-                    deferred.resolve(module);
-                  });
+                  deferred.resolve(module);
                 }, function error(err) {
-                  $timeout(function() {
-                    deferred.reject(err);
-                  });
+                  deferred.reject(err);
                 });
               }
             }, function error(err) {
