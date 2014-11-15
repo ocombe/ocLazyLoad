@@ -1,4 +1,4 @@
-ocLazyLoad
+ocLazyLoad [![Build Status](https://travis-ci.org/ocombe/ocLazyLoad.svg)](https://travis-ci.org/ocombe/ocLazyLoad)
 ==========
 
 Load modules on demand (lazy load) in AngularJS
