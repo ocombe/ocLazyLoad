@@ -2,7 +2,7 @@ var gulp = require('gulp');
 
 gulp.task('karma', function(callback) {
 	var conf = require('./karma.conf.js').conf;
-	conf.singleRun = true;
+	conf.browsers = ['Chrome'];
 	return require('karma-as-promised').server.start(conf);
 });
 

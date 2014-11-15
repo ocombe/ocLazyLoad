@@ -218,9 +218,6 @@
            * because the user can overwrite templatesLoader and it will probably not use promises :(
            */
           templatesLoader = function(paths, callback, params) {
-            if(angular.isString(paths)) {
-              paths = [paths];
-            }
             var promises = [];
             angular.forEach(paths, function(url) {
               var deferred = $q.defer();
@@ -237,10 +234,8 @@
                   filesCache.put(url, true);
                 }
                 deferred.resolve();
-              }).error(function(data) {
-                var err = 'Error load template "' + url + '": ' + data;
-                $log.error(err);
-                deferred.reject(new Error(err));
+              }).error(function(err) {
+                deferred.reject(new Error('Unable to load template file "' + url + '": ' + err));
               });
             });
             return $q.all(promises).then(function success() {
@@ -854,13 +849,10 @@
   }
 
   function getModuleName(module) {
-    if(module === null) {
-      return null;
-    }
     var moduleName = null;
-    if(typeof module === 'string') {
+    if(angular.isString(module)) {
       moduleName = module;
-    } else if(typeof module === 'object' && module.hasOwnProperty('name') && typeof module.name === 'string') {
+    } else if(angular.isObject(module) && module.hasOwnProperty('name') && angular.isString(module.name)) {
       moduleName = module.name;
     }
     return moduleName;

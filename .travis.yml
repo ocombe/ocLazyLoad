@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+- '0.10'
+before_install:
+- npm config set spin false
+- npm install -g bower
+- bower install
+before_script:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+deploy:
+  provider: npm
+  email: olivier.combe@gmail.com
+  skip_cleanup: true
+  api_key:
+    secure: lEMo04/NKEZfen4AKkztLd30SLqFmGLwSqTlUM27In31QbGEpA9pQhrZhkiEPfqDK+hE1E6tFsrWtehYt286S7qBL8ki8eTOPt6Ymy/QbSLn0bIwyDjxI0Pfy/CXk26n9e83+w+W1wz2hgHWTlwfY95cJR76SApYwnZJXBEXsXE=
+  on:
+    tags: true
+    all_branches: true
+    repo: ocombe/ocLazyLoad

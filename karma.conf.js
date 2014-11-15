@@ -1,5 +1,12 @@
 module.exports = function(config) {
   config.set(module.exports.conf);
+
+  if(process.env.TRAVIS) {
+    var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
+
+    config.logLevel = config.LOG_DEBUG;
+    config.captureTimeout = 0; // rely on SL timeout
+  }
 };
 
 module.exports.conf = {
@@ -20,7 +27,7 @@ module.exports.conf = {
     'src/**/*.js',
     'tests/unit/**/*.spec.js',
     'tests/unit/**/*.mock.js',
-    {pattern: 'tests/unit/lazyLoad/**/*.js', included: false}
+    {pattern: 'tests/unit/lazyLoad/**/*', included: false}
   ],
 
 
@@ -52,13 +59,19 @@ module.exports.conf = {
   // enable / disable watching file and executing tests whenever any file changes
   autoWatch: true,
 
-
-  // start these browsers
-  // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-  browsers: ['Chrome'],
-
+  // we use Firefox because it's the only one available in travis
+  browsers: ['Firefox'],
 
   // Continuous Integration mode
   // if true, Karma captures browsers, runs the tests and exits
-  singleRun: false
+  singleRun: true,
+
+  // Increase timeout in case connection in CI is slow
+  captureTimeout: 120000,
+
+  browserDisconnectTimeout: 10000,
+
+  browserDisconnectTolerance: 2,
+
+  browserNoActivityTimeout: 30000
 };
