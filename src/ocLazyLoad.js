@@ -226,11 +226,13 @@
               var deferred = $q.defer();
               promises.push(deferred.promise);
               $http.get(url, params).success(function(data) {
-                angular.forEach(angular.element(data), function(node) {
-                  if(node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
-                    $templateCache.put(node.id, node.innerHTML);
-                  }
-                });
+                if(angular.isString(data) && data.length > 0) {
+                  angular.forEach(angular.element(data), function(node) {
+                    if(node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
+                      $templateCache.put(node.id, node.innerHTML);
+                    }
+                  });
+                }
                 if(angular.isUndefined(filesCache.get(url))) {
                   filesCache.put(url, true);
                 }
