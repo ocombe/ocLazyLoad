@@ -108,7 +108,7 @@
           el.onerror = function(e) {
             deferred.reject(new Error('Unable to load ' + path));
           }
-          el.async = 1;
+          el.async = params.serie ? 0 : 1;
 
           var insertBeforeElem = anchor.lastChild;
           if(params.insertBefore) {
