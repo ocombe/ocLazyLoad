@@ -17,14 +17,7 @@
     "type": "git",
     "url": "git://github.com/ocombe/ocLazyLoad.git"
   },
-  "keywords": [
-    "lazy load",
-    "lazy-load",
-    "load on demand",
-    "module",
-    "angular",
-    "angularJS"
-  ],
+  "keywords": ["lazy load", "lazy-load", "load on demand", "module", "angular", "angularJS"],
   "bugs": {
     "url": "https://github.com/ocombe/ocLazyLoad/issues"
   },

@@ -85,8 +85,6 @@ var makeChangelog = function(newVer) {
 
 // Make changelog
 gulp.task('changelog', function(event) {
-	var prompt = require('gulp-prompt');
-
 	return promptBump(makeChangelog);
 })
 
