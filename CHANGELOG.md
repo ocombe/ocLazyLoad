@@ -1,3 +1,19 @@
+<a name="0.5.1"></a>
+# 0.5.1 (2014-11-20)
+
+
+## Bug Fixes
+
+- don't use async when you load files in serie
+ ([9af93ed3](https://github.com/ocombe/ocLazyLoad/commit/9af93ed30cf05c6c64594d206dc9bf36a318f46e),
+ [#95](https://github.com/ocombe/ocLazyLoad/issues/95))
+- avoid errors thrown on empty template files
+ ([768b9d75](https://github.com/ocombe/ocLazyLoad/commit/768b9d751a613a0a10cb476d5c3eac5fdf44f627))
+- compatibility with jasmine
+ ([d4985e1d](https://github.com/ocombe/ocLazyLoad/commit/d4985e1d7ce98315ca64a72730d8c10524929d58),
+ [#94](https://github.com/ocombe/ocLazyLoad/issues/94))
+
+
 <a name="0.5.0"></a>
 # 0.5.0 (2014-11-11)
 
