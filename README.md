@@ -25,13 +25,13 @@ There are multiple ways to use `$ocLazyLoad` to load your files, just choose the
 If you decide to use ocLazyLoad with requireJS, you must declare the bootstraped module in the configuration of the provider. More info [here](#loaded-modules)
 
 ###### More examples / tutorials / articles
-You can find two basic examples in the example folder. If you need more, check out those links:
+You can find two basic examples in the example folder. If you need more, check out these links:
 - Lazy loading with requirejs, ocLazyLoad and ui-router: [using the templateProvider](http://plnkr.co/edit/OGvi01?p=preview) / [using the uiRouterDecorator](http://plnkr.co/edit/6CLDsz?p=preview) - by @gilbox
 - Lazy Loading ui-router states with requirejs, ocLazyLoad and ui-router-extras futureStates, [part 1](http://bardo.io/posts/oclazyload-future-states/) / [part 2](http://bardo.io/posts/ng-deferred-bootstrap-like-with-oclazyload/) - by @kbdaitch
 - Lazy loading Angular modules with ocLazyLoad, [part 1](https://egghead.io/lessons/angularjs-lazy-loading-angular-modules-with-oclazyload) / [part 2](https://egghead.io/lessons/angularjs-lazy-loading-modules-with-ui-router-and-oclazyload) / [part 3](https://egghead.io/lessons/angularjs-simple-lazy-loaded-angular-module-syntax-with-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/)
 
 ### Service
-You can include `$ocLazyLoad` and use the function `load` which returns a promise. It supports single dependency (object) or multiple dependencies (array of objects).
+You can include `$ocLazyLoad` and use the function `load` which returns a promise. It supports a single dependency (object) or multiple dependencies (array of objects).
 
 Load a single module with one file:
 ```js
@@ -78,7 +78,7 @@ $ocLazyLoad.load([{
 }]);
 ```
 
-In fact, if you don't load an angular module, why bother with an object having a single `files` property ? You can just pass the urls.
+In fact, if you don't load an angular module, why bother with an object having a single `files` property? You can just pass the urls.
 Single file:
 ```js
 $ocLazyLoad.load('bower_components/bootstrap/dist/js/bootstrap.js');
@@ -111,8 +111,8 @@ You can put more than one template script in your template file, just make sure 
 </script>
 ```
 
-There is two ways to define config options for the load function. You can use a second optional parameter that will define configs for all the modules that you will load, or you can define optional parameters to each module.
-For example, those are equivalents:
+There are two ways to define config options for the load function. You can use a second optional parameter that will define configs for all the modules that you will load, or you can define optional parameters to each module.
+For example, these are equivalent:
 ```js
 $ocLazyLoad.load([{
 	name: 'TestModule',
@@ -120,7 +120,7 @@ $ocLazyLoad.load([{
 	cache: false
 },{
     name: 'AnotherModule',
-    files: ['anotherModule.js']
+    files: ['anotherModule.js'],
     cache: false
 }]);
 ```
@@ -198,7 +198,7 @@ $ocLazyLoad.load({
 The directive usage is very similar to the service. The main interest here is that the content will be included and compiled once your modules have been loaded.
 This means that you can use directives that will be lazy loaded inside the oc-lazy-load directive.
 
-Use the same parameters than the service:
+Use the same parameters as a service:
 ```html
 <div oc-lazy-load="{name: 'TestModule', files: ['js/testModule.js', 'partials/lazyLoadTemplate.html']}">
 	// Use a directive from TestModule
@@ -220,7 +220,7 @@ $scope.lazyLoadParams = {
 <div oc-lazy-load="lazyLoadParams"></div>
 ```
 
-### Bonus: use the dependency injection
+### Bonus: Use dependency injection
 As a convenience you can also load dependencies by placing a module definition in the dependency injection block of your module. This will only work for lazy loaded modules:
 ```js
 angular.module('MyModule', ['pascalprecht.translate', {
@@ -232,7 +232,7 @@ angular.module('MyModule', ['pascalprecht.translate', {
 			'/components/bootstrap/js/bootstrap.js'
 		]
 	}]
-)
+);
 ```
 
 
@@ -255,7 +255,7 @@ The options are:
 	});
 	```
 
-- `cssLoader`: you can also define your own css async loader. The rules and syntax are the same than for jsLoader.
+- `cssLoader`: You can also define your own css async loader. The rules and syntax are the same as jsLoader.
 	```js
 	$ocLazyLoadProvider.config({
 		cssLoader: function([Array of files], callback, params);
@@ -265,7 +265,7 @@ The options are:
 - `templatesLoader`: You can use your template loader. It's similar to the `jsLoader` but it uses an optional config parameter
 	```js
 	$ocLazyLoadProvider.config({
-		cssLoader: function([Array of files], callback, params);
+		templatesLoader: function([Array of files], callback, params);
 	});
 	```
 
@@ -288,7 +288,7 @@ The options are:
 	});
 	```
 
-- <a name="loaded-modules"></a>`loadedModules`: if you use angular.bootstrap(...) to launch your application, you need to define the main app module as a loaded module.
+- <a name="loaded-modules"></a>`loadedModules`: If you use angular.bootstrap(...) to launch your application, you need to define the main app module as a loaded module.
 	```js
 	angular.bootstrap(document.body, ['test']);
 	```
@@ -308,11 +308,11 @@ The options are:
 	});
 	```
 	```js
-	$ocLazyLoad.load('TestModule'});
+	$ocLazyLoad.load('TestModule');
 	```
 
 
-## With your router
+## Works well with your router
 `$ocLazyLoad` works well with routers and especially [ui-router](https://github.com/angular-ui/ui-router). Since it returns a promise, use the [resolve property](https://github.com/angular-ui/ui-router/wiki#resolve) to make sure that your components are loaded before the view is resolved:
 ```js
 $stateProvider.state('index', {
@@ -399,16 +399,16 @@ $stateProvider.state('index', {
 ##Other functions
 `$ocLazyLoad` provides a few other functions that might help you in a few specific cases:
 
-- `setModuleConfig(moduleConfig)`: Let you define a module config object
+- `setModuleConfig(moduleConfig)`: Lets you define a module config object
 
-- `getModuleConfig(moduleName)`: Let you get a module config object
+- `getModuleConfig(moduleName)`: Lets you get a module config object
 
 - `getModules()`: Returns the list of loaded modules
 
-- `isLoaded(modulesNames)`: Let you check if a module (or a list of modules) has been loaded into Angular or not
+- `isLoaded(modulesNames)`: Lets you check if a module (or a list of modules) has been loaded into Angular or not
 
 
 ##Contribute
-If you want to get started and the docs are not enough, see the examples in the 'example' folder !
+If you want to get started and the docs are not enough, see the examples in the 'example' folder!
 
 If you want to contribute, it would be really awesome to add some tests, or more examples :)
