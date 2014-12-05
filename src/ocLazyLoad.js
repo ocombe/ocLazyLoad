@@ -789,19 +789,19 @@
         if(newModule) { // new module
           regModules.push(moduleName);
           register(providers, moduleFn.requires, params);
-        }
-        if(moduleFn._runBlocks.length > 0) {
-          // new run blocks detected! Replace the old ones (if existing)
-          runBlocks[moduleName] = [];
-          while(moduleFn._runBlocks.length > 0) {
-            runBlocks[moduleName].push(moduleFn._runBlocks.shift());
+          if(moduleFn._runBlocks.length > 0) {
+            // new run blocks detected! Replace the old ones (if existing)
+            runBlocks[moduleName] = [];
+            while(moduleFn._runBlocks.length > 0) {
+              runBlocks[moduleName].push(moduleFn._runBlocks.shift());
+            }
           }
+          if(angular.isDefined(runBlocks[moduleName]) && (newModule || params.rerun)) {
+            tempRunBlocks = tempRunBlocks.concat(runBlocks[moduleName]);
+          }
+          invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);
+          invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
         }
-        if(angular.isDefined(runBlocks[moduleName]) && (newModule || params.rerun)) {
-          tempRunBlocks = tempRunBlocks.concat(runBlocks[moduleName]);
-        }
-        invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);
-        invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
         broadcast(newModule ? 'ocLazyLoad.moduleLoaded' : 'ocLazyLoad.moduleReloaded', moduleName);
         registerModules.pop();
         justLoaded.push(moduleName);
