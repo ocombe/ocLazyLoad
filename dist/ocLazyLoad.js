@@ -266,7 +266,7 @@
           var pushFile = function(path) {
             cachePromise = filesCache.get(path);
             if(angular.isUndefined(cachePromise) || params.cache === false) {
-              if(/\.css[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
+              if(/\.(css|less)[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
                 cssFiles.push(path);
               } else if(/\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
                 templatesFiles.push(path);
