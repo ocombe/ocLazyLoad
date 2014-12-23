@@ -1,0 +1,22 @@
+<div>
+	<h3>Load external libs (not angular-based):</h3>
+	<p><button class="btn btn-info" ng-click="loadBootstrap()" ng-disabled="bootstrapLoaded">Load Bootstrap</button></p>
+</div>
+
+<div>
+	<h3>Load a module by loading a state:</h3>
+	<p><a ui-sref="modal()" ng-if="!openModal">Go to "modal" state</a></p>
+	<p><button class="btn btn-info" ng-click="openModal()" ng-if="openModal">Open modal</button></p>
+</div>
+
+<div>
+	<h3>Autoload a complete module with dependencies and templates using the directive:</h3>
+
+	<!-- gridModule has been defined in the app config -->
+	<div oc-lazy-load="gridModule">
+		<div ng-controller="GridModuleCtrl">
+			<span>{{test}}</span><br/>
+			<div ui-grid="gridOptions" class="gridStyle"></div>
+		</div>
+	</div>
+</div>

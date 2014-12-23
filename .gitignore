@@ -43,7 +43,9 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Mac crap
+#############
+## Mac crap
+#############
 .DS_Store
 
 
@@ -55,7 +57,6 @@ nbproject
 manifest.mf
 build.xml
 
-.project
 .settings
 .idea/*
 *.iml
@@ -68,5 +69,4 @@ public
 node_modules/*
 npm-debug.log
 bower_components
-
-test/test-results.xml
+coverage

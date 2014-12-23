@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:ng="http://angularjs.org" ng-app="app">
+	<head>
+		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.20/angular.min.js"></script>
+		<script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+		<script type="text/javascript" src="js/ocLazyLoad.js"></script>
+		<script type="text/javascript" src="js/app.js"></script>
+        <style>
+            .gridStyle {
+                border: 1px solid rgb(212, 212, 212);
+                width: 400px;
+                height: 200px
+            }
+        </style>
+	</head>
+
+    <body class="container">
+	    <h1 class="page-header">$ocLazyLoad</h1>
+	    <p>
+		    With ocLazyLoad you can lazy load js / css / templates with a service and/or a directive.<br/>
+            <small><i>If you get on error when you load the page the first time, don't forget to use `bower install` to download the libraries used in this example.</i></small>
+	    </p>
+	    <div ui-view="lazyLoadView"></div>
+    </body>
+</html>

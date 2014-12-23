@@ -1,0 +1,1 @@
+Use `bower install` to download the libraries used in this example.

@@ -1,24 +1,17 @@
 {
-  "name": "ocLazyLoad",
-  "main": "ocLazyLoad.min.js",
-  "version": "0.0.3",
-  "homepage": "https://github.com/ocombe/ocLazyLoad",
-  "authors": [
-    "Olivier Combe <olivier.combe@gmail.com>"
-  ],
+  "name": "oclazyload",
+  "version": "0.5.1",
   "description": "Load modules on demand (lazy load) with angularJS",
-  "keywords": [
-    "lazy load",
-	"lazy-load",
-	"load on demand",
-	"module",
-	"angular",
-	"angularJS"
-  ],
+  "main": "dist/ocLazyLoad.min.js",
+  "homepage": "https://github.com/ocombe/ocLazyLoad",
+  "authors": ["Olivier Combe <olivier.combe@gmail.com>"],
   "license": "MIT",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components"
-  ]
+  "keywords": ["lazy load", "lazy-load", "load on demand", "module", "angular", "angularJS"],
+  "ignore": ["**/.*", "node_modules", "bower_components", "src", "gulpfile.js", "package.json", "changelog.js", "validate-commit-msg.js", "tests", "karma.conf.js"],
+  "devDependencies": {
+    "angular-mocks": "~1.3.2"
+  },
+  "dependencies": {
+    "angular": "1.2.x - 1.3.x"
+  }
 }
