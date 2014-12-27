@@ -409,6 +409,6 @@ $stateProvider.state('index', {
 
 
 ##Contribute
-If you want to get started and the docs are not enough, see the examples in the 'example' folder!
+If you want to get started and the docs are not enough, see the examples in the 'examples' folder!
 
 If you want to contribute, it would be really awesome to add some tests, or more examples :)
