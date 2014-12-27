@@ -5,7 +5,7 @@ Load modules on demand (lazy load) in AngularJS
 
 ## Key features
 - Dependencies are automatically loaded
-- Debugger like (no eval code)
+- Debugger friendly (no eval code)
 - The ability to mix normal boot and load on demand
 - Load via the service or the directive
 - Use the embedded async loader or use your own (requireJS, ...)
