@@ -5,7 +5,7 @@ Load modules on demand (lazy load) in AngularJS
 
 ## Key features
 - Dependencies are automatically loaded
-- Debugger like (no eval code)
+- Debugger friendly (no eval code)
 - The ability to mix normal boot and load on demand
 - Load via the service or the directive
 - Use the embedded async loader or use your own (requireJS, ...)
@@ -248,7 +248,7 @@ angular.module('app').config(['$ocLazyLoadProvider', function($ocLazyLoadProvide
 ```
 
 The options are:
-- `jsLoader`: You can use your own async loader. The one provided with $ocLazyLoad is based on $script.js, but you can use requireJS or any other async loader that works with the following syntax: 
+- `jsLoader`: You can use your own async loader. The one provided with $ocLazyLoad is based on $script.js, but you can use requireJS or any other async loader that works with the following syntax:
 	```js
 	$ocLazyLoadProvider.config({
 		jsLoader: function([Array of files], callback, params);
@@ -409,6 +409,6 @@ $stateProvider.state('index', {
 
 
 ##Contribute
-If you want to get started and the docs are not enough, see the examples in the 'example' folder!
+If you want to get started and the docs are not enough, see the examples in the 'examples' folder!
 
 If you want to contribute, it would be really awesome to add some tests, or more examples :)
