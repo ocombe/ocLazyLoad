@@ -248,7 +248,7 @@ angular.module('app').config(['$ocLazyLoadProvider', function($ocLazyLoadProvide
 ```
 
 The options are:
-- `jsLoader`: You can use your own async loader. The one provided with $ocLazyLoad is based on $script.js, but you can use requireJS or any other async loader that works with the following syntax: 
+- `jsLoader`: You can use your own async loader. The one provided with $ocLazyLoad is based on $script.js, but you can use requireJS or any other async loader that works with the following syntax:
 	```js
 	$ocLazyLoadProvider.config({
 		jsLoader: function([Array of files], callback, params);
