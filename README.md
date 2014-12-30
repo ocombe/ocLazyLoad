@@ -25,7 +25,7 @@ There are multiple ways to use `$ocLazyLoad` to load your files, just choose the
 If you decide to use ocLazyLoad with requireJS, you must declare the bootstraped module in the configuration of the provider. More info [here](#loaded-modules)
 
 ###### More examples / tutorials / articles
-You can find two basic examples in the example folder. If you need more, check out these links:
+You can find three basic examples in the example folder. If you need more, check out these links:
 - Lazy loading with requirejs, ocLazyLoad and ui-router: [using the templateProvider](http://plnkr.co/edit/OGvi01?p=preview) / [using the uiRouterDecorator](http://plnkr.co/edit/6CLDsz?p=preview) - by @gilbox
 - Lazy Loading ui-router states with requirejs, ocLazyLoad and ui-router-extras futureStates, [part 1](http://bardo.io/posts/oclazyload-future-states/) / [part 2](http://bardo.io/posts/ng-deferred-bootstrap-like-with-oclazyload/) - by @kbdaitch
 - Lazy loading Angular modules with ocLazyLoad, [part 1](https://egghead.io/lessons/angularjs-lazy-loading-angular-modules-with-oclazyload) / [part 2](https://egghead.io/lessons/angularjs-lazy-loading-modules-with-ui-router-and-oclazyload) / [part 3](https://egghead.io/lessons/angularjs-simple-lazy-loaded-angular-module-syntax-with-oclazyload) / [part 4](https://egghead.io/lessons/angularjs-lazy-loading-non-angular-libraries-with-oclazyload) - An AngularJS lesson by [@johnlindquist](https://twitter.com/johnlindquist) on [egghead.io](https://egghead.io/)
