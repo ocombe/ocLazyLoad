@@ -1,3 +1,20 @@
+<a name="0.5.2"></a>
+# 0.5.2 (2014-12-30)
+
+
+## Bug Fixes
+
+- use init for bootstrapped apps & removed the need for loadedModules
+ ([01936cd6](https://github.com/ocombe/ocLazyLoad/commit/01936cd6fe0e0f89a203408ee0bbb927f5b44d07),
+ [#84](https://github.com/ocombe/ocLazyLoad/issues/84), [#102](https://github.com/ocombe/ocLazyLoad/issues/102), [#109](https://github.com/ocombe/ocLazyLoad/issues/109))
+
+
+## Documentation
+
+- added a link to a new lesson from egghead.io
+ ([ef8d2871](https://github.com/ocombe/ocLazyLoad/commit/ef8d2871a445b29588f779a27cb3b702d0da6a13))
+
+
 <a name="0.5.1"></a>
 # 0.5.1 (2014-11-20)
 
