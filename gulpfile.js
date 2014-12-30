@@ -23,8 +23,6 @@ var build = function(newVer) {
 	return gulp.src('src/ocLazyLoad.js')
 		.pipe(header(banner, {pkg: pkg}))
 		.pipe(gulp.dest('dist'))
-		.pipe(gulp.dest('examples/example1/js/'))
-		.pipe(gulp.dest('examples/example2/js/'))
 		.pipe(uglify())
 		.pipe(header(banner, {pkg: pkg}))
 		.pipe(rename({suffix: '.min'}))
