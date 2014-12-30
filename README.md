@@ -21,9 +21,6 @@ Load modules on demand (lazy load) in AngularJS
 With $ocLazyLoad you can load angular modules, but if you want to load controllers / services / filters / ... without defining a new module it's entirely possible, just use the name an existing module (your app name for example).
 There are multiple ways to use `$ocLazyLoad` to load your files, just choose the one that fits you the best.
 
-###### Using requireJS:
-If you decide to use ocLazyLoad with requireJS, you must declare the bootstraped module in the configuration of the provider. More info [here](#loaded-modules)
-
 ###### More examples / tutorials / articles
 You can find three basic examples in the example folder. If you need more, check out these links:
 - Lazy loading with requirejs, ocLazyLoad and ui-router: [using the templateProvider](http://plnkr.co/edit/OGvi01?p=preview) / [using the uiRouterDecorator](http://plnkr.co/edit/6CLDsz?p=preview) - by @gilbox
@@ -285,16 +282,6 @@ The options are:
 	```js
 	$scope.$on('ocLazyLoad.moduleLoaded', function(e, module) {
 		console.log('module loaded', module);
-	});
-	```
-
-- <a name="loaded-modules"></a>`loadedModules`: If you use angular.bootstrap(...) to launch your application, you need to define the main app module as a loaded module.
-	```js
-	angular.bootstrap(document.body, ['test']);
-	```
-	```js
-	$ocLazyLoadProvider.config({
-	    loadedModules: ['test']
 	});
 	```
 

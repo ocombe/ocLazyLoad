@@ -1,6 +1,7 @@
 (function() {
   'use strict';
   var regModules = ['ng'],
+    initModules = [],
     regInvokes = {},
     regConfigs = [],
     justLoaded = [],
@@ -618,17 +619,6 @@
           templatesLoader = config.templatesLoader;
         }
 
-        // for bootstrap apps, we need to define the main module name
-        if(angular.isDefined(config.loadedModules)) {
-          var addRegModule = function(loadedModule) {
-            if(regModules.indexOf(loadedModule) < 0) {
-              regModules.push(loadedModule);
-              angular.forEach(angular.module(loadedModule).requires, addRegModule);
-            }
-          };
-          angular.forEach(config.loadedModules, addRegModule);
-        }
-
         // If we want to define modules configs
         if(angular.isDefined(config.modules)) {
           if(angular.isArray(config.modules)) {
@@ -863,62 +853,69 @@
    * @param element
    */
   function init(element) {
-    var elements = [element],
-      appElement,
-      moduleName,
-      names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
-      NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/;
+    if(initModules.length === 0) {
+      var elements = [element],
+        names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
+        NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/,
+        append = function append(elm) {
+          return (elm && elements.push(elm));
+        };
 
-    function append(elm) {
-      return (elm && elements.push(elm));
+      angular.forEach(names, function(name) {
+        names[name] = true;
+        append(document.getElementById(name));
+        name = name.replace(':', '\\:');
+        if(element[0].querySelectorAll) {
+          angular.forEach(element[0].querySelectorAll('.' + name), append);
+          angular.forEach(element[0].querySelectorAll('.' + name + '\\:'), append);
+          angular.forEach(element[0].querySelectorAll('[' + name + ']'), append);
+        }
+      });
+
+      angular.forEach(elements, function(elm) {
+        if(initModules.length === 0) {
+          var className = ' ' + element.className + ' ';
+          var match = NG_APP_CLASS_REGEXP.exec(className);
+          if(match) {
+            initModules.push((match[2] || '').replace(/\s+/g, ','));
+          } else {
+            angular.forEach(elm.attributes, function(attr) {
+              if(initModules.length === 0 && names[attr.name]) {
+                initModules.push(attr.value);
+              }
+            });
+          }
+        }
+      });
+    }
+    if(initModules.length === 0) {
+      throw 'No module found during bootstrap, unable to init ocLazyLoad';
     }
 
-    angular.forEach(names, function(name) {
-      names[name] = true;
-      append(document.getElementById(name));
-      name = name.replace(':', '\\:');
-      if(element[0].querySelectorAll) {
-        angular.forEach(element[0].querySelectorAll('.' + name), append);
-        angular.forEach(element[0].querySelectorAll('.' + name + '\\:'), append);
-        angular.forEach(element[0].querySelectorAll('[' + name + ']'), append);
+    var addReg = function addReg(moduleName) {
+      if(regModules.indexOf(moduleName) === -1) {
+        // register existing modules
+        regModules.push(moduleName);
+        var mainModule = angular.module(moduleName);
+
+        // register existing components (directives, services, ...)
+        invokeQueue(null, mainModule._invokeQueue, moduleName);
+        invokeQueue(null, mainModule._configBlocks, moduleName); // angular 1.3+
+
+        angular.forEach(mainModule.requires, addReg);
       }
+    };
+
+    angular.forEach(initModules, function(moduleName) {
+      addReg(moduleName);
     });
-
-    //TODO: search the script tags for angular.bootstrap
-    angular.forEach(elements, function(elm) {
-      if(!appElement) {
-        var className = ' ' + element.className + ' ';
-        var match = NG_APP_CLASS_REGEXP.exec(className);
-        if(match) {
-          appElement = elm;
-          moduleName = (match[2] || '').replace(/\s+/g, ',');
-        } else {
-          angular.forEach(elm.attributes, function(attr) {
-            if(!appElement && names[attr.name]) {
-              appElement = elm;
-              moduleName = attr.value;
-            }
-          });
-        }
-      }
-    });
-
-    if(appElement) {
-      (function addReg(moduleName) {
-        if(regModules.indexOf(moduleName) === -1) {
-          // register existing modules
-          regModules.push(moduleName);
-          var mainModule = angular.module(moduleName);
-
-          // register existing components (directives, services, ...)
-          invokeQueue(null, mainModule._invokeQueue, moduleName);
-          invokeQueue(null, mainModule._configBlocks, moduleName); // angular 1.3+
-
-          angular.forEach(mainModule.requires, addReg);
-        }
-      })(moduleName);
-    }
   }
+
+  var bootstrap = angular.bootstrap;
+  angular.bootstrap = function(element, modules, config) {
+    initModules = modules.slice(); // make a clean copy
+    return bootstrap(element, modules, config);
+  };
 
   // Array.indexOf polyfill for IE8
   if(!Array.prototype.indexOf) {

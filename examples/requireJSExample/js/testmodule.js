@@ -1,7 +1,6 @@
 angular.module('test', ['oc.lazyLoad'])
 	.config(['$ocLazyLoadProvider', function($ocLazyLoadProvider) {
 		$ocLazyLoadProvider.config({
-			loadedModules: ['test'],
 			jsLoader: requirejs,
 			debug: true
 		});
