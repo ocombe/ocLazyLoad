@@ -394,6 +394,9 @@ $stateProvider.state('index', {
 
 - `isLoaded(modulesNames)`: Lets you check if a module (or a list of modules) has been loaded into Angular or not
 
+`angular` is hacked and provided a special function to allow manual init of bootstrapped modules:
+
+- `setOcLazyLoadInitModules(modules)`: Lets you manually define an array of bootstraped modules. Usefull for unit testing in Karma. Karma doesn't bootstrap angular automatically or manually. You must manually init modules needed in your unit test.
 
 ##Contribute
 If you want to get started and the docs are not enough, see the examples in the 'examples' folder!
