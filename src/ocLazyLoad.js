@@ -917,6 +917,14 @@
     return bootstrap(element, modules, config);
   };
 
+  /**
+   * Manually init modules, used for unit testing
+   * @param {array} modules [list of modules needed for init]
+   */
+  angular.setOcLazyLoadInitModules = function(modules) {
+    initModules = modules;
+  };
+
   // Array.indexOf polyfill for IE8
   if(!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement, fromIndex) {
