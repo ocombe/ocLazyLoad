@@ -689,8 +689,11 @@
    * @returns {boolean}
    */
   function moduleExists(moduleName) {
+    if(!angular.isString(moduleName)) {
+      return false;
+    }
     try {
-      return angular.module(moduleName);
+      return ngModuleFct(moduleName);
     } catch(e) {
       if(/No module/.test(e) || (e.message.indexOf('$injector:nomod') > -1)) {
         return false;
@@ -700,7 +703,7 @@
 
   function getModule(moduleName) {
     try {
-      return angular.module(moduleName);
+      return ngModuleFct(moduleName);
     } catch(e) {
       // this error message really suxx
       if(/No module/.test(e) || (e.message.indexOf('$injector:nomod') > -1)) {
@@ -775,7 +778,7 @@
           continue;
         }
         var newModule = regModules.indexOf(moduleName) === -1;
-        moduleFn = angular.module(moduleName);
+        moduleFn = ngModuleFct(moduleName);
         if(newModule) { // new module
           regModules.push(moduleName);
           register(providers, moduleFn.requires, params);
@@ -888,6 +891,7 @@
         }
       });
     }
+
     if(initModules.length === 0) {
       throw 'No module found during bootstrap, unable to init ocLazyLoad';
     }
@@ -909,13 +913,45 @@
     angular.forEach(initModules, function(moduleName) {
       addReg(moduleName);
     });
+
+    initModules = []; // reset for next bootstrap
+    angular.module = ngModuleFct; // restore angular.module
   }
 
-  var bootstrap = angular.bootstrap;
+  var bootstrapFct = angular.bootstrap;
   angular.bootstrap = function(element, modules, config) {
     initModules = modules.slice(); // make a clean copy
-    return bootstrap(element, modules, config);
+    return bootstrapFct(element, modules, config);
   };
+
+  var addToInit = function addToInit(name) {
+    if(angular.isString(name) && initModules.indexOf(name) === -1) {
+      initModules.push(name);
+    }
+  };
+
+  var ngModuleFct = angular.module;
+  angular.module = function(name, requires, configFn) {
+    addToInit(name);
+    return ngModuleFct(name, requires, configFn);
+  };
+
+  // add unit tests support
+  if((window.jasmine || window.mocha) && angular.isDefined(angular.mock)) {
+    var ngMockModuleFct = angular.mock.module;
+    var windowMockModuleFct = window.module;
+    window.module = angular.mock.module = function(module) {
+      var moduleFns = Array.prototype.slice.call(arguments, 0);
+      if (angular.isObject(module) && !angular.isArray(module)) {
+        angular.forEach(module, function(value, key) {
+          addToInit(key);
+        });
+      } else if(angular.isString(module)) {
+        addToInit(module);
+      }
+      ngMockModuleFct(module);
+    }
+  }
 
   // Array.indexOf polyfill for IE8
   if(!Array.prototype.indexOf) {

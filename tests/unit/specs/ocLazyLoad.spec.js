@@ -1,4 +1,3 @@
-/*globals describe, beforeEach, afterEach, inject, module, it, expect, angular */
 describe('Module: oc.lazyLoad', function() {
   'use strict';
 
@@ -66,7 +65,7 @@ describe('Module: oc.lazyLoad', function() {
     });
 
     it('loadedModules should be working', function() {
-      expect($ocLazyLoad.getModules()).toEqual(['ng', 'app1', 'oc.lazyLoad']);
+      expect($ocLazyLoad.getModules()).toEqual(['ng', 'app1', 'oc.lazyLoad', 'ngMockE2E']);
     });
 
     it('isLoaded should be working', function() {
@@ -145,7 +144,7 @@ describe('Module: oc.lazyLoad', function() {
         window.clearInterval(interval);
         throw err;
       });
-    })
+    });
 
     it('should be able to execute config blocks', function() {
       expect(window.spy.config).toHaveBeenCalledWith('config1');
