@@ -258,13 +258,18 @@
           angular.extend(params || {}, config);
 
           var pushFile = function(path) {
+            var file_type = null;
+            if (typeof path === 'object') {
+                file_type = path.type;
+                path = path.path;
+            }
             cachePromise = filesCache.get(path);
             if(angular.isUndefined(cachePromise) || params.cache === false) {
-              if(/\.(css|less)[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
+              if(file_type === 'css' || /\.(css|less)[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
                 cssFiles.push(path);
-              } else if(/\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
+              } else if(file_type === 'html' || /\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
                 templatesFiles.push(path);
-              } else if(jsFiles.indexOf(path) === -1) {
+              } else if(file_type === 'js' || jsFiles.indexOf(path) === -1) {
                 jsFiles.push(path);
               }
             } else if(cachePromise) {
