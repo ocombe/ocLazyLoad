@@ -53,7 +53,7 @@
           if(debug) {
             $log.info(eventName, params);
           }
-        }
+        };
 
         /**
          * Load a js/css file
@@ -105,10 +105,10 @@
             loaded = 1;
             broadcast('ocLazyLoad.fileLoaded', path);
             deferred.resolve();
-          }
+          };
           el.onerror = function(e) {
             deferred.reject(new Error('Unable to load ' + path));
-          }
+          };
           el.async = params.serie ? 0 : 1;
 
           var insertBeforeElem = anchor.lastChild;
@@ -401,7 +401,7 @@
                 isLoaded = !!moduleExists(module);
               }
               return isLoaded;
-            }
+            };
             if(angular.isString(modulesNames)) {
               modulesNames = [modulesNames];
             }
@@ -591,7 +591,7 @@
 
               // Create a wrapper promise to watch the promise list and resolve it once everything is done.
               return $q.all(promisesList);
-            }
+            };
 
             filesLoader(config, localParams).then(function success() {
               if(moduleName === null) {
@@ -769,7 +769,7 @@
                 provider[args[1]].apply(provider, args[2]);
               }
             }
-          }
+          };
           if(angular.isFunction(args[2][0])) {
             callInvoke(args[2][0]);
           } else if(angular.isArray(args[2][0])) {
@@ -850,7 +850,7 @@
       newInvoke = true;
       regInvokes[moduleName][type].push(invokeName);
       broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
-    }
+    };
     if(angular.isString(invokeList) && regInvokes[moduleName][type].indexOf(invokeList) === -1) {
       onInvoke(invokeList);
     } else if(angular.isObject(invokeList)) {
