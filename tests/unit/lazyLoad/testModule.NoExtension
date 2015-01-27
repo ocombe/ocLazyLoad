@@ -1,43 +1,43 @@
 // ngGrid is also lazy loaded by $ocLazyLoad thanks to the module dependency injection !
-var testModule = angular.module('testModule', []);
+var testModuleNoExt = angular.module('testModuleNoExt', []);
 
 // config blocks
-testModule.config(function() {
+testModuleNoExt.config(function() {
   spy.config('config1');
 });
 
-testModule.config(function() {
+testModuleNoExt.config(function() {
   spy.config('config2');
 });
 
 // run blocks
-testModule.run(function() {
+testModuleNoExt.run(function() {
   spy.run('run1');
 });
 
-testModule.run(function() {
+testModuleNoExt.run(function() {
   spy.run('run2');
 });
 
 // controllers
-testModule.controller('TestCtrlNoExt', function($scope) {
+testModuleNoExt.controller('TestCtrl', function($scope) {
   spy.ctrl('ctrl');
 });
 
 //
-testModule.factory('testServiceNoExt', [function () {
+testModuleNoExt.factory('testService', [function () {
   spy.service('service');
   return {};
 }]);
 
-testModule.filter('testFilterNoExt', function () {
+testModuleNoExt.filter('testFilter', function () {
   spy.filter('filter');
   return function (input) {
     return input;
   }
 });
 
-testModule.directive("test", function () {
+testModuleNoExt.directive("testNoExt", function () {
   spy.directive('directive');
   return {
     restrict: 'E',
@@ -47,7 +47,7 @@ testModule.directive("test", function () {
 });
 
 // redefine directive to check that both won't be invoked (it would throw a [$compile:multidir] Multiple directives)
-testModule.directive("test", function () {
+testModuleNoExt.directive("testNoExt", function () {
   spy.directive('directive');
   return {
     restrict: 'E',
