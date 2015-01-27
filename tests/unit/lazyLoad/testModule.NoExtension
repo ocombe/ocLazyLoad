@@ -20,17 +20,17 @@ testModuleNoExt.run(function() {
 });
 
 // controllers
-testModuleNoExt.controller('TestCtrl', function($scope) {
+testModuleNoExt.controller('TestCtrlNoExt', function($scope) {
   spy.ctrl('ctrl');
 });
 
 //
-testModuleNoExt.factory('testService', [function () {
+testModuleNoExt.factory('testServiceNoExt', [function () {
   spy.service('service');
   return {};
 }]);
 
-testModuleNoExt.filter('testFilter', function () {
+testModuleNoExt.filter('testFilterNoExt', function () {
   spy.filter('filter');
   return function (input) {
     return input;
