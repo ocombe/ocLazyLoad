@@ -149,7 +149,7 @@ describe('Module: oc.lazyLoad', function() {
     it('should be able to lazy load a module when specifying a file type', function(done) {
           var interval = triggerDigests(),
               templateUrl = lazyLoadUrl + 'test.html',
-              testModule = {
+              testModuleNoExt = {
                   name: 'testModuleNoExt',
                   files: [
                       {type: 'js', file: lazyLoadUrl + 'testModule.NoExtension'},
@@ -161,11 +161,11 @@ describe('Module: oc.lazyLoad', function() {
           // create spies for the following tests
           window.spy = jasmine.createSpyObj('spy', ['config', 'run', 'ctrl', 'service', 'filter', 'directive']);
 
-          $ocLazyLoad.load(testModule).then(function success(res){
+          $ocLazyLoad.load(testModuleNoExt).then(function success(res){
               window.clearInterval(interval);
 
               // Test the module loading
-              expect(res).toEqual(testModule);
+              expect(res).toEqual(testModuleNoExt);
               expect(function() { angular.module('testModuleNoExt') }).not.toThrow();
               expect(angular.module('testModuleNoExt')).toBeDefined();
 
