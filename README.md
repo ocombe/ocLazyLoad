@@ -46,6 +46,22 @@ $ocLazyLoad.load({
 });
 ```
 
+Load a single module with multiple files and specify a type where necessary:
+Note: When using the requireJS style formatting, do not specify a file extension. Use one or the other.
+```js
+$ocLazyLoad.load({
+	name: 'TestModule',
+	files: [
+	    'testModule.js',
+	    {type: 'css', path: 'testModuleCtrl'},
+	    {type: 'html', path: 'testModuleCtrl.html'},
+	    {type: 'js', path: 'testModuleCtrl'},
+	    'js!testModuleService',
+	    'less!testModuleLessFile'
+	]
+});
+```
+
 Load multiple modules with one or more files:
 ```js
 $ocLazyLoad.load([{

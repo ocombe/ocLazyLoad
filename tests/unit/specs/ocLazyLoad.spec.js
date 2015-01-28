@@ -146,6 +146,62 @@ describe('Module: oc.lazyLoad', function() {
       });
     });
 
+    it('should be able to lazy load a module when specifying a file type', function(done) {
+          var interval = triggerDigests(),
+              templateUrl = lazyLoadUrl + 'test.html',
+              testModuleNoExt = {
+                  name: 'testModuleNoExt',
+                  files: [
+                      {type: 'js', file: lazyLoadUrl + 'testModule.NoExtension'},
+                      lazyLoadUrl + 'test.css',
+                      'css!' + lazyLoadUrl + 'test.NoExtCss',
+                      templateUrl
+                  ]
+              };
+
+          // create spies for the following tests
+          window.spy = jasmine.createSpyObj('spy', ['config', 'run', 'ctrl', 'service', 'filter', 'directive']);
+
+          $ocLazyLoad.load(testModuleNoExt).then(function success(res){
+              window.clearInterval(interval);
+
+              // Test the module loading
+              expect(res).toEqual(testModuleNoExt);
+              expect(function() { angular.module('testModuleNoExt') }).not.toThrow();
+              expect(angular.module('testModuleNoExt')).toBeDefined();
+
+              // execute controller
+              $controller('TestCtrlNoExt', { $scope: $rootScope.$new() });
+
+              // instantiate service
+              $injector.get('testServiceNoExt');
+
+              // execute filter
+              $filter('testFilterNoExt');
+
+              // Compile a piece of HTML containing the directive
+              element = $compile("<test-no-ext></test-no-ext>")($rootScope.$new());
+
+              // Test the template loading
+              var $templateCache = $injector.get('$templateCache');
+              expect($templateCache.get('/partials/test.html')).toEqual('Test partial content');
+
+              // Test the css loading
+              var links = document.getElementsByTagName('link');
+              expect(links.length).toBeGreaterThan(0);
+              expect(function() { links[links.length - 1].sheet.cssRules; }).not.toThrow(); // this only works if a stylesheet has been loaded
+              expect(links[links.length - 1].sheet.cssRules).toBeDefined();
+
+              // because debug is set to false, we shouldn't have any log
+              $log.assertEmpty();
+
+              done();
+          }, function error(err){
+              window.clearInterval(interval);
+              throw err;
+          });
+      });
+
     it('should be able to execute config blocks', function() {
       expect(window.spy.config).toHaveBeenCalledWith('config1');
       expect(window.spy.config).toHaveBeenCalledWith('config2');
