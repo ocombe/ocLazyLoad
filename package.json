@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "karma start karma.conf.js",
-    "test-dev": "karma start karma.conf.js --single-run=false --browsers=Chrome",
+    "test-dev": "karma start karma.conf.js --single-run=false",
     "build": "gulp build"
   },
   "repository": {

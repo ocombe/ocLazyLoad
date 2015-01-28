@@ -101,7 +101,7 @@
           }
           el.onload = el['onreadystatechange'] = function(e) {
             if((el['readyState'] && !(/^c|loade/.test(el['readyState']))) || loaded) return;
-            el.onload = el['onreadystatechange'] = null
+            el.onload = el['onreadystatechange'] = null;
             loaded = 1;
             broadcast('ocLazyLoad.fileLoaded', path);
             deferred.resolve();
@@ -266,16 +266,15 @@
             cachePromise = filesCache.get(path);
             if(angular.isUndefined(cachePromise) || params.cache === false) {
 
-                // Note that the code below won't cope with a file that has both types of definition.
-                // To fix this, the order of the comparisons could be reversed, but it would mean forcing two
-                // regexp compares for each load "just in case" someone was using the more obscure method.
+              // always check for requirejs syntax just in case
+              if ((m = /^(css|less|html|htm|js)?(?=!)/.exec(path)) !== null) { // Detect file type using preceding type declaration (ala requireJS)
+                file_type = m[1];
+                path = path.substr(m[1].length + 1, path.length);  // Strip the type from the path
+              }
 
               if (!file_type) {
-                if ((m = /[.](css|less|html|htm|js)?$/.exec(path)) != null) {  // Detect file type via file extension
+                if ((m = /[.](css|less|html|htm|js)?$/.exec(path)) !== null) {  // Detect file type via file extension
                     file_type = m[1];
-                } else if ((m = /^(css|less|html|htm|js)?(?=!)/.exec(path)) != null) { // Detect file type using preceding type declaration (ala requireJS)
-                    file_type = m[1];
-                    path = path.substr(m[1].length + 1, path.length);  // Strip the type from the path
                 } else {
                     $log.error('File type could not be determined. ' + path);
                     return;

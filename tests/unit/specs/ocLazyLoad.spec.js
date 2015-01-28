@@ -154,8 +154,7 @@ describe('Module: oc.lazyLoad', function() {
                   files: [
                       {type: 'js', path: lazyLoadUrl + 'testModule.fakejs'},
                       lazyLoadUrl + 'test.css',
-                      'css!' + lazyLoadUrl + 'test.fakecss',
-                      templateUrl
+                      'html!' + lazyLoadUrl + 'test.html'
                   ]
               };
 
