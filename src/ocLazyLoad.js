@@ -843,19 +843,38 @@
       regInvokes[moduleName] = {};
     }
     if(angular.isUndefined(regInvokes[moduleName][type])) {
-      regInvokes[moduleName][type] = [];
+      regInvokes[moduleName][type] = {};
     }
-    var onInvoke = function(invokeName) {
+    var onInvoke = function(invokeName, signature) {
       newInvoke = true;
-      regInvokes[moduleName][type].push(invokeName);
+      regInvokes[moduleName][type][invokeName].push(signature);
       broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
     };
-    if(angular.isString(invokeList) && regInvokes[moduleName][type].indexOf(invokeList) === -1) {
-      onInvoke(invokeList);
-    } else if(angular.isObject(invokeList)) {
+    var signature = function(data) {
+      if(angular.isArray(data)) { // arrays are objects, we need to test for it first
+        return data.toString();
+      } else if(angular.isObject(data)) { // constants & values for example
+        return JSON.stringify(data);
+      } else {
+        return data.toString();
+      }
+    };
+    if(angular.isString(invokeList)) {
+      if(angular.isUndefined(regInvokes[moduleName][type][invokeList])) {
+        regInvokes[moduleName][type][invokeList] = [];
+      }
+      if(regInvokes[moduleName][type][invokeList].indexOf(signature(args[2][1])) === -1) {
+        onInvoke(invokeList, signature(args[2][1]));
+      }
+    } else if(angular.isObject(invokeList)) { // decorators for example
       angular.forEach(invokeList, function(invoke) {
-        if(angular.isString(invoke) && regInvokes[moduleName][type].indexOf(invoke) === -1) {
-          onInvoke(invoke);
+        if(angular.isString(invoke)) {
+          if(angular.isUndefined(regInvokes[moduleName][type][invoke])) {
+            regInvokes[moduleName][type][invoke] = [];
+          }
+          if(regInvokes[moduleName][type][invoke].indexOf(signature(invokeList[1])) === -1) {
+            onInvoke(invoke, signature(invokeList[1]));
+          }
         }
       });
     } else {
