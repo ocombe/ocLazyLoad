@@ -152,9 +152,9 @@ describe('Module: oc.lazyLoad', function() {
               testModuleNoExt = {
                   name: 'testModuleNoExt',
                   files: [
-                      {type: 'js', path: lazyLoadUrl + 'testModule.NoExtension'},
+                      {type: 'js', path: lazyLoadUrl + 'testModule.fakejs'},
                       lazyLoadUrl + 'test.css',
-                      'css!' + lazyLoadUrl + 'test.NoExtCss',
+                      'css!' + lazyLoadUrl + 'test.fakecss',
                       templateUrl
                   ]
               };
