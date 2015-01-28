@@ -1,0 +1,57 @@
+// ngGrid is also lazy loaded by $ocLazyLoad thanks to the module dependency injection !
+var testModuleNoExt = angular.module('testModuleNoExt', []);
+
+// config blocks
+testModuleNoExt.config(function() {
+  spy.config('config1');
+});
+
+testModuleNoExt.config(function() {
+  spy.config('config2');
+});
+
+// run blocks
+testModuleNoExt.run(function() {
+  spy.run('run1');
+});
+
+testModuleNoExt.run(function() {
+  spy.run('run2');
+});
+
+// controllers
+testModuleNoExt.controller('TestCtrlNoExt', function($scope) {
+  spy.ctrl('ctrl');
+});
+
+//
+testModuleNoExt.factory('testServiceNoExt', [function () {
+  spy.service('service');
+  return {};
+}]);
+
+testModuleNoExt.filter('testFilterNoExt', function () {
+  spy.filter('filter');
+  return function (input) {
+    return input;
+  }
+});
+
+testModuleNoExt.directive("testNoExt", function () {
+  spy.directive('directive');
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<div>Test template {{1 + 1}}</div>'
+  };
+});
+
+// redefine directive to check that both won't be invoked (it would throw a [$compile:multidir] Multiple directives)
+testModuleNoExt.directive("testNoExt", function () {
+  spy.directive('directive');
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<div>Test template {{1 + 1}}</div>'
+  };
+});

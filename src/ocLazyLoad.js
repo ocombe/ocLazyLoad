@@ -53,7 +53,7 @@
           if(debug) {
             $log.info(eventName, params);
           }
-        }
+        };
 
         /**
          * Load a js/css file
@@ -105,10 +105,10 @@
             loaded = 1;
             broadcast('ocLazyLoad.fileLoaded', path);
             deferred.resolve();
-          }
+          };
           el.onerror = function(e) {
             deferred.reject(new Error('Unable to load ' + path));
-          }
+          };
           el.async = params.serie ? 0 : 1;
 
           var insertBeforeElem = anchor.lastChild;
@@ -161,7 +161,7 @@
           }
 
           return deferred.promise;
-        }
+        };
 
         if(angular.isUndefined(jsLoader)) {
           /**
@@ -182,7 +182,7 @@
             }, function error(err) {
               callback(err);
             });
-          }
+          };
           jsLoader.ocLazyLoadLoader = true;
         }
 
@@ -205,7 +205,7 @@
             }, function error(err) {
               callback(err);
             });
-          }
+          };
           cssLoader.ocLazyLoadLoader = true;
         }
 
@@ -244,7 +244,7 @@
             }, function error(err) {
               callback(err);
             });
-          }
+          };
           templatesLoader.ocLazyLoadLoader = true;
         }
 
@@ -258,19 +258,43 @@
           angular.extend(params || {}, config);
 
           var pushFile = function(path) {
+            var file_type = null, m;
+            if (typeof path === 'object') {
+                file_type = path.type;
+                path = path.path;
+            }
             cachePromise = filesCache.get(path);
             if(angular.isUndefined(cachePromise) || params.cache === false) {
-              if(/\.(css|less)[^\.]*$/.test(path) && cssFiles.indexOf(path) === -1) {
+
+                // Note that the code below won't cope with a file that has both types of definition.
+                // To fix this, the order of the comparisons could be reversed, but it would mean forcing two
+                // regexp compares for each load "just in case" someone was using the more obscure method.
+
+              if (!file_type) {
+                if ((m = /[.](css|less|html|htm|js)?$/.exec(path)) != null) {  // Detect file type via file extension
+                    file_type = m[1];
+                } else if ((m = /^(css|less|html|htm|js)?(?=!)/.exec(path)) != null) { // Detect file type using preceding type declaration (ala requireJS)
+                    file_type = m[1];
+                    path = path.substr(m[1].length + 1, path.length);  // Strip the type from the path
+                } else {
+                    $log.error('File type could not be determined. ' + path);
+                    return;
+                }
+              }
+
+              if((file_type === 'css' || file_type === 'less') && cssFiles.indexOf(path) === -1) {
                 cssFiles.push(path);
-              } else if(/\.(htm|html)[^\.]*$/.test(path) && templatesFiles.indexOf(path) === -1) {
+              } else if ((file_type === 'html' || file_type === 'htm') && templatesFiles.indexOf(path) === -1) {
                 templatesFiles.push(path);
-              } else if(jsFiles.indexOf(path) === -1) {
+              } else if((file_type === 'js') || jsFiles.indexOf(path) === -1) {
                 jsFiles.push(path);
+              } else {
+                  $log.error('File type is not valid. ' + path);
               }
             } else if(cachePromise) {
               promises.push(cachePromise);
             }
-          }
+          };
 
           if(params.serie) {
             pushFile(params.files.shift());
@@ -326,7 +350,7 @@
           } else {
             return $q.all(promises);
           }
-        }
+        };
 
         return {
           /**
@@ -377,7 +401,7 @@
                 isLoaded = !!moduleExists(module);
               }
               return isLoaded;
-            }
+            };
             if(angular.isString(modulesNames)) {
               modulesNames = [modulesNames];
             }
@@ -567,7 +591,7 @@
 
               // Create a wrapper promise to watch the promise list and resolve it once everything is done.
               return $q.all(promisesList);
-            }
+            };
 
             filesLoader(config, localParams).then(function success() {
               if(moduleName === null) {
@@ -745,7 +769,7 @@
                 provider[args[1]].apply(provider, args[2]);
               }
             }
-          }
+          };
           if(angular.isFunction(args[2][0])) {
             callInvoke(args[2][0]);
           } else if(angular.isArray(args[2][0])) {
@@ -826,7 +850,7 @@
       newInvoke = true;
       regInvokes[moduleName][type].push(invokeName);
       broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
-    }
+    };
     if(angular.isString(invokeList) && regInvokes[moduleName][type].indexOf(invokeList) === -1) {
       onInvoke(invokeList);
     } else if(angular.isObject(invokeList)) {
