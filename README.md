@@ -3,6 +3,17 @@ ocLazyLoad [![Build Status](https://travis-ci.org/ocombe/ocLazyLoad.svg)](https:
 
 Load modules on demand (lazy load) in AngularJS
 
+## Table of contents
+1. [Key features](#key-features)
+2. [Usage](#usage)
+3. [Service](#service)
+4. [Directive](#directive)
+5. [Dependency injection](#bonus-use-dependency-injection)
+6. [Configuration](#configuration)
+7. [Router usage](#works-well-with-your-router)
+8. [Other function](#other-functions)
+9. [Contribute](#contribute)
+
 ## Key features
 - Dependencies are automatically loaded
 - Debugger friendly (no eval code)
@@ -399,7 +410,7 @@ $stateProvider.state('index', {
 ```
 
 
-##Other functions
+## Other functions
 `$ocLazyLoad` provides a few other functions that might help you in a few specific cases:
 
 - `setModuleConfig(moduleConfig)`: Lets you define a module config object
@@ -411,7 +422,7 @@ $stateProvider.state('index', {
 - `isLoaded(modulesNames)`: Lets you check if a module (or a list of modules) has been loaded into Angular or not
 
 
-##Contribute
+## Contribute
 If you want to get started and the docs are not enough, see the examples in the 'examples' folder!
 
 If you want to contribute, it would be really awesome to add some tests, or more examples :)
