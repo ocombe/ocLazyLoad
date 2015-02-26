@@ -940,8 +940,8 @@
       });
     }
 
-    if(initModules.length === 0) {
-      throw 'No module found during bootstrap, unable to init ocLazyLoad';
+    if(modulesToLoad.length === 0 && !((window.jasmine || window.mocha) && angular.isDefined(angular.mock))) {
+      console.error('No module found during bootstrap, unable to init ocLazyLoad. You should always use the ng-app directive or angular.boostrap when you use ocLazyLoad.');
     }
 
     var addReg = function addReg(moduleName) {
