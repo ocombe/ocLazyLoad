@@ -1,13 +1,13 @@
 (function() {
   'use strict';
   var regModules = ['ng'],
-    initModules = [],
     regInvokes = {},
     regConfigs = [],
     justLoaded = [],
     runBlocks = {},
     ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
-    broadcast = angular.noop;
+    broadcast = angular.noop,
+    modulesToLoad = [];
 
   ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector', '$animateProvider',
     function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
@@ -904,7 +904,7 @@
    * @param element
    */
   function init(element) {
-    if(initModules.length === 0) {
+    if(modulesToLoad.length === 0) {
       var elements = [element],
         names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
         NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/,
@@ -924,15 +924,15 @@
       });
 
       angular.forEach(elements, function(elm) {
-        if(initModules.length === 0) {
+        if(modulesToLoad.length === 0) {
           var className = ' ' + element.className + ' ';
           var match = NG_APP_CLASS_REGEXP.exec(className);
           if(match) {
-            initModules.push((match[2] || '').replace(/\s+/g, ','));
+            modulesToLoad.push((match[2] || '').replace(/\s+/g, ','));
           } else {
             angular.forEach(elm.attributes, function(attr) {
-              if(initModules.length === 0 && names[attr.name]) {
-                initModules.push(attr.value);
+              if(modulesToLoad.length === 0 && names[attr.name]) {
+                modulesToLoad.push(attr.value);
               }
             });
           }
@@ -958,23 +958,23 @@
       }
     };
 
-    angular.forEach(initModules, function(moduleName) {
+    angular.forEach(modulesToLoad, function(moduleName) {
       addReg(moduleName);
     });
 
-    initModules = []; // reset for next bootstrap
     angular.module = ngModuleFct; // restore angular.module
+    modulesToLoad = []; // reset for next bootstrap
   }
 
   var bootstrapFct = angular.bootstrap;
   angular.bootstrap = function(element, modules, config) {
-    initModules = modules.slice(); // make a clean copy
+    modulesToLoad = modules.slice(); // make a clean copy
     return bootstrapFct(element, modules, config);
   };
 
   var addToInit = function addToInit(name) {
-    if(angular.isString(name) && initModules.indexOf(name) === -1) {
-      initModules.push(name);
+    if(angular.isString(name) && modulesToLoad.indexOf(name) === -1) {
+      modulesToLoad.push(name);
     }
   };
 
