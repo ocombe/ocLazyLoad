@@ -55,3 +55,7 @@ testModule.directive("test", function () {
     template: '<div>Test template {{1 + 1}}</div>'
   };
 });
+
+testModule.constant("myConst1", "something");
+testModule.constant("myConst2", undefined);
+testModule.constant("myConst3", null);

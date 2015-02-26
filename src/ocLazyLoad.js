@@ -856,7 +856,11 @@
       } else if(angular.isObject(data)) { // constants & values for example
         return JSON.stringify(data);
       } else {
-        return data.toString();
+        if(angular.isDefined(data) && data !== null) {
+          return data.toString();
+        } else {
+          return data;
+        }
       }
     };
     if(angular.isString(invokeList)) {
