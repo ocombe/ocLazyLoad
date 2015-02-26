@@ -12,10 +12,7 @@
     <script>
       angular.module("LazyLoadTest", ["oc.lazyLoad"])
         .controller("TestController", function($scope, $ocLazyLoad, $compile) {
-          $ocLazyLoad.load({
-            name: "testApp",
-            files: ["js/testApp.js"]
-          }).then(function() {
+          $ocLazyLoad.load("js/testApp.js").then(function() {
             var el, elToAppend;
             elToAppend = $compile('<say-hello to="world"></say-hello>')($scope);
             el = angular.element('#example');

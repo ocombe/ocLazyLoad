@@ -55,19 +55,23 @@ describe('Module: oc.lazyLoad', function() {
       $httpBackend.when('GET', new RegExp(lazyLoadUrl)).passThrough();
     });
 
+    // test 1
     it('service should be defined', function() {
       expect($ocLazyLoad).toBeDefined();
     });
 
+    // test 2
     it('getModules should be working', function() {
       expect($ocLazyLoad.getModules).toBeDefined();
       expect(angular.isArray($ocLazyLoad.getModules())).toBe(true);
     });
 
+    // test 3
     it('loadedModules should be working', function() {
       expect($ocLazyLoad.getModules()).toEqual(['ng', 'app1', 'oc.lazyLoad', 'ngMockE2E']);
     });
 
+    // test 4
     it('isLoaded should be working', function() {
       expect($ocLazyLoad.isLoaded).toBeDefined();
       expect($ocLazyLoad.isLoaded).toThrowError('You need to define the module(s) name(s)');
@@ -77,6 +81,7 @@ describe('Module: oc.lazyLoad', function() {
       expect($ocLazyLoad.isLoaded(['ng', 'noModule'])).toBe(false);
     });
 
+    // test 5
     it('getModuleConfig should be working', function() {
       expect($ocLazyLoad.getModuleConfig).toBeDefined();
       expect($ocLazyLoad.getModuleConfig).toThrowError('You need to give the name of the module to get');
@@ -84,6 +89,7 @@ describe('Module: oc.lazyLoad', function() {
       expect($ocLazyLoad.getModuleConfig('test')).toEqual({name: 'test', files: []});
     });
 
+    // test 6
     it('setModuleConfig should be working', function() {
       expect($ocLazyLoad.setModuleConfig).toBeDefined();
       expect($ocLazyLoad.setModuleConfig).toThrowError('You need to give the module config object to set');
@@ -91,17 +97,15 @@ describe('Module: oc.lazyLoad', function() {
       expect($ocLazyLoad.getModuleConfig('test2')).toEqual({name: 'test2'}); // check if set worked
     });
 
+    // test 7
     it('should be able to lazy load a module', function(done) {
       var interval = triggerDigests(),
         templateUrl = lazyLoadUrl + 'test.html',
-        testModule = {
-          name: 'testModule',
-          files: [
-            lazyLoadUrl + 'testModule.js',
-            lazyLoadUrl + 'test.css',
-            templateUrl
-          ]
-        };
+        testModule = [
+          lazyLoadUrl + 'testModule.js',
+          lazyLoadUrl + 'test.css',
+          templateUrl
+        ];
 
       // create spies for the following tests
       window.spy = jasmine.createSpyObj('spy', ['config', 'run', 'ctrl', 'service', 'filter', 'directive']);
@@ -146,17 +150,14 @@ describe('Module: oc.lazyLoad', function() {
       });
     });
 
+    // test 8
     it('should be able to lazy load a module when specifying a file type', function(done) {
           var interval = triggerDigests(),
-              templateUrl = lazyLoadUrl + 'test.html',
-              testModuleNoExt = {
-                  name: 'testModuleNoExt',
-                  files: [
-                      {type: 'js', path: lazyLoadUrl + 'testModule.fakejs'},
-                      lazyLoadUrl + 'test.css',
-                      'html!' + lazyLoadUrl + 'test.html'
-                  ]
-              };
+              testModuleNoExt = [
+                  {type: 'js', path: lazyLoadUrl + 'testModule.fakejs'},
+                  lazyLoadUrl + 'test.css',
+                  'html!' + lazyLoadUrl + 'test.html'
+              ];
 
           // create spies for the following tests
           window.spy = jasmine.createSpyObj('spy', ['config', 'run', 'ctrl', 'service', 'filter', 'directive']);
@@ -166,7 +167,7 @@ describe('Module: oc.lazyLoad', function() {
 
               // Test the module loading
               expect(res).toEqual(testModuleNoExt);
-              expect(function() { angular.module('testModuleNoExt') }).not.toThrow();
+              //expect(function() { angular.module('testModuleNoExt') }).not.toThrow();
               expect(angular.module('testModuleNoExt')).toBeDefined();
 
               // execute controller
@@ -201,39 +202,46 @@ describe('Module: oc.lazyLoad', function() {
           });
       });
 
+    // test 9
     it('should be able to execute config blocks', function() {
       expect(window.spy.config).toHaveBeenCalledWith('config1');
       expect(window.spy.config).toHaveBeenCalledWith('config2');
       expect(window.spy.config.calls.count()).toEqual(2);
     });
 
+    // test 10
     it('should be able to execute run blocks', function() {
       expect(window.spy.run).toHaveBeenCalledWith('run1');
       expect(window.spy.run).toHaveBeenCalledWith('run2');
       expect(window.spy.run.calls.count()).toEqual(2);
     });
 
+    // test 11
     it('should be able to define controllers', function() {
       expect(window.spy.ctrl).toHaveBeenCalledWith('ctrl');
       expect(window.spy.ctrl.calls.count()).toEqual(1);
     });
 
+    // test 12
     it('should be able to define services', function() {
       expect(window.spy.service).toHaveBeenCalledWith('service');
       expect(window.spy.service.calls.count()).toEqual(1);
     });
 
+    // test 13
     it('should be able to define filters', function() {
       expect(window.spy.filter).toHaveBeenCalledWith('filter');
       expect(window.spy.filter.calls.count()).toEqual(1);
     });
 
+    // test 14
     it('should be able to define directives', function() {
       expect(window.spy.directive).toHaveBeenCalledWith('directive');
       expect(window.spy.directive.calls.count()).toEqual(1);
       expect(element.html()).toContain("Test template");
     });
 
+    // test 15
     it('should reject the promise when the jsLoader is unable to load a file', function(done) {
       var interval = triggerDigests();
 
@@ -244,6 +252,7 @@ describe('Module: oc.lazyLoad', function() {
       });
     });
 
+    // test 16
     it('should reject the promise when the cssLoader is unable to load a file', function(done) {
       var interval = triggerDigests();
 
@@ -254,6 +263,7 @@ describe('Module: oc.lazyLoad', function() {
       });
     });
 
+    // test 17
     it('should reject the promise when the templateLoader is unable to load a file', function(done) {
       var interval = triggerDigests();
 
@@ -268,6 +278,7 @@ describe('Module: oc.lazyLoad', function() {
 
   describe('failed configs', function() {
 
+    // test 18
     it('should throw an error if js loader is not a function', function() {
       expect(function() {
         angular.module('app2', ['oc.lazyLoad'])
@@ -281,6 +292,7 @@ describe('Module: oc.lazyLoad', function() {
       }).toThrowError(/The js loader needs to be a function/);
     });
 
+    // test 19
     it('should throw an error if css loader is not a function', function() {
       expect(function() {
         angular.module('app2', ['oc.lazyLoad'])
@@ -294,6 +306,7 @@ describe('Module: oc.lazyLoad', function() {
       }).toThrowError(/The css loader needs to be a function/);
     });
 
+    // test 20
     it('should throw an error if css loader is not a function', function() {
       expect(function() {
         angular.module('app2', ['oc.lazyLoad'])

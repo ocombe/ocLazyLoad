@@ -10,10 +10,7 @@ angular.module('test', ['oc.lazyLoad'])
 		$scope.partialUrl = '';
 
 		$scope.load = function() {
-			$ocLazyLoad.load({
-				name: 'lazymodule',
-				files: ['lazymodule']
-			}).then(function() {
+			$ocLazyLoad.load('lazymodule').then(function() {
 				$scope.partialUrl = 'partials/grid.html';
 			}, function(e){
 				console.log(e);

@@ -457,8 +457,6 @@
               return deferred.promise;
             }
 
-            moduleName = getModuleName(module);
-
             // Get or Set a configuration depending on what was passed in
             if(typeof module === 'string') {
               config = self.getModuleConfig(module);
@@ -466,14 +464,20 @@
                 config = {
                   files: [module]
                 };
-                moduleName = null;
               }
             } else if(typeof module === 'object') {
-              config = self.setModuleConfig(module);
+              if(angular.isDefined(module.path) && angular.isDefined(module.type)) { // case {type: 'js', path: lazyLoadUrl + 'testModule.fakejs'}
+                config = {
+                  files: [module]
+                };
+              } else {
+                config = self.setModuleConfig(module);
+              }
             }
 
             if(config === null) {
-              errText = 'Module "' + moduleName + '" is not configured, cannot load.';
+              var moduleName = getModuleName(module);
+              errText = 'Module "' + (moduleName || 'unknown') + '" is not configured, cannot load.';
               $log.error(errText);
               deferred.reject(new Error(errText));
             } else {
@@ -495,17 +499,6 @@
                 Array.prototype.push.apply(this, arguments);
               }
             };
-
-            // If this module has been loaded before, re-use it.
-            if(angular.isDefined(moduleName) && moduleExists(moduleName) && regModules.indexOf(moduleName) !== -1) {
-              moduleCache.push(moduleName);
-
-              // if we don't want to load new files, resolve here
-              if(angular.isUndefined(config.files)) {
-                deferred.resolve();
-                return deferred.promise;
-              }
-            }
 
             var localParams = {};
             angular.extend(localParams, params, config);
@@ -563,21 +556,16 @@
                     }));
                   }
                   return;
+                } else if(angular.isArray(requireEntry)) {
+                  requireEntry = {
+                    files: requireEntry
+                  };
                 } else if(typeof requireEntry === 'object') {
                   if(requireEntry.hasOwnProperty('name') && requireEntry['name']) {
                     // The dependency doesn't exist in the module cache and is a new configuration, so store and push it.
                     self.setModuleConfig(requireEntry);
                     moduleCache.push(requireEntry['name']);
                   }
-
-                  // CSS Loading Handler
-                  if(requireEntry.hasOwnProperty('css') && requireEntry['css'].length !== 0) {
-                    // Locate the document insertion point
-                    angular.forEach(requireEntry['css'], function(path) {
-                      buildElement('css', path, localParams);
-                    });
-                  }
-                  // CSS End.
                 }
 
                 // Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
@@ -595,23 +583,34 @@
             };
 
             filesLoader(config, localParams).then(function success() {
-              if(moduleName === null) {
+              if(modulesToLoad.length === 0) {
                 deferred.resolve(module);
               } else {
-                moduleCache.push(moduleName);
-                loadDependencies(moduleName).then(function success() {
-                  try {
-                    justLoaded = [];
-                    register(providers, moduleCache, localParams);
-                  } catch(e) {
-                    $log.error(e.message);
-                    deferred.reject(e);
-                    return;
-                  }
-                  deferred.resolve(module);
-                }, function error(err) {
-                  deferred.reject(err);
-                });
+                var resolvedModules = [];
+                var loadNext = function loadNext(moduleName) {
+                  moduleCache.push(moduleName);
+                  loadDependencies(moduleName).then(function success() {
+                    try {
+                      justLoaded = [];
+                      register(providers, moduleCache, localParams);
+                    } catch(e) {
+                      $log.error(e.message);
+                      deferred.reject(e);
+                      return;
+                    }
+
+                    if(modulesToLoad.length > 0) {
+                      loadNext(modulesToLoad.shift()); // load the next in list
+                    } else {
+                      deferred.resolve(module); // everything has been loaded, resolve
+                    }
+                  }, function error(err) {
+                    deferred.reject(err);
+                  });
+                };
+
+                // load the first in list
+                loadNext(modulesToLoad.shift());
               }
             }, function error(err) {
               deferred.reject(err);
@@ -962,7 +961,6 @@
       addReg(moduleName);
     });
 
-    angular.module = ngModuleFct; // restore angular.module
     modulesToLoad = []; // reset for next bootstrap
   }
 
