@@ -1,3 +1,41 @@
+<a name="0.6.0"></a>
+# 0.6.0 (2015-02-27)
+
+
+## Bug Fixes
+
+- staged lines missing from last commit
+ ([dd24bcdd](https://github.com/ocombe/ocLazyLoad/commit/dd24bcdd573821ce7def60c173a15cbee2540de7))
+- don't throw for karma
+ ([633bec8b](https://github.com/ocombe/ocLazyLoad/commit/633bec8b38635e7d78aaa0e4ea8f1a8cdb85050e),
+ [#129](https://github.com/ocombe/ocLazyLoad/issues/129))
+- RequireJS should be able to load js files with no extension (default behavior)
+ ([4f60d05d](https://github.com/ocombe/ocLazyLoad/commit/4f60d05d02039b700908545b60b71c3e2ca9bbf6))
+- null constants should work
+ ([83d416f9](https://github.com/ocombe/ocLazyLoad/commit/83d416f97d357d148efe97bafbaf2836ed7b3a3d),
+ [#111](https://github.com/ocombe/ocLazyLoad/issues/111))
+- keep track of components signatures instead of just the names
+ ([6bbaed97](https://github.com/ocombe/ocLazyLoad/commit/6bbaed971cf2d23bb35a6ba5f29c6e6162edc5b5),
+ [#120](https://github.com/ocombe/ocLazyLoad/issues/120))
+- improve bootstrap & added compatibility with karma
+ ([ff6afcf5](https://github.com/ocombe/ocLazyLoad/commit/ff6afcf5d3ef00e8e931fd548051f3103225cea8),
+ [#111](https://github.com/ocombe/ocLazyLoad/issues/111))
+
+
+## Features
+
+- you don't need to specify the name of the lazy loaded modules anymore!!
+ ([6634cbee](https://github.com/ocombe/ocLazyLoad/commit/6634cbee6c5ce84363be84ae5529a61a633585b5))
+- added support for specifying the type of a file.
+ ([a3549eea](https://github.com/ocombe/ocLazyLoad/commit/a3549eea93c67cfc4881ebe9d44c73c220790461))
+
+
+## Documentation
+
+- adding a table of contents
+ ([98aad141](https://github.com/ocombe/ocLazyLoad/commit/98aad14141e2eae1d04f9fc1fe09d85cd4b14713))
+
+
 <a name="0.5.2"></a>
 # 0.5.2 (2014-12-30)
 
