@@ -13,7 +13,7 @@ Load modules on demand (lazy load) in AngularJS
 7. [Router usage](#works-well-with-your-router)
 8. [Other function](#other-functions)
 9. [Contribute](#contribute)
-10. [Karma & unit tests](#karma-unit-tests)
+10. [Karma & unit tests](#karma--unit-tests)
 
 ## Key features
 - Dependencies are automatically loaded
