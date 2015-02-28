@@ -13,6 +13,7 @@ Load modules on demand (lazy load) in AngularJS
 7. [Router usage](#works-well-with-your-router)
 8. [Other function](#other-functions)
 9. [Contribute](#contribute)
+10. [Karma & unit tests](#karma-unit-tests)
 
 ## Key features
 - Dependencies are automatically loaded
@@ -330,14 +331,15 @@ $stateProvider.state('index', {
 Of course, if you want to use the loaded files immediately, you don't need to define two resolves, you can also use the injector (it works anywhere, not just in the router):
 ```js
 $stateProvider.state('index', {
-	url: "/",
-	resolve: {
-		loadMyService: ['$ocLazyLoad', '$injector', function($ocLazyLoad, $injector) {
+  url: "/",
+  resolve: {
+    loadMyService: ['$ocLazyLoad', '$injector', function($ocLazyLoad, $injector) {
       return $ocLazyLoad.load('js/ServiceTest.js').then(function() {
         var $serviceTest = $injector.get("$serviceTest");
         $serviceTest.doSomething();
       });
-		}]}
+    }]
+  }
 });
 ```
 
@@ -352,6 +354,10 @@ $stateProvider.state('index', {
 - `getModules()`: Returns the list of loaded modules
 
 - `isLoaded(modulesNames)`: Lets you check if a module (or a list of modules) has been loaded into Angular or not
+
+
+## Karma & unit tests
+You have to make sure that you load the ocLazyLoad.js file before the angular-mocks.js file (ideally you should load angular.js and the ocLazyLoad lib right after). The reason is that ocLazyLoad & angular mocks will both overwrite angular.module, but ocLazyLoad needs to be executed first.
 
 
 ## Contribute
