@@ -24,19 +24,21 @@ testModule.controller('TestCtrl', function($scope) {
   spy.ctrl('ctrl');
 });
 
-//
+// services
 testModule.factory('testService', [function () {
   spy.service('service');
   return {};
 }]);
 
-testModule.filter('testFilter', function () {
+// filters
+angular.module('testModule').filter('testFilter', function () {
   spy.filter('filter');
   return function (input) {
     return input;
   }
 });
 
+// directives
 testModule.directive("test", function () {
   spy.directive('directive');
   return {
@@ -56,6 +58,7 @@ testModule.directive("test", function () {
   };
 });
 
+// constants
 testModule.constant("myConst1", "something");
 testModule.constant("myConst2", undefined);
 testModule.constant("myConst3", null);

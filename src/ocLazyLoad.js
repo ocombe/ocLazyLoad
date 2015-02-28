@@ -7,7 +7,8 @@
     runBlocks = {},
     ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
     broadcast = angular.noop,
-    modulesToLoad = [];
+    modulesToLoad = [],
+    recordDeclarations = [true];
 
   ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector', '$animateProvider',
     function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
@@ -248,12 +249,14 @@
           templatesLoader.ocLazyLoadLoader = true;
         }
 
-        var filesLoader = function(config, params) {
+        var filesLoader = function filesLoader(config, params) {
           var cssFiles = [],
             templatesFiles = [],
             jsFiles = [],
             promises = [],
             cachePromise = null;
+
+          recordDeclarations.push(true); // start watching angular.module calls
 
           angular.extend(params || {}, config);
 
@@ -349,7 +352,10 @@
               return filesLoader(config, params);
             });
           } else {
-            return $q.all(promises);
+            return $q.all(promises).finally(function(res) {
+              recordDeclarations.pop(); // stop watching angular.module calls
+              return res;
+            });
           }
         };
 
@@ -431,7 +437,6 @@
               moduleCache = [],
               deferredList = [],
               deferred = $q.defer(),
-              moduleName,
               errText;
 
             if(angular.isUndefined(params)) {
@@ -962,6 +967,7 @@
     });
 
     modulesToLoad = []; // reset for next bootstrap
+    recordDeclarations.pop(); // wait for the next lazy load
   }
 
   var bootstrapFct = angular.bootstrap;
@@ -970,15 +976,15 @@
     return bootstrapFct(element, modules, config);
   };
 
-  var addToInit = function addToInit(name) {
-    if(angular.isString(name) && modulesToLoad.indexOf(name) === -1) {
+  var addToLoadList = function addToLoadList(name) {
+    if(recordDeclarations.length > 0 && angular.isString(name) && modulesToLoad.indexOf(name) === -1) {
       modulesToLoad.push(name);
     }
   };
 
   var ngModuleFct = angular.module;
   angular.module = function(name, requires, configFn) {
-    addToInit(name);
+    addToLoadList(name);
     return ngModuleFct(name, requires, configFn);
   };
 
@@ -990,10 +996,10 @@
       var moduleFns = Array.prototype.slice.call(arguments, 0);
       if (angular.isObject(module) && !angular.isArray(module)) {
         angular.forEach(module, function(value, key) {
-          addToInit(key);
+          addToLoadList(key);
         });
       } else if(angular.isString(module)) {
-        addToInit(module);
+        addToLoadList(module);
       }
       ngMockModuleFct(module);
     }
