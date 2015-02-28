@@ -856,15 +856,15 @@
       regInvokes[moduleName][type][invokeName].push(signature);
       broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
     };
-    var signature = function(data) {
+    var signature = function signature(data) {
       if(angular.isArray(data)) { // arrays are objects, we need to test for it first
-        return data.toString();
+        return hashCode(data.toString());
       } else if(angular.isObject(data)) { // constants & values for example
-        return JSON.stringify(data);
+        return hashCode(JSON.stringify(data));
       } else {
         if(angular.isDefined(data) && data !== null) {
-          return data.toString();
-        } else {
+          return hashCode(data.toString());
+        } else { // null & undefined constants
           return data;
         }
       }
@@ -1004,6 +1004,17 @@
       ngMockModuleFct(module);
     }
   }
+
+  var hashCode = function hashCode(str) {
+    var hash = 0, i, chr, len;
+    if (str.length == 0) return hash;
+    for (i = 0, len = str.length; i < len; i++) {
+      chr   = str.charCodeAt(i);
+      hash  = ((hash << 5) - hash) + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+  };
 
   // Array.indexOf polyfill for IE8
   if(!Array.prototype.indexOf) {
