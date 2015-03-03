@@ -991,9 +991,7 @@
   // add unit tests support
   if((window.jasmine || window.mocha) && angular.isDefined(angular.mock)) {
     var ngMockModuleFct = angular.mock.module;
-    var windowMockModuleFct = window.module;
     window.module = angular.mock.module = function(module) {
-      var moduleFns = Array.prototype.slice.call(arguments, 0);
       if (angular.isObject(module) && !angular.isArray(module)) {
         angular.forEach(module, function(value, key) {
           addToLoadList(key);
