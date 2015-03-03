@@ -860,7 +860,7 @@
       if(angular.isArray(data)) { // arrays are objects, we need to test for it first
         return hashCode(data.toString());
       } else if(angular.isObject(data)) { // constants & values for example
-        return hashCode(JSON.stringify(data));
+        return hashCode(stringify(data));
       } else {
         if(angular.isDefined(data) && data !== null) {
           return hashCode(data.toString());
@@ -1014,6 +1014,22 @@
       hash |= 0; // Convert to 32bit integer
     }
     return hash;
+  };
+
+  var stringify = function stringify(obj) {
+    var cache = [];
+    return JSON.stringify(obj, function(key, value) {
+      if (typeof value === 'object' && value !== null) {
+        if (cache.indexOf(value) !== -1) {
+          // Circular reference found, discard key
+          return;
+        }
+        // Store value in our collection
+        cache.push(value);
+      }
+      return value;
+    });
+    cache = null; // Enable garbage collection
   };
 
   // Array.indexOf polyfill for IE8
