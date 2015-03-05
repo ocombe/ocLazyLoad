@@ -972,7 +972,10 @@
 
   var bootstrapFct = angular.bootstrap;
   angular.bootstrap = function(element, modules, config) {
-    modulesToLoad = modules.slice(); // make a clean copy
+    // we use slice to make a clean copy
+    angular.forEach(modules.slice(), function(module) {
+      addToLoadList(module);
+    });
     return bootstrapFct(element, modules, config);
   };
 
