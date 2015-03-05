@@ -1,3 +1,25 @@
+<a name="0.6.1"></a>
+# 0.6.1 (2015-03-05)
+
+
+## Bug Fixes
+
+- karma hack isn't needed anymore
+ ([3108296e](https://github.com/ocombe/ocLazyLoad/commit/3108296e9d78da822e58333f2f7d674531ae937b))
+- angular.bootstrap now adds modules to init, not replace them
+ ([bdc03dd9](https://github.com/ocombe/ocLazyLoad/commit/bdc03dd9128eca7fca2421317b9f7b103c9b419c))
+- fixed TypeError: Converting circular structure to JSON
+ ([11da36d9](https://github.com/ocombe/ocLazyLoad/commit/11da36d90bc5bae588fa3770430d371d5f935aae))
+- don't watch for angular.module calls when you're not lazy loading
+ ([35f7eb5b](https://github.com/ocombe/ocLazyLoad/commit/35f7eb5be57f7753a20d7460c5a380f44e3ac175))
+
+
+## Performance Improvements
+
+- hash the signature to optimize memory consumption
+ ([1cd9676e](https://github.com/ocombe/ocLazyLoad/commit/1cd9676e8799cff03458f7d2d4d144f624da9cfa))
+
+
 <a name="0.6.0"></a>
 # 0.6.0 (2015-02-27)
 

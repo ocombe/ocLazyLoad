@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v0.6.0
+ * @version v0.6.1
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -14,7 +14,8 @@
     runBlocks = {},
     ocLazyLoad = angular.module('oc.lazyLoad', ['ng']),
     broadcast = angular.noop,
-    modulesToLoad = [];
+    modulesToLoad = [],
+    recordDeclarations = [true];
 
   ocLazyLoad.provider('$ocLazyLoad', ['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector', '$animateProvider',
     function($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
@@ -255,12 +256,14 @@
           templatesLoader.ocLazyLoadLoader = true;
         }
 
-        var filesLoader = function(config, params) {
+        var filesLoader = function filesLoader(config, params) {
           var cssFiles = [],
             templatesFiles = [],
             jsFiles = [],
             promises = [],
             cachePromise = null;
+
+          recordDeclarations.push(true); // start watching angular.module calls
 
           angular.extend(params || {}, config);
 
@@ -356,7 +359,10 @@
               return filesLoader(config, params);
             });
           } else {
-            return $q.all(promises);
+            return $q.all(promises).finally(function(res) {
+              recordDeclarations.pop(); // stop watching angular.module calls
+              return res;
+            });
           }
         };
 
@@ -438,7 +444,6 @@
               moduleCache = [],
               deferredList = [],
               deferred = $q.defer(),
-              moduleName,
               errText;
 
             if(angular.isUndefined(params)) {
@@ -858,15 +863,15 @@
       regInvokes[moduleName][type][invokeName].push(signature);
       broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
     };
-    var signature = function(data) {
+    var signature = function signature(data) {
       if(angular.isArray(data)) { // arrays are objects, we need to test for it first
-        return data.toString();
+        return hashCode(data.toString());
       } else if(angular.isObject(data)) { // constants & values for example
-        return JSON.stringify(data);
+        return hashCode(stringify(data));
       } else {
         if(angular.isDefined(data) && data !== null) {
-          return data.toString();
-        } else {
+          return hashCode(data.toString());
+        } else { // null & undefined constants
           return data;
         }
       }
@@ -969,42 +974,56 @@
     });
 
     modulesToLoad = []; // reset for next bootstrap
+    recordDeclarations.pop(); // wait for the next lazy load
   }
 
   var bootstrapFct = angular.bootstrap;
   angular.bootstrap = function(element, modules, config) {
-    modulesToLoad = modules.slice(); // make a clean copy
+    // we use slice to make a clean copy
+    angular.forEach(modules.slice(), function(module) {
+      addToLoadList(module);
+    });
     return bootstrapFct(element, modules, config);
   };
 
-  var addToInit = function addToInit(name) {
-    if(angular.isString(name) && modulesToLoad.indexOf(name) === -1) {
+  var addToLoadList = function addToLoadList(name) {
+    if(recordDeclarations.length > 0 && angular.isString(name) && modulesToLoad.indexOf(name) === -1) {
       modulesToLoad.push(name);
     }
   };
 
   var ngModuleFct = angular.module;
   angular.module = function(name, requires, configFn) {
-    addToInit(name);
+    addToLoadList(name);
     return ngModuleFct(name, requires, configFn);
   };
 
-  // add unit tests support
-  if((window.jasmine || window.mocha) && angular.isDefined(angular.mock)) {
-    var ngMockModuleFct = angular.mock.module;
-    var windowMockModuleFct = window.module;
-    window.module = angular.mock.module = function(module) {
-      var moduleFns = Array.prototype.slice.call(arguments, 0);
-      if (angular.isObject(module) && !angular.isArray(module)) {
-        angular.forEach(module, function(value, key) {
-          addToInit(key);
-        });
-      } else if(angular.isString(module)) {
-        addToInit(module);
-      }
-      ngMockModuleFct(module);
+  var hashCode = function hashCode(str) {
+    var hash = 0, i, chr, len;
+    if (str.length == 0) return hash;
+    for (i = 0, len = str.length; i < len; i++) {
+      chr   = str.charCodeAt(i);
+      hash  = ((hash << 5) - hash) + chr;
+      hash |= 0; // Convert to 32bit integer
     }
-  }
+    return hash;
+  };
+
+  var stringify = function stringify(obj) {
+    var cache = [];
+    return JSON.stringify(obj, function(key, value) {
+      if (typeof value === 'object' && value !== null) {
+        if (cache.indexOf(value) !== -1) {
+          // Circular reference found, discard key
+          return;
+        }
+        // Store value in our collection
+        cache.push(value);
+      }
+      return value;
+    });
+    cache = null; // Enable garbage collection
+  };
 
   // Array.indexOf polyfill for IE8
   if(!Array.prototype.indexOf) {
