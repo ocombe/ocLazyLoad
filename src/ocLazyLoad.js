@@ -991,21 +991,6 @@
     return ngModuleFct(name, requires, configFn);
   };
 
-  // add unit tests support
-  if((window.jasmine || window.mocha) && angular.isDefined(angular.mock)) {
-    var ngMockModuleFct = angular.mock.module;
-    window.module = angular.mock.module = function(module) {
-      if (angular.isObject(module) && !angular.isArray(module)) {
-        angular.forEach(module, function(value, key) {
-          addToLoadList(key);
-        });
-      } else if(angular.isString(module)) {
-        addToLoadList(module);
-      }
-      ngMockModuleFct(module);
-    }
-  }
-
   var hashCode = function hashCode(str) {
     var hash = 0, i, chr, len;
     if (str.length == 0) return hash;

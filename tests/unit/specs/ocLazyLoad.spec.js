@@ -68,7 +68,7 @@ describe('Module: oc.lazyLoad', function() {
 
     // test 3
     it('loadedModules should be working', function() {
-      expect($ocLazyLoad.getModules()).toEqual(['ng', 'app1', 'oc.lazyLoad', 'ngMockE2E']);
+      expect($ocLazyLoad.getModules()).toEqual(['ng', 'app1', 'oc.lazyLoad']);
     });
 
     // test 4

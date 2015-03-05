@@ -356,10 +356,6 @@ $stateProvider.state('index', {
 - `isLoaded(modulesNames)`: Lets you check if a module (or a list of modules) has been loaded into Angular or not
 
 
-## Karma & unit tests
-You have to make sure that you load the ocLazyLoad.js file before the angular-mocks.js file (ideally you should load angular.js and the ocLazyLoad lib right after). The reason is that ocLazyLoad & angular mocks will both overwrite angular.module, but ocLazyLoad needs to be executed first.
-
-
 ## Contribute
 If you want to get started and the docs are not enough, see the examples in the 'examples' folder!
 
