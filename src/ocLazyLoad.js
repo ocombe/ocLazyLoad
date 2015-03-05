@@ -587,6 +587,13 @@
               return $q.all(promisesList);
             };
 
+            // if someone loaded the module file with something else and called the load function with just the module name
+            if(angular.isUndefined(config.files) && angular.isDefined(config.name) && moduleExists(config.name)) {
+              recordDeclarations.push(true); // start watching angular.module calls
+              addToLoadList(config.name);
+              recordDeclarations.pop();
+            }
+
             filesLoader(config, localParams).then(function success() {
               if(modulesToLoad.length === 0) {
                 deferred.resolve(module);
