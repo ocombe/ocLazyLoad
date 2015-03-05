@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v0.6.1
+ * @version v0.6.2
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -593,6 +593,13 @@
               // Create a wrapper promise to watch the promise list and resolve it once everything is done.
               return $q.all(promisesList);
             };
+
+            // if someone loaded the module file with something else and called the load function with just the module name
+            if(angular.isUndefined(config.files) && angular.isDefined(config.name) && moduleExists(config.name)) {
+              recordDeclarations.push(true); // start watching angular.module calls
+              addToLoadList(config.name);
+              recordDeclarations.pop();
+            }
 
             filesLoader(config, localParams).then(function success() {
               if(modulesToLoad.length === 0) {

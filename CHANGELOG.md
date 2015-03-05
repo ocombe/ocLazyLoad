@@ -1,3 +1,13 @@
+<a name="0.6.2"></a>
+# 0.6.2 (2015-03-05)
+
+
+## Features
+
+- first step on supporting systemjs & import
+ ([cb8dd62e](https://github.com/ocombe/ocLazyLoad/commit/cb8dd62ed9052995cbaf132d94092d1d103dd74d))
+
+
 <a name="0.6.1"></a>
 # 0.6.1 (2015-03-05)
 
