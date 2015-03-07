@@ -485,6 +485,7 @@
               errText = 'Module "' + (moduleName || 'unknown') + '" is not configured, cannot load.';
               $log.error(errText);
               deferred.reject(new Error(errText));
+              return deferred.promise;
             } else {
               // deprecated
               if(angular.isDefined(config.template)) {
