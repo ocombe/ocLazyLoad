@@ -276,7 +276,7 @@
               }
 
               if (!file_type) {
-                if ((m = /[.](css|less|html|htm|js)?$/.exec(path)) !== null) {  // Detect file type via file extension
+                if ((m = /[.](css|less|html|htm|js)?(\?.*)?$/.exec(path)) !== null) {  // Detect file type via file extension
                     file_type = m[1];
                 } else if(!jsLoader.hasOwnProperty('ocLazyLoadLoader') && jsLoader.hasOwnProperty('load')) { // requirejs
                   file_type = 'js';
