@@ -60,6 +60,7 @@
          * Load a js/css file
          * @param type
          * @param path
+         * @param params
          * @returns promise
          */
         var buildElement = function buildElement(type, path, params) {
@@ -107,7 +108,7 @@
             broadcast('ocLazyLoad.fileLoaded', path);
             deferred.resolve();
           };
-          el.onerror = function(e) {
+          el.onerror = function() {
             deferred.reject(new Error('Unable to load ' + path));
           };
           el.async = params.serie ? 0 : 1;
@@ -295,6 +296,7 @@
               } else {
                   $log.error('File type is not valid. ' + path);
               }
+
             } else if(cachePromise) {
               promises.push(cachePromise);
             }
@@ -599,7 +601,6 @@
               if(modulesToLoad.length === 0) {
                 deferred.resolve(module);
               } else {
-                var resolvedModules = [];
                 var loadNext = function loadNext(moduleName) {
                   moduleCache.push(moduleName);
                   loadDependencies(moduleName).then(function success() {
@@ -847,7 +848,8 @@
   /**
    * Register an invoke
    * @param args
-   * @returns {*}
+   * @param moduleName
+   * @returns {boolean}
    */
   function registerInvokeList(args, moduleName) {
     var invokeList = args[2][0],
@@ -1023,7 +1025,6 @@
       }
       return value;
     });
-    cache = null; // Enable garbage collection
   };
 
   // Array.indexOf polyfill for IE8
