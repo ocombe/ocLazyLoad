@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v0.6.2
+ * @version v0.6.3
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -67,6 +67,7 @@
          * Load a js/css file
          * @param type
          * @param path
+         * @param params
          * @returns promise
          */
         var buildElement = function buildElement(type, path, params) {
@@ -114,7 +115,7 @@
             broadcast('ocLazyLoad.fileLoaded', path);
             deferred.resolve();
           };
-          el.onerror = function(e) {
+          el.onerror = function() {
             deferred.reject(new Error('Unable to load ' + path));
           };
           el.async = params.serie ? 0 : 1;
@@ -283,7 +284,7 @@
               }
 
               if (!file_type) {
-                if ((m = /[.](css|less|html|htm|js)?$/.exec(path)) !== null) {  // Detect file type via file extension
+                if ((m = /[.](css|less|html|htm|js)?(\?.*)?$/.exec(path)) !== null) {  // Detect file type via file extension
                     file_type = m[1];
                 } else if(!jsLoader.hasOwnProperty('ocLazyLoadLoader') && jsLoader.hasOwnProperty('load')) { // requirejs
                   file_type = 'js';
@@ -302,6 +303,7 @@
               } else {
                   $log.error('File type is not valid. ' + path);
               }
+
             } else if(cachePromise) {
               promises.push(cachePromise);
             }
@@ -492,6 +494,7 @@
               errText = 'Module "' + (moduleName || 'unknown') + '" is not configured, cannot load.';
               $log.error(errText);
               deferred.reject(new Error(errText));
+              return deferred.promise;
             } else {
               // deprecated
               if(angular.isDefined(config.template)) {
@@ -605,7 +608,6 @@
               if(modulesToLoad.length === 0) {
                 deferred.resolve(module);
               } else {
-                var resolvedModules = [];
                 var loadNext = function loadNext(moduleName) {
                   moduleCache.push(moduleName);
                   loadDependencies(moduleName).then(function success() {
@@ -853,7 +855,8 @@
   /**
    * Register an invoke
    * @param args
-   * @returns {*}
+   * @param moduleName
+   * @returns {boolean}
    */
   function registerInvokeList(args, moduleName) {
     var invokeList = args[2][0],
@@ -1029,7 +1032,6 @@
       }
       return value;
     });
-    cache = null; // Enable garbage collection
   };
 
   // Array.indexOf polyfill for IE8

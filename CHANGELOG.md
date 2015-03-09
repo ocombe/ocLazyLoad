@@ -1,3 +1,16 @@
+<a name="0.6.3"></a>
+# 0.6.3 (2015-03-09)
+
+
+## Bug Fixes
+
+- detect file type when path contains url parameters
+ ([57e1801d](https://github.com/ocombe/ocLazyLoad/commit/57e1801d933f978060954bd8707f586b51544906),
+ [#137](https://github.com/ocombe/ocLazyLoad/issues/137))
+- rejected promise should be returned immediately
+ ([887a67c4](https://github.com/ocombe/ocLazyLoad/commit/887a67c4196fa4bbd65c34f6eba1d8b2bca9fed3))
+
+
 <a name="0.6.2"></a>
 # 0.6.2 (2015-03-05)
 
