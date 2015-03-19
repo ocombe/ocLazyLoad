@@ -1,4 +1,3 @@
-// ngGrid is also lazy loaded by $ocLazyLoad thanks to the module dependency injection !
 var testModule = angular.module('testModule', []);
 
 // config blocks
@@ -59,6 +58,7 @@ testModule.directive("test", function () {
 });
 
 // constants
+testModule.constant("myConst0", {bar: 'foo'});
 testModule.constant("myConst1", "something");
 testModule.constant("myConst2", undefined);
 testModule.constant("myConst3", null);

@@ -1143,18 +1143,7 @@
              * @param params object config parameters
              * because the user can overwrite jsLoader and it will probably not use promises :(
              */
-            $delegate.jsLoader = function (paths, callback, params) {
-                var promises = [];
-                angular.forEach(paths, function loading(path) {
-                    promises.push($delegate.buildElement("js", path, params));
-                });
-                $q.all(promises).then(function success() {
-                    callback();
-                }, function error(err) {
-                    callback(err);
-                });
-            };
-            $delegate.jsLoader.ocLazyLoadLoader = true;
+            $delegate.jsLoader = require;
 
             return $delegate;
         }]);
@@ -1275,4 +1264,4 @@ if (!Array.prototype.indexOf) {
     return -1;
   };
 }
-//# sourceMappingURL=ocLazyLoad.js.map
+//# sourceMappingURL=ocLazyLoad.require.js.map

@@ -2,7 +2,7 @@
   "name": "oclazyload",
   "version": "0.6.3",
   "description": "Load modules on demand (lazy load) with angularJS",
-  "main": "dist/ocLazyLoad.min.js",
+  "main": "dist/ocLazyLoad.js",
   "homepage": "https://github.com/ocombe/ocLazyLoad",
   "authors": [
     "Olivier Combe <olivier.combe@gmail.com>"
@@ -11,6 +11,7 @@
   "keywords": [
     "lazy load",
     "lazy-load",
+    "lazyload",
     "load on demand",
     "module",
     "angular",
@@ -26,7 +27,8 @@
     "changelog.js",
     "validate-commit-msg.js",
     "tests",
-    "karma.conf.js"
+    "karma.conf.js",
+    "examples"
   ],
   "devDependencies": {
     "angular-mocks": "~1.3.2"

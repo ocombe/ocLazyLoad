@@ -1,3 +1,24 @@
+<a name="1.0.0-alpha1"></a>
+# 1.0.0-alpha1 (2015-03-19)
+
+
+## Features
+
+- ocLazyLoad is now modular and (partially) written in ES6! It should be easier to write new loaders (or even extensions), and you can cherry picks the parts that you like. For example, you can use the injector without the loaders. Also, all of the internal functions are available (preceded by an underscore, and undocumented), use them at your own risk (in fact you shouldn't need them unless you're writing an extension).
+
+
+## Bug Fixes
+
+- the directive should append the content and not add it after
+- only the modules added via angular.bootstrap should be considered "already loaded"
+ [#147](https://github.com/ocombe/ocLazyLoad/issues/147)
+ 
+## TODO before the release
+- try to remove most of the promises for perfs/tests
+- use moaaar ES6
+- clean up the code
+
+
 <a name="0.6.3"></a>
 # 0.6.3 (2015-03-09)
 

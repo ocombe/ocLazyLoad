@@ -5,7 +5,7 @@ requirejs.config({
     'angular': 'angular.min',
     'test': 'testmodule',
     'ngGrid': 'ng-grid-2.0.11.debug',
-    'ocLazyLoad': '../../../src/ocLazyLoad'
+    'ocLazyLoad': '../../../dist/ocLazyLoad.require'
   },
   shim: {
     'angular': ['jquery'],

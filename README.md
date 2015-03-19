@@ -32,7 +32,7 @@ Load modules on demand (lazy load) in AngularJS
 - Load on demand:
 With $ocLazyLoad you can load angular modules, but if you want to load any component (controllers / services / filters / ...) without defining a new module it's entirely possible (just make sure that you define this component within an existing module).
 
-There are multiple ways to use `$ocLazyLoad` to load your files, just choose the one that fits you the best.
+There are multiple ways to use `$ocLazyLoad` to load your files, just choose the one that you prefer.
 
 ###### More examples / tutorials / articles
 You can find three basic examples in the example folder. If you need more, check out these links:
@@ -42,7 +42,7 @@ You can find three basic examples in the example folder. If you need more, check
 - Lazy loading Angular modules with [ocLazyLoad, SystemJS and Angular UI-Router](https://github.com/lookfirst/systemjs-seed) - Fully functional seed project based off a [Yeoman generator](https://github.com/lookfirst/generator-systemjs) by [@lookfirst](https://github.com/lookfirst/)
 
 ### Service
-You can include `$ocLazyLoad` and use the function `load` which returns a promise. It supports a single dependency (object) or multiple dependencies (array of objects).
+You can include `$ocLazyLoad` and use the function `load` which returns a promise. It supports a single dependency or multiple dependencies (array).
 
 Load one or more modules & components with one file:
 ```js
@@ -67,7 +67,7 @@ $ocLazyLoad.load([
 ]);
 ```
 
-You can also load external libs (not angular):
+You can load external libs (not angular):
 ```js
 $ocLazyLoad.load(['testModule.js', 'bower_components/bootstrap/dist/js/bootstrap.js', 'anotherModule.js']);
 ```
@@ -81,14 +81,14 @@ $ocLazyLoad.load([
 ]);
 ```
 
-If you want to load templates, the template file should be an html (or htm) file with regular [script templates](https://docs.angularjs.org/api/ng/directive/script). It looks like this:
+If you want to load templates, the template file should be an html file with regular [script templates](https://docs.angularjs.org/api/ng/directive/script). It looks like this:
 ```html
 <script type="text/ng-template" id="/tpl.html">
   Content of the template.
 </script>
 ```
 
-You can put more than one template script in your template file, just make sure to use different ids:
+You can put more than one template script in your template file, just make sure that you use different ids:
 ```html
 <script type="text/ng-template" id="/tpl1.html">
   Content of the first template.
@@ -100,7 +100,7 @@ You can put more than one template script in your template file, just make sure 
 ```
 
 There are two ways to define config options for the load function. You can use a second optional parameter that will define configs for all the modules that you will load, or you can define optional parameters to each module.
-For example, these are equivalent:
+For example, these are equivalent (except that the first two files won't be cached in the first example):
 ```js
 $ocLazyLoad.load([{
   files: ['testModule.js', 'bower_components/bootstrap/dist/js/bootstrap.js'],
@@ -219,27 +219,6 @@ angular.module('app').config(['$ocLazyLoadProvider', function($ocLazyLoadProvide
 ```
 
 The options are:
-- `jsLoader`: You can use your own async loader. The one provided with $ocLazyLoad is based on $script.js, but you can use requireJS or any other async loader that works with the following syntax:
-	```js
-	$ocLazyLoadProvider.config({
-		jsLoader: function([Array of files], callback, params);
-	});
-	```
-
-- `cssLoader`: You can also define your own css async loader. The rules and syntax are the same as jsLoader.
-	```js
-	$ocLazyLoadProvider.config({
-		cssLoader: function([Array of files], callback, params);
-	});
-	```
-
-- `templatesLoader`: You can use your template loader. It's similar to the `jsLoader` but it uses an optional config parameter
-	```js
-	$ocLazyLoadProvider.config({
-		templatesLoader: function([Array of files], callback, params);
-	});
-	```
-
 - `debug`: $ocLazyLoad returns a promise that can be rejected if there is an error. If you set debug to true, $ocLazyLoad will also log all errors to the console.
 	```js
 	$ocLazyLoadProvider.config({
@@ -354,7 +333,11 @@ $stateProvider.state('index', {
 
 - `getModules()`: Returns the list of loaded modules
 
-- `isLoaded(modulesNames)`: Lets you check if a module (or a list of modules) has been loaded into Angular or not
+- `isLoaded('moduleName' or [modulesNames])`: Lets you check if a module (or a list of modules) has been loaded into Angular or not
+
+- `inject('moduleName' or [modulesNames])`: if you load your files on your own (with RequireJS, SystemJS or else), you can call inject manually but you will have to provide the names of the modules that you are loading (unless you used `toggleWatch` before and after loading the files
+
+- `toggleWatch(boolean)`: let ocLazyLoad know that it should monitor angular.module for new modules. Probably only useful if you use `inject` on your own. Don't forget to toggle it off after or it might lead to unexpected results
 
 
 ## Contribute
