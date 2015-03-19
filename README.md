@@ -25,7 +25,7 @@ Load modules on demand (lazy load) in AngularJS
 - Compatible with AngularJS 1.2.x and 1.3.x
 
 ## Usage
-- Put ocLazyLoad.js into you project
+- Put ocLazyLoad.js into your project
 
 - Add the module ```oc.lazyLoad``` to your application (you can install it with `bower install oclazyload` or `npm install oclazyload`)
 
