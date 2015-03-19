@@ -21,7 +21,7 @@ Load modules on demand (lazy load) in AngularJS
 - Load via the service or the directive
 - Use the embedded async loader or use your own (requireJS, ...)
 - Load js (angular or not) / css / templates files
-- Compatible with AngularJS 1.2.x and 1.3.x
+- Compatible with AngularJS 1.2.x/1.3.x/1.4.x
 
 ## Usage
 - Put ocLazyLoad.js into your project
