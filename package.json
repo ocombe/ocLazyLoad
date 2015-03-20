@@ -2,7 +2,7 @@
   "name": "oclazyload",
   "version": "1.0.0-alpha1",
   "description": "Load modules on demand (lazy load) with angularJS",
-  "main": "dist/ocLazyLoad.min.js",
+  "main": "dist/ocLazyLoad.js",
   "author": "Olivier Combe <olivier.combe@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/ocombe/ocLazyLoad",
