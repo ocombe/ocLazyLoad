@@ -254,6 +254,28 @@ describe('Module: oc.lazyLoad', function() {
             });
         });
 
+        it('should be able to lazy load a module when the url ends with a hash', function(done) {
+            var interval = triggerDigests();
+
+            $ocLazyLoad.load(lazyLoadUrl + 'testModule4.js#hash').then(function success(res) {
+                window.clearInterval(interval);
+
+                // Test the module loading
+                expect(angular.module('testModule4')).toBeDefined();
+
+                // Test the module loading
+                expect(res).toBeDefined();
+
+                // because debug is set to false, we shouldn't have any log
+                $log.assertEmpty();
+
+                done();
+            }, function error(err) {
+                window.clearInterval(interval);
+                throw err;
+            });
+        });
+
         it('should reject the promise when the jsLoader is unable to load a file', function(done) {
             var interval = triggerDigests();
 
