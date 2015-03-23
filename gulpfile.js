@@ -17,7 +17,7 @@ gulp.task('clean', function() {
         .pipe(clean());
 });
 
-gulp.task('build-minify', ['build-files', 'build-files-require'], function() {
+gulp.task('build-minify', ['build-files-require'], function() {
     var rename = require('gulp-rename'),
         uglify = require('gulp-uglify'),
         header = require('gulp-header'),
@@ -45,7 +45,7 @@ gulp.task('build-minify', ['build-files', 'build-files-require'], function() {
 
 });
 
-gulp.task('build-files-require', function() {
+gulp.task('build-files-require', ['build-files'], function() {
     var rename = require('gulp-rename'),
         uglify = require('gulp-uglify'),
         header = require('gulp-header'),
@@ -53,7 +53,6 @@ gulp.task('build-files-require', function() {
         ngAnnotate = require('gulp-ng-annotate'),
         pkg = require('./package.json'),
         concat = require('gulp-concat'),
-        gulpIgnore = require('gulp-ignore'),
         sourcemaps = require('gulp-sourcemaps'),
         banner = ['/**',
             ' * <%= pkg.name %> - <%= pkg.description %>',
@@ -64,11 +63,20 @@ gulp.task('build-files-require', function() {
             ' */',
             ''].join('\n');
 
-    return gulp.src('src/**/*.js')
+    return gulp.src([
+            'src/ocLazyLoad.core.js',
+            'src/ocLazyLoad.directive.js',
+            'src/ocLazyLoad.loaders.common.js',
+            'src/ocLazyLoad.loaders.core.js',
+            'src/ocLazyLoad.loaders.cssLoader.js',
+            'src/ocLazyLoad.loaders.requireJSLoader.js',
+            'src/ocLazyLoad.loaders.templatesLoader.js',
+            'src/ocLazyLoad.polyfill.ie8.js'
+        ])
         .pipe(sourcemaps.init())
         .pipe(babel({ blacklist: ["strict"] }))
         .pipe(ngAnnotate())
-        .pipe(gulpIgnore.exclude('**/*.jsLoader.js'))
+        .pipe(gulp.dest('dist/modules'))
         .pipe(concat('ocLazyLoad.require.js'))
         .pipe(header(banner, {pkg: pkg}))
         .pipe(sourcemaps.write('.'))
@@ -83,7 +91,6 @@ gulp.task('build-files', ['clean'], function() {
         ngAnnotate = require('gulp-ng-annotate'),
         pkg = require('./package.json'),
         concat = require('gulp-concat'),
-        gulpIgnore = require('gulp-ignore'),
         sourcemaps = require('gulp-sourcemaps'),
         banner = ['/**',
             ' * <%= pkg.name %> - <%= pkg.description %>',
@@ -94,12 +101,20 @@ gulp.task('build-files', ['clean'], function() {
             ' */',
             ''].join('\n');
 
-    return gulp.src('src/**/*.js')
+    return gulp.src([
+            'src/ocLazyLoad.core.js',
+            'src/ocLazyLoad.directive.js',
+            'src/ocLazyLoad.loaders.common.js',
+            'src/ocLazyLoad.loaders.core.js',
+            'src/ocLazyLoad.loaders.cssLoader.js',
+            'src/ocLazyLoad.loaders.jsLoader.js',
+            'src/ocLazyLoad.loaders.templatesLoader.js',
+            'src/ocLazyLoad.polyfill.ie8.js'
+        ])
         .pipe(sourcemaps.init())
         .pipe(babel({ blacklist: ["strict"] }))
         .pipe(ngAnnotate())
         .pipe(gulp.dest('dist/modules'))
-        .pipe(gulpIgnore.exclude('**/*.requirejsLoader.js'))
         .pipe(concat('ocLazyLoad.js'))
         .pipe(header(banner, {pkg: pkg}))
         .pipe(sourcemaps.write('.'))

@@ -36,7 +36,6 @@
     "gulp-concat": "~2.5.2",
     "gulp-exec": "~2.1.1",
     "gulp-header": "~1.2.2",
-    "gulp-ignore": "^1.2.1",
     "gulp-json-editor": "~2.2.1",
     "gulp-ng-annotate": "~0.5.2",
     "gulp-prompt": "~0.1.2",
