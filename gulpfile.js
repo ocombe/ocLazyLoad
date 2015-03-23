@@ -21,7 +21,6 @@ gulp.task('build-minify', ['build-files', 'build-files-require'], function() {
     var rename = require('gulp-rename'),
         uglify = require('gulp-uglify'),
         header = require('gulp-header'),
-        babel = require('gulp-babel'),
         pkg = require('./package.json'),
         sourcemaps = require('gulp-sourcemaps'),
         banner = ['/**',
@@ -67,7 +66,7 @@ gulp.task('build-files-require', function() {
 
     return gulp.src('src/**/*.js')
         .pipe(sourcemaps.init())
-        .pipe(babel())
+        .pipe(babel({ blacklist: ["strict"] }))
         .pipe(ngAnnotate())
         .pipe(gulpIgnore.exclude('**/*.jsLoader.js'))
         .pipe(concat('ocLazyLoad.require.js'))
@@ -97,7 +96,7 @@ gulp.task('build-files', ['clean'], function() {
 
     return gulp.src('src/**/*.js')
         .pipe(sourcemaps.init())
-        .pipe(babel())
+        .pipe(babel({ blacklist: ["strict"] }))
         .pipe(ngAnnotate())
         .pipe(gulp.dest('dist/modules'))
         .pipe(gulpIgnore.exclude('**/*.requirejsLoader.js'))

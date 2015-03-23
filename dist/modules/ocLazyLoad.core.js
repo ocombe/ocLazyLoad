@@ -1,5 +1,3 @@
-"use strict";
-
 (function (angular, window) {
     "use strict";
 
@@ -401,7 +399,7 @@
                     if (!modules[moduleName]) {
                         return null;
                     }
-                    return modules[moduleName];
+                    return angular.copy(modules[moduleName]);
                 },
 
                 /**
