@@ -1,3 +1,6 @@
+language: node_js
+node_js:
+- '0.10'
 before_install:
 - npm config set spin false
 - npm install -g bower
@@ -15,6 +18,3 @@ deploy:
     tags: true
     all_branches: true
     repo: ocombe/ocLazyLoad
-language: node_js
-node_js:
-- '0.10'
