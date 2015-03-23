@@ -387,7 +387,7 @@
                     if(!modules[moduleName]) {
                         return null;
                     }
-                    return modules[moduleName];
+                    return angular.copy(modules[moduleName]);
                 },
 
                 /**
