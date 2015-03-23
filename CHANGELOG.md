@@ -1,3 +1,14 @@
+<a name="1.0.0-alpha2"></a>
+# 1.0.0-alpha2 (2015-03-23)
+
+
+## Bug Fixes
+
+- hash shouldn't prevent file type detection
+ ([9e1d0894](https://github.com/ocombe/ocLazyLoad/commit/9e1d089413e09b14b7b46d5ff5de4612613be5e9),
+ [#153](https://github.com/ocombe/ocLazyLoad/issues/153))
+
+
 <a name="1.0.0-alpha1"></a>
 # 1.0.0-alpha1 (2015-03-19)
 
