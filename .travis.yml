@@ -1,13 +1,19 @@
-language: node_js
+language:
+- node_js
 node_js:
 - '0.10'
+branches:
+  only:
+  - master
 before_install:
-- npm config set spin false
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+before_script:
+- npm install
 - npm install -g bower
 - bower install
-before_script:
-- export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
+script:
+- npm test
 deploy:
   provider: npm
   email: olivier.combe@gmail.com
