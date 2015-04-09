@@ -1,3 +1,23 @@
+<a name="1.0.0-alpha.3"></a>
+# 1.0.0-alpha.3 (2015-04-09)
+
+
+## Bug Fixes
+
+- components can be registered as object maps now
+ ([08ed860e](https://github.com/ocombe/ocLazyLoad/commit/08ed860e7051f1f0dd132d760b958c5be1114177),
+ [#156](https://github.com/ocombe/ocLazyLoad/issues/156))
+- make a real copy of the params
+ ([6a5d3d4c](https://github.com/ocombe/ocLazyLoad/commit/6a5d3d4ca3fca1e90468aed10ef96f06669cd7f9),
+ [#160](https://github.com/ocombe/ocLazyLoad/issues/160))
+
+
+## Features
+
+- ES6fy all the things!
+ ([9cae48c8](https://github.com/ocombe/ocLazyLoad/commit/9cae48c828665e58132950d6db138d082f6bf2a2))
+
+
 <a name="1.0.0-alpha2"></a>
 # 1.0.0-alpha2 (2015-03-23)
 
