@@ -13,10 +13,10 @@
              */
             $delegate.cssLoader = function (paths, callback, params) {
                 var promises = [];
-                angular.forEach(paths, function loading(path) {
+                angular.forEach(paths, function (path) {
                     promises.push($delegate.buildElement("css", path, params));
                 });
-                $q.all(promises).then(function success() {
+                $q.all(promises).then(function () {
                     callback();
                 }, function (err) {
                     callback(err);

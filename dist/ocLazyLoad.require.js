@@ -288,10 +288,10 @@
                     } else {
                         // config block
                         var callInvoke = function callInvoke(fct) {
-                            var invoked = regConfigs.indexOf(moduleName + "-" + fct);
+                            var invoked = regConfigs.indexOf("" + moduleName + "-" + fct);
                             if (invoked === -1 || reconfig) {
                                 if (invoked === -1) {
-                                    regConfigs.push(moduleName + "-" + fct);
+                                    regConfigs.push("" + moduleName + "-" + fct);
                                 }
                                 if (angular.isDefined(provider)) {
                                     provider[args[1]].apply(provider, args[2]);
@@ -726,7 +726,7 @@
                         return model($scope) || $attr.ocLazyLoad; // it can be a module name (string), an object, an array, or a scope reference to any of this
                     }, function (moduleName) {
                         if (angular.isDefined(moduleName)) {
-                            $ocLazyLoad.load(moduleName).then(function success() {
+                            $ocLazyLoad.load(moduleName).then(function () {
                                 $animate.enter($compile(content)($scope), $element);
                             });
                         }
@@ -761,11 +761,11 @@
                     var dc = new Date().getTime();
                     if (url.indexOf("?") >= 0) {
                         if (url.substring(0, url.length - 1) === "&") {
-                            return url + "_dc=" + dc;
+                            return "" + url + "_dc=" + dc;
                         }
-                        return url + "&_dc=" + dc;
+                        return "" + url + "&_dc=" + dc;
                     } else {
-                        return url + "?_dc=" + dc;
+                        return "" + url + "?_dc=" + dc;
                     }
                 };
 
@@ -979,7 +979,7 @@
                 }
 
                 if (params.serie && params.files.length > 0) {
-                    return $q.all(promises).then(function success() {
+                    return $q.all(promises).then(function () {
                         return $delegate.filesLoader(config, params);
                     });
                 } else {
@@ -1013,9 +1013,9 @@
                     });
 
                     // Resolve the promise once everything has loaded
-                    $q.all(deferredList).then(function success(res) {
+                    $q.all(deferredList).then(function (res) {
                         deferred.resolve(res);
-                    }, function error(err) {
+                    }, function (err) {
                         deferred.reject(err);
                     });
 
@@ -1069,13 +1069,13 @@
                     return $delegate.inject(config.name, localParams);
                 }
 
-                $delegate.filesLoader(config, localParams).then(function success() {
+                $delegate.filesLoader(config, localParams).then(function () {
                     $delegate.inject(null, localParams).then(function (res) {
                         deferred.resolve(res);
                     }, function (err) {
                         deferred.reject(err);
                     });
-                }, function error(err) {
+                }, function (err) {
                     deferred.reject(err);
                 });
 
@@ -1102,10 +1102,10 @@
              */
             $delegate.cssLoader = function (paths, callback, params) {
                 var promises = [];
-                angular.forEach(paths, function loading(path) {
+                angular.forEach(paths, function (path) {
                     promises.push($delegate.buildElement("css", path, params));
                 });
-                $q.all(promises).then(function success() {
+                $q.all(promises).then(function () {
                     callback();
                 }, function (err) {
                     callback(err);
@@ -1172,9 +1172,9 @@
                         deferred.reject(new Error("Unable to load template file \"" + url + "\": " + err));
                     });
                 });
-                return $q.all(promises).then(function success() {
+                return $q.all(promises).then(function () {
                     callback();
-                }, function error(err) {
+                }, function (err) {
                     callback(err);
                 });
             };

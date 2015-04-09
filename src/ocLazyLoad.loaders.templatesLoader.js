@@ -1,4 +1,4 @@
-(function(angular) {
+(angular => {
     'use strict';
 
     angular.module('oc.lazyLoad').config(function($provide) {
@@ -15,12 +15,12 @@
                 var promises = [],
                     filesCache = $delegate._getFilesCache();
 
-                angular.forEach(paths, function(url) {
+                angular.forEach(paths, url => {
                     var deferred = $q.defer();
                     promises.push(deferred.promise);
-                    $http.get(url, params).success(function(data) {
+                    $http.get(url, params).success(data => {
                         if(angular.isString(data) && data.length > 0) {
-                            angular.forEach(angular.element(data), function(node) {
+                            angular.forEach(angular.element(data), node => {
                                 if(node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
                                     $templateCache.put(node.id, node.innerHTML);
                                 }
@@ -31,12 +31,12 @@
                         }
                         deferred.resolve();
                     }).error(function(err) {
-                        deferred.reject(new Error('Unable to load template file "' + url + '": ' + err));
+                        deferred.reject(new Error(`Unable to load template file "${ url }": ${ err }`));
                     });
                 });
-                return $q.all(promises).then(function success() {
+                return $q.all(promises).then(() => {
                     callback();
-                }, function error(err) {
+                }, err => {
                     callback(err);
                 });
             };

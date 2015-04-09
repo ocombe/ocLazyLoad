@@ -281,10 +281,10 @@
                     } else {
                         // config block
                         var callInvoke = function callInvoke(fct) {
-                            var invoked = regConfigs.indexOf(moduleName + "-" + fct);
+                            var invoked = regConfigs.indexOf("" + moduleName + "-" + fct);
                             if (invoked === -1 || reconfig) {
                                 if (invoked === -1) {
-                                    regConfigs.push(moduleName + "-" + fct);
+                                    regConfigs.push("" + moduleName + "-" + fct);
                                 }
                                 if (angular.isDefined(provider)) {
                                     provider[args[1]].apply(provider, args[2]);

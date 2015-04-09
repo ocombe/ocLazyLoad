@@ -1,4 +1,4 @@
-(function(angular) {
+(angular => {
     'use strict';
 
     angular.module('oc.lazyLoad').config(function($provide) {
@@ -13,12 +13,12 @@
              */
             $delegate.jsLoader = function(paths, callback, params) {
                 var promises = [];
-                angular.forEach(paths, function loading(path) {
+                angular.forEach(paths, path => {
                     promises.push($delegate.buildElement('js', path, params));
                 });
-                $q.all(promises).then(function success() {
+                $q.all(promises).then(() => {
                     callback();
-                }, function error(err) {
+                }, err => {
                     callback(err);
                 });
             };

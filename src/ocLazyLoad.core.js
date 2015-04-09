@@ -1,4 +1,4 @@
-(function(angular, window) {
+((angular, window) => {
     'use strict';
 
     var regModules = ['ng', 'oc.lazyLoad'],
@@ -36,7 +36,7 @@
             // If we want to define modules configs
             if(angular.isDefined(config.modules)) {
                 if(angular.isArray(config.modules)) {
-                    angular.forEach(config.modules, function(moduleConfig) {
+                    angular.forEach(config.modules, moduleConfig => {
                         modules[moduleConfig.name] = moduleConfig;
                     });
                 } else {
@@ -67,25 +67,25 @@
                         return (elm && elements.push(elm));
                     };
 
-                angular.forEach(names, function(name) {
+                angular.forEach(names, name => {
                     names[name] = true;
                     append(document.getElementById(name));
                     name = name.replace(':', '\\:');
                     if(element[0].querySelectorAll) {
-                        angular.forEach(element[0].querySelectorAll('.' + name), append);
-                        angular.forEach(element[0].querySelectorAll('.' + name + '\\:'), append);
-                        angular.forEach(element[0].querySelectorAll('[' + name + ']'), append);
+                        angular.forEach(element[0].querySelectorAll(`.${ name }`), append);
+                        angular.forEach(element[0].querySelectorAll(`.${ name }\\:`), append);
+                        angular.forEach(element[0].querySelectorAll(`[${ name }]`), append);
                     }
                 });
 
-                angular.forEach(elements, function(elm) {
+                angular.forEach(elements, elm => {
                     if(modulesToLoad.length === 0) {
-                        var className = ' ' + element.className + ' ';
+                        var className = ` ${ element.className } `;
                         var match = NG_APP_CLASS_REGEXP.exec(className);
                         if(match) {
                             modulesToLoad.push((match[2] || '').replace(/\s+/g, ','));
                         } else {
-                            angular.forEach(elm.attributes, function(attr) {
+                            angular.forEach(elm.attributes, attr => {
                                 if(modulesToLoad.length === 0 && names[attr.name]) {
                                     modulesToLoad.push(attr.value);
                                 }
@@ -113,7 +113,7 @@
                 }
             };
 
-            angular.forEach(modulesToLoad, function(moduleName) {
+            angular.forEach(modulesToLoad, moduleName => {
                 addReg(moduleName);
             });
 
@@ -127,7 +127,7 @@
          */
         var stringify = function stringify(obj) {
             var cache = [];
-            return JSON.stringify(obj, function(key, value) {
+            return JSON.stringify(obj, (key, value) => {
                 if(angular.isObject(value) && value !== null) {
                     if(cache.indexOf(value) !== -1) {
                         // Circular reference found, discard key
@@ -147,7 +147,7 @@
             }
             for(i = 0, len = str.length; i < len; i++) {
                 chr = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + chr;
+                hash = (hash << 5) - hash + chr;
                 hash |= 0; // Convert to 32bit integer
             }
             return hash;
@@ -188,7 +188,7 @@
                 }
                 // execute the run blocks at the end
                 var instanceInjector = providers.getInstanceInjector();
-                angular.forEach(tempRunBlocks, (fn) => {
+                angular.forEach(tempRunBlocks, fn => {
                     instanceInjector.invoke(fn);
                 });
             }
@@ -258,7 +258,7 @@
                         if(providers.hasOwnProperty(args[0])) {
                             provider = providers[args[0]];
                         } else {
-                            throw new Error('unsupported provider ' + args[0]);
+                            throw new Error(`unsupported provider ${ args[0] }`);
                         }
                     }
                     var isNew = _registerInvokeList(args, moduleName);
@@ -268,10 +268,10 @@
                         }
                     } else { // config block
                         var callInvoke = function(fct) {
-                            var invoked = regConfigs.indexOf(moduleName + '-' + fct);
+                            var invoked = regConfigs.indexOf(`${ moduleName }-${ fct }`);
                             if(invoked === -1 || reconfig) {
                                 if(invoked === -1) {
-                                    regConfigs.push(moduleName + '-' + fct);
+                                    regConfigs.push(`${ moduleName }-${ fct }`);
                                 }
                                 if(angular.isDefined(provider)) {
                                     provider[args[1]].apply(provider, args[2]);
@@ -309,7 +309,7 @@
             try {
                 return ngModuleFct(moduleName);
             } catch(e) {
-                if(/No module/.test(e) || (e.message.indexOf('$injector:nomod') > -1)) {
+                if(/No module/.test(e) || e.message.indexOf('$injector:nomod') > -1) {
                     return false;
                 }
             }
@@ -328,7 +328,7 @@
 
             // Make this lazy because when $get() is called the instance injector hasn't been assigned to the rootElement yet
             providers.getInstanceInjector = function() {
-                return (instanceInjector) ? instanceInjector : (instanceInjector = ($rootElement.data('$injector') || angular.injector()));
+                return instanceInjector ? instanceInjector : (instanceInjector = ($rootElement.data('$injector') || angular.injector()));
             };
 
             broadcast = function broadcast(eventName, params) {
@@ -452,8 +452,8 @@
                         return ngModuleFct(moduleName);
                     } catch(e) {
                         // this error message really suxx
-                        if(/No module/.test(e) || (e.message.indexOf('$injector:nomod') > -1)) {
-                            e.message = 'The module "' + stringify(moduleName) + '" that you are trying to load does not exist. ' + e.message
+                        if(/No module/.test(e) || e.message.indexOf('$injector:nomod') > -1) {
+                            e.message = `The module "${ stringify(moduleName) }" that you are trying to load does not exist. ${ e.message }`;
                         }
                         throw e;
                     }
@@ -494,7 +494,7 @@
                         requires = self.getRequires(loadedModule);
                     }
 
-                    angular.forEach(requires, function(requireEntry) {
+                    angular.forEach(requires, requireEntry => {
                         // If no configuration is provided, try and find one from a previous load.
                         // If there isn't one, bail and let the normal flow run
                         if(angular.isString(requireEntry)) {
@@ -509,9 +509,7 @@
                         // Check if this dependency has been loaded previously
                         if(self.moduleExists(requireEntry.name)) {
                             // compare against the already loaded module to see if the new definition adds any new files
-                            diff = requireEntry.files.filter(function(n) {
-                                return self.getModuleConfig(requireEntry.name).files.indexOf(n) < 0;
-                            });
+                            diff = requireEntry.files.filter(n => self.getModuleConfig(requireEntry.name).files.indexOf(n) < 0);
 
                             // If the module was redefined, advise via the console
                             if(diff.length !== 0) {
@@ -520,9 +518,7 @@
 
                             // Push everything to the file loader, it will weed out the duplicates.
                             if(angular.isDefined(self.filesLoader)) { // if a files loader is defined
-                                promisesList.push(self.filesLoader(requireEntry, localParams).then(function() {
-                                    return self._loadDependencies(requireEntry)
-                                }));
+                                promisesList.push(self.filesLoader(requireEntry, localParams).then(() => self._loadDependencies(requireEntry)));
                             } else {
                                 return reject(new Error(`Error: New dependencies need to be loaded from external files (${requireEntry.files}), but no loader has been defined.`));
                             }
@@ -542,9 +538,7 @@
                         // Check if the dependency has any files that need to be loaded. If there are, push a new promise to the promise list.
                         if(angular.isDefined(requireEntry.files) && requireEntry.files.length !== 0) {
                             if(angular.isDefined(self.filesLoader)) { // if a files loader is defined
-                                promisesList.push(self.filesLoader(requireEntry, localParams).then(function() {
-                                    return self._loadDependencies(requireEntry);
-                                }));
+                                promisesList.push(self.filesLoader(requireEntry, localParams).then(() => self._loadDependencies(requireEntry)));
                             } else {
                                 return reject(new Error(`Error: the module "${requireEntry.name}" is defined in external files (${requireEntry.files}), but no loader has been defined.`));
                             }
@@ -566,7 +560,7 @@
                     if(angular.isDefined(moduleName) && moduleName !== null) {
                         if(angular.isArray(moduleName)) {
                             var promisesList = [];
-                            angular.forEach(moduleName, function(module) {
+                            angular.forEach(moduleName, module => {
                                 promisesList.push(self.inject(module));
                             });
                             return $q.all(promisesList);
@@ -613,7 +607,7 @@
                  */
                 getRequires: function getRequires(module) {
                     var requires = [];
-                    angular.forEach(module.requires, function(requireModule) {
+                    angular.forEach(module.requires, requireModule => {
                         if(regModules.indexOf(requireModule) === -1) {
                             requires.push(requireModule);
                         }
@@ -665,7 +659,7 @@
     var bootstrapFct = angular.bootstrap;
     angular.bootstrap = function(element, modules, config) {
         // we use slice to make a clean copy
-        angular.forEach(modules.slice(), function(module) {
+        angular.forEach(modules.slice(), module => {
             _addToLoadList(module, true);
         });
         return bootstrapFct(element, modules, config);

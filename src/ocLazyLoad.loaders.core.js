@@ -1,4 +1,4 @@
-(function(angular) {
+(angular => {
     'use strict';
 
     angular.module('oc.lazyLoad').config(function($provide) {
@@ -43,7 +43,7 @@
                             } else if(!$delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader') && $delegate.jsLoader.hasOwnProperty('load')) { // requirejs
                                 file_type = 'js';
                             } else {
-                                $delegate._$log.error('File type could not be determined. ' + path);
+                                $delegate._$log.error(`File type could not be determined. ${ path }`);
                                 return;
                             }
                         }
@@ -52,10 +52,10 @@
                             cssFiles.push(path);
                         } else if((file_type === 'html' || file_type === 'htm') && templatesFiles.indexOf(path) === -1) {
                             templatesFiles.push(path);
-                        } else if((file_type === 'js') || jsFiles.indexOf(path) === -1) {
+                        } else if(file_type === 'js' || jsFiles.indexOf(path) === -1) {
                             jsFiles.push(path);
                         } else {
-                            $delegate._$log.error('File type is not valid. ' + path);
+                            $delegate._$log.error(`File type is not valid. ${ path }`);
                         }
 
                     } else if(cachePromise) {
@@ -73,7 +73,7 @@
 
                 if(cssFiles.length > 0) {
                     var cssDeferred = $q.defer();
-                    $delegate.cssLoader(cssFiles, function(err) {
+                    $delegate.cssLoader(cssFiles, err => {
                         if(angular.isDefined(err) && $delegate.cssLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             cssDeferred.reject(err);
@@ -86,7 +86,7 @@
 
                 if(templatesFiles.length > 0) {
                     var templatesDeferred = $q.defer();
-                    $delegate.templatesLoader(templatesFiles, function(err) {
+                    $delegate.templatesLoader(templatesFiles, err => {
                         if(angular.isDefined(err) && $delegate.templatesLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             templatesDeferred.reject(err);
@@ -99,7 +99,7 @@
 
                 if(jsFiles.length > 0) {
                     var jsDeferred = $q.defer();
-                    $delegate.jsLoader(jsFiles, function(err) {
+                    $delegate.jsLoader(jsFiles, err => {
                         if(angular.isDefined(err) && $delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             jsDeferred.reject(err);
@@ -111,11 +111,9 @@
                 }
 
                 if(params.serie && params.files.length > 0) {
-                    return $q.all(promises).then(function success() {
-                        return $delegate.filesLoader(config, params);
-                    });
+                    return $q.all(promises).then(() => $delegate.filesLoader(config, params));
                 } else {
-                    return $q.all(promises).finally(function(res) {
+                    return $q.all(promises).finally(res => {
                         $delegate.toggleWatch(false); // stop watching angular.module calls
                         return res;
                     });
@@ -138,14 +136,14 @@
                 // If module is an array, break it down
                 if(angular.isArray(module)) {
                     // Resubmit each entry as a single module
-                    angular.forEach(module, function(m) {
+                    angular.forEach(module, m => {
                         deferredList.push(self.load(m, params));
                     });
 
                     // Resolve the promise once everything has loaded
-                    $q.all(deferredList).then(function success(res) {
+                    $q.all(deferredList).then(res => {
                         deferred.resolve(res);
-                    }, function error(err) {
+                    }, err => {
                         deferred.reject(err);
                     });
 
@@ -173,7 +171,7 @@
 
                 if(config === null) {
                     var moduleName = self._getModuleName(module);
-                    errText = 'Module "' + (moduleName || 'unknown') + '" is not configured, cannot load.';
+                    errText = `Module "${ moduleName || 'unknown' }" is not configured, cannot load.`;
                     $delegate._$log.error(errText);
                     deferred.reject(new Error(errText));
                     return deferred.promise;
@@ -199,13 +197,13 @@
                     return $delegate.inject(config.name, localParams);
                 }
 
-                $delegate.filesLoader(config, localParams).then(function success() {
-                    $delegate.inject(null, localParams).then(function(res) {
+                $delegate.filesLoader(config, localParams).then(() => {
+                    $delegate.inject(null, localParams).then(res => {
                         deferred.resolve(res);
-                    }, function(err) {
+                    }, err => {
                         deferred.reject(err);
                     });
-                }, function error(err) {
+                }, err => {
                     deferred.reject(err);
                 });
 

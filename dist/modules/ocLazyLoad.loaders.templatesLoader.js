@@ -34,9 +34,9 @@
                         deferred.reject(new Error("Unable to load template file \"" + url + "\": " + err));
                     });
                 });
-                return $q.all(promises).then(function success() {
+                return $q.all(promises).then(function () {
                     callback();
-                }, function error(err) {
+                }, function (err) {
                     callback(err);
                 });
             };

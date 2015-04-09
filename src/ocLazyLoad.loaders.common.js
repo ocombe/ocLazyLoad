@@ -1,8 +1,8 @@
-(function(angular) {
+(angular => {
     'use strict';
 
-    angular.module('oc.lazyLoad').config(function($provide) {
-        $provide.decorator('$ocLazyLoad', function ($delegate, $q, $window, $interval) {
+    angular.module('oc.lazyLoad').config($provide => {
+        $provide.decorator('$ocLazyLoad', function($delegate, $q, $window, $interval) {
             var uaCssChecked = false,
                 useCssLoadPatch = false,
                 anchor = $window.document.getElementsByTagName('head')[0] || $window.document.getElementsByTagName('body')[0];
@@ -23,11 +23,11 @@
                         var dc = new Date().getTime();
                         if(url.indexOf('?') >= 0) {
                             if(url.substring(0, url.length - 1) === '&') {
-                                return url + '_dc=' + dc;
+                                return `${ url }_dc=${ dc }`;
                             }
-                            return url + '&_dc=' + dc;
+                            return `${ url }&_dc=${ dc }`;
                         } else {
-                            return url + '?_dc=' + dc;
+                            return `${ url }?_dc=${ dc }`;
                         }
                     };
 
@@ -51,18 +51,18 @@
                         el.src = params.cache === false ? cacheBuster(path) : path;
                         break;
                     default:
-                        deferred.reject(new Error('Requested type "' + type + '" is not known. Could not inject "' + path + '"'));
+                    deferred.reject(new Error(`Requested type "${ type }" is not known. Could not inject "${ path }"`));
                         break;
                 }
                 el.onload = el['onreadystatechange'] = function(e) {
-                    if((el['readyState'] && !(/^c|loade/.test(el['readyState']))) || loaded) return;
+                    if((el['readyState'] && !/^c|loade/.test(el['readyState'])) || loaded) return;
                     el.onload = el['onreadystatechange'] = null;
                     loaded = 1;
                     $delegate._broadcast('ocLazyLoad.fileLoaded', path);
                     deferred.resolve();
                 };
                 el.onerror = function() {
-                    deferred.reject(new Error('Unable to load ' + path));
+                    deferred.reject(new Error(`Unable to load ${ path }`));
                 };
                 el.async = params.serie ? 0 : 1;
 
@@ -101,7 +101,7 @@
 
                     if(useCssLoadPatch) {
                         var tries = 1000; // * 20 = 20000 miliseconds
-                        var interval = $interval(function() {
+                        var interval = $interval(() => {
                             try {
                                 el.sheet.cssRules;
                                 $interval.cancel(interval);

@@ -116,7 +116,7 @@
                 }
 
                 if (params.serie && params.files.length > 0) {
-                    return $q.all(promises).then(function success() {
+                    return $q.all(promises).then(function () {
                         return $delegate.filesLoader(config, params);
                     });
                 } else {
@@ -150,9 +150,9 @@
                     });
 
                     // Resolve the promise once everything has loaded
-                    $q.all(deferredList).then(function success(res) {
+                    $q.all(deferredList).then(function (res) {
                         deferred.resolve(res);
-                    }, function error(err) {
+                    }, function (err) {
                         deferred.reject(err);
                     });
 
@@ -206,13 +206,13 @@
                     return $delegate.inject(config.name, localParams);
                 }
 
-                $delegate.filesLoader(config, localParams).then(function success() {
+                $delegate.filesLoader(config, localParams).then(function () {
                     $delegate.inject(null, localParams).then(function (res) {
                         deferred.resolve(res);
                     }, function (err) {
                         deferred.reject(err);
                     });
-                }, function error(err) {
+                }, function (err) {
                     deferred.reject(err);
                 });
 

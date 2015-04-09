@@ -23,11 +23,11 @@
                     var dc = new Date().getTime();
                     if (url.indexOf("?") >= 0) {
                         if (url.substring(0, url.length - 1) === "&") {
-                            return url + "_dc=" + dc;
+                            return "" + url + "_dc=" + dc;
                         }
-                        return url + "&_dc=" + dc;
+                        return "" + url + "&_dc=" + dc;
                     } else {
-                        return url + "?_dc=" + dc;
+                        return "" + url + "?_dc=" + dc;
                     }
                 };
 

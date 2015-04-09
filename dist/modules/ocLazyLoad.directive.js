@@ -17,7 +17,7 @@
                         return model($scope) || $attr.ocLazyLoad; // it can be a module name (string), an object, an array, or a scope reference to any of this
                     }, function (moduleName) {
                         if (angular.isDefined(moduleName)) {
-                            $ocLazyLoad.load(moduleName).then(function success() {
+                            $ocLazyLoad.load(moduleName).then(function () {
                                 $animate.enter($compile(content)($scope), $element);
                             });
                         }
