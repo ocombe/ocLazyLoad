@@ -219,9 +219,14 @@
                 regInvokes[moduleName][type] = {};
             }
             var onInvoke = function onInvoke(invokeName, signature) {
-                newInvoke = true;
-                regInvokes[moduleName][type][invokeName].push(signature);
-                broadcast("ocLazyLoad.componentLoaded", [moduleName, type, invokeName]);
+                if (angular.isUndefined(regInvokes[moduleName][type][invokeName])) {
+                    regInvokes[moduleName][type][invokeName] = [];
+                }
+                if (regInvokes[moduleName][type][invokeName].indexOf(signature) === -1) {
+                    newInvoke = true;
+                    regInvokes[moduleName][type][invokeName].push(signature);
+                    broadcast("ocLazyLoad.componentLoaded", [moduleName, type, invokeName]);
+                }
             };
 
             function signature(data) {
@@ -242,22 +247,15 @@
             }
 
             if (angular.isString(invokeList)) {
-                if (angular.isUndefined(regInvokes[moduleName][type][invokeList])) {
-                    regInvokes[moduleName][type][invokeList] = [];
-                }
-                if (regInvokes[moduleName][type][invokeList].indexOf(signature(args[2][1])) === -1) {
-                    onInvoke(invokeList, signature(args[2][1]));
-                }
+                onInvoke(invokeList, signature(args[2][1]));
             } else if (angular.isObject(invokeList)) {
-                // decorators for example
-                angular.forEach(invokeList, function (invoke) {
+                angular.forEach(invokeList, function (invoke, key) {
                     if (angular.isString(invoke)) {
-                        if (angular.isUndefined(regInvokes[moduleName][type][invoke])) {
-                            regInvokes[moduleName][type][invoke] = [];
-                        }
-                        if (regInvokes[moduleName][type][invoke].indexOf(signature(invokeList[1])) === -1) {
-                            onInvoke(invoke, signature(invokeList[1]));
-                        }
+                        // decorators for example
+                        onInvoke(invoke, signature(invokeList[1]));
+                    } else {
+                        // components registered as object lists {"componentName": function() {}}
+                        onInvoke(key, signature(invoke));
                     }
                 });
             } else {

@@ -118,19 +118,28 @@ describe('Module: oc.lazyLoad', function() {
                 expect(angular.module('testModule')).toBeDefined();
 
                 // execute controller
-                $controller('TestCtrl', {$scope: $rootScope.$new()});
+                expect(function() {
+                    $controller('TestCtrl', {$scope: $rootScope.$new()});
+                }).not.toThrow();
 
                 // instantiate service
-                $injector.get('testService');
+                expect(function() {
+                    $injector.get('testService');
+                }).not.toThrow();
 
                 // execute filter
-                $filter('testFilter');
+                expect(function() {
+                    $filter('testFilter');
+                }).not.toThrow();
 
                 // Compile a piece of HTML containing the directive
                 element = $compile("<test></test>")($rootScope.$new());
 
                 // Test the template loading
-                var $templateCache = $injector.get('$templateCache');
+                var $templateCache;
+                expect(function() {
+                    $templateCache = $injector.get('$templateCache');
+                }).not.toThrow();
                 expect($templateCache.get('/partials/test.html')).toEqual('Test partial content');
 
                 // Test the css loading
@@ -352,6 +361,27 @@ describe('Module: oc.lazyLoad', function() {
                 expect(function() {
                     angular.module('testModule2');
                 }).not.toThrow();
+                window.clearInterval(interval);
+                done();
+            }, function error(err) {
+                window.clearInterval(interval);
+                throw err;
+            });
+        });
+
+        it('should be able to load a component defined as an object', function(done) {
+            var interval = triggerDigests();
+
+            $ocLazyLoad.load(lazyLoadUrl + 'testModule5.js').then(function success(res) {
+                expect(function() {
+                    angular.module('testModule5');
+                }).not.toThrow();
+
+                // execute controller
+                expect(function() {
+                    $controller('testModule5Ctrl', {$scope: $rootScope.$new()});
+                }).not.toThrow();
+
                 window.clearInterval(interval);
                 done();
             }, function error(err) {
