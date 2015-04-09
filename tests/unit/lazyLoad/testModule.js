@@ -62,3 +62,4 @@ testModule.constant("myConst0", {bar: 'foo'});
 testModule.constant("myConst1", "something");
 testModule.constant("myConst2", undefined);
 testModule.constant("myConst3", null);
+testModule.constant("myConst4", function() {});

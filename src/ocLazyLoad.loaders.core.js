@@ -9,7 +9,7 @@
              * @param params
              * @returns {*}
              */
-            $delegate.filesLoader = function filesLoader(config, params = {}) {
+            $delegate.filesLoader = function filesLoader(config, originalParams = {}) {
                 var cssFiles = [],
                     templatesFiles = [],
                     jsFiles = [],
@@ -19,7 +19,8 @@
 
                 $delegate.toggleWatch(true); // start watching angular.module calls
 
-                angular.extend(params, config);
+                // we need a real copy because we might edit some parts of it
+                var params = angular.copy(angular.extend({}, originalParams, config));
 
                 var pushFile = function(path) {
                     var file_type = null, m;
