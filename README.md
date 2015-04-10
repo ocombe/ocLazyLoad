@@ -13,6 +13,7 @@ Load modules on demand (lazy load) in AngularJS
 7. [Router usage](#works-well-with-your-router)
 8. [Other function](#other-functions)
 9. [Contribute](#contribute)
+10. [FAQ](#faq)
 
 ## Key features
 - Dependencies are automatically loaded
@@ -343,3 +344,8 @@ $stateProvider.state('index', {
 If you want to get started and the docs are not enough, see the examples in the 'examples' folder!
 
 If you want to contribute, it would be really awesome to add some tests, or more examples :)
+
+## FAQ
+> Do you have a plunkr I could use to open an issue ?
+
+Yes, You can fork this one: http://plnkr.co/edit/n4DG0bbC14Mm1uccBptd?p=preview
