@@ -163,7 +163,7 @@ $ocLazyLoad.load({
 });
 ```
 
-The files, by default, will be inserted before the last child of the `head` element. You can override this by using `insertBefore: 'cssSelector'`:
+The files, by default, will be inserted before the last child of the `head` element. You can override this by using `insertBefore: 'cssSelector'` (it uses jQuery if available, or document.querySelector otherwise):
 ```js
 $ocLazyLoad.load({
 	insertBefore: '#load_css_before',

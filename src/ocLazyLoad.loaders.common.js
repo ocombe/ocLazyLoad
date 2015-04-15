@@ -68,7 +68,7 @@
 
                 var insertBeforeElem = anchor.lastChild;
                 if(params.insertBefore) {
-                    var element = angular.element(params.insertBefore);
+                    var element = angular.element(angular.isDefined(window.jQuery) ? params.insertBefore : document.querySelector(params.insertBefore));
                     if(element && element.length > 0) {
                         insertBeforeElem = element[0];
                     }

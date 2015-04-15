@@ -396,5 +396,20 @@ describe('Module: oc.lazyLoad', function() {
                 throw err;
             });
         });
+
+        it('should be able to load a module with insertBefore', function(done) {
+            var interval = triggerDigests();
+
+            $ocLazyLoad.load({files: [lazyLoadUrl + 'testModule6.js'], insertBefore: "title"}).then(function success(res) {
+                expect(function() {
+                    angular.module('testModule6');
+                }).not.toThrow();
+                window.clearInterval(interval);
+                done();
+            }, function error(err) {
+                window.clearInterval(interval);
+                throw err;
+            });
+        });
     });
 });
