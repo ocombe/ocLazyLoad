@@ -18,7 +18,7 @@
             $controllerProvider: $controllerProvider,
             $compileProvider: $compileProvider,
             $filterProvider: $filterProvider,
-            $provide: $provide, // other things
+            $provide: $provide, // other things (constant, decorator, provider, factory, service)
             $injector: $injector,
             $animateProvider: $animateProvider
         },

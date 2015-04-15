@@ -47,6 +47,14 @@ testModule.directive("test", function () {
   };
 });
 
+if(angular.version.minor > 3) { // only in angular 1.4+
+    // decorators
+    testModule.decorator("testService", function($delegate) {
+        spy.decorator('decorator');
+        return $delegate;
+    });
+}
+
 // redefine directive to check that both won't be invoked (it would throw a [$compile:multidir] Multiple directives)
 testModule.directive("test", function () {
   spy.directive('directive');

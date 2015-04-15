@@ -106,7 +106,7 @@ describe('Module: oc.lazyLoad', function() {
                 ];
 
             // create spies for the following tests
-            window.spy = jasmine.createSpyObj('spy', ['config', 'run', 'ctrl', 'service', 'filter', 'directive']);
+            window.spy = jasmine.createSpyObj('spy', ['config', 'run', 'ctrl', 'service', 'filter', 'directive', 'decorator']);
 
             $ocLazyLoad.load(testModule).then(function success(res) {
                 window.clearInterval(interval);
@@ -192,6 +192,13 @@ describe('Module: oc.lazyLoad', function() {
             expect(window.spy.directive.calls.count()).toEqual(1);
             expect(element.html()).toContain("Test template");
         });
+
+        if(angular.version.minor > 3) { // only in angular 1.4+
+            it('should be able to define decorators', function() {
+                expect(window.spy.decorator).toHaveBeenCalledWith('decorator');
+                expect(window.spy.service.calls.count()).toEqual(1);
+            });
+        }
 
         it('should be able to resolve a file name with url parameters', function(done) {
             var interval = triggerDigests(),
