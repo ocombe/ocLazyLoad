@@ -1,3 +1,20 @@
+<a name="1.0.0-beta.1"></a>
+# 1.0.0-beta.1 (2015-04-16)
+
+
+## Bug Fixes
+
+- use document.querySelector for insertBefore when jQuery isn't available
+ ([6e8fa8c3](https://github.com/ocombe/ocLazyLoad/commit/6e8fa8c37f4305c50241288db7fddc5ecae0ab8f),
+ [#164](https://github.com/ocombe/ocLazyLoad/issues/164))
+
+
+## Documentation
+
+- adding a plunkr for issues
+ ([2f408d27](https://github.com/ocombe/ocLazyLoad/commit/2f408d2729eaf3df9cc8434375611a5b26181c0b))
+
+
 <a name="1.0.0-alpha.3"></a>
 # 1.0.0-alpha.3 (2015-04-09)
 
