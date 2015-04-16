@@ -1,7 +1,7 @@
 <a href="https://oclazyload.readme.io" target="_blank">ocLazyLoad</a> [![Build Status](https://travis-ci.org/ocombe/ocLazyLoad.svg)](https://travis-ci.org/ocombe/ocLazyLoad)
 ==========
 
-Load modules on demand (lazy load) in AngularJS
+Lazy load modules & components in AngularJS
 
 ----
 <p align="center">
