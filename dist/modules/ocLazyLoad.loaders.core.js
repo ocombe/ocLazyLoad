@@ -10,7 +10,7 @@
              * @returns {*}
              */
             $delegate.filesLoader = function filesLoader(config) {
-                var originalParams = arguments[1] === undefined ? {} : arguments[1];
+                var params = arguments[1] === undefined ? {} : arguments[1];
 
                 var cssFiles = [],
                     templatesFiles = [],
@@ -21,8 +21,7 @@
 
                 $delegate.toggleWatch(true); // start watching angular.module calls
 
-                // we need a real copy because we might edit some parts of it
-                var params = angular.copy(angular.extend({}, originalParams, config));
+                angular.extend(params, config);
 
                 var pushFile = function pushFile(path) {
                     var file_type = null,
@@ -133,14 +132,18 @@
              * @param params Object optional parameters
              * @returns promise
              */
-            $delegate.load = function (module) {
-                var params = arguments[1] === undefined ? {} : arguments[1];
+            $delegate.load = function (originalModule) {
+                var originalParams = arguments[1] === undefined ? {} : arguments[1];
 
                 var self = this,
                     config = null,
                     deferredList = [],
                     deferred = $q.defer(),
                     errText;
+
+                // clean copy
+                var module = angular.copy(originalModule);
+                var params = angular.copy(originalParams);
 
                 // If module is an array, break it down
                 if (angular.isArray(module)) {
@@ -198,8 +201,7 @@
                     }
                 }
 
-                var localParams = {};
-                angular.extend(localParams, params, config);
+                var localParams = angular.extend({}, params, config);
 
                 // if someone used an external loader and called the load function with just the module name
                 if (angular.isUndefined(config.files) && angular.isDefined(config.name) && $delegate.moduleExists(config.name)) {

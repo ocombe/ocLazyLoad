@@ -411,5 +411,25 @@ describe('Module: oc.lazyLoad', function() {
                 throw err;
             });
         });
+
+        it('should be able to load files with the param serie set to true', function(done) {
+            var interval = triggerDigests(),
+                params = {files: [lazyLoadUrl + 'testModule5.js', lazyLoadUrl + 'testModule6.js'], serie: true};
+
+            $ocLazyLoad.load(params).then(function success(res) {
+                expect(function() {
+                    angular.module('testModule5');
+                    angular.module('testModule6');
+                }).not.toThrow();
+
+               expect(params.files.length).toEqual(2); // it should not change the original params
+
+                window.clearInterval(interval);
+                done();
+            }, function error(err) {
+                window.clearInterval(interval);
+                throw err;
+            });
+        });
     });
 });

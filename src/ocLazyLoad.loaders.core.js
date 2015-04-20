@@ -9,7 +9,7 @@
              * @param params
              * @returns {*}
              */
-            $delegate.filesLoader = function filesLoader(config, originalParams = {}) {
+            $delegate.filesLoader = function filesLoader(config, params = {}) {
                 var cssFiles = [],
                     templatesFiles = [],
                     jsFiles = [],
@@ -19,8 +19,7 @@
 
                 $delegate.toggleWatch(true); // start watching angular.module calls
 
-                // we need a real copy because we might edit some parts of it
-                var params = angular.copy(angular.extend({}, originalParams, config));
+                angular.extend(params, config);
 
                 var pushFile = function(path) {
                     var file_type = null, m;
@@ -126,12 +125,16 @@
              * @param params Object optional parameters
              * @returns promise
              */
-            $delegate.load = function(module, params = {}) {
+            $delegate.load = function(originalModule, originalParams = {}) {
                 var self = this,
                     config = null,
                     deferredList = [],
                     deferred = $q.defer(),
                     errText;
+
+                // clean copy
+                var module = angular.copy(originalModule);
+                var params = angular.copy(originalParams);
 
                 // If module is an array, break it down
                 if(angular.isArray(module)) {
@@ -189,8 +192,7 @@
                     }
                 }
 
-                var localParams = {};
-                angular.extend(localParams, params, config);
+                var localParams = angular.extend({}, params, config);
 
                 // if someone used an external loader and called the load function with just the module name
                 if(angular.isUndefined(config.files) && angular.isDefined(config.name) && $delegate.moduleExists(config.name)) {
