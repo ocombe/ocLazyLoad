@@ -1,3 +1,14 @@
+<a name="1.0.0-beta.2"></a>
+# 1.0.0-beta.2 (2015-04-20)
+
+
+## Bug Fixes
+
+- Die infinite loops! You are not fun anymore (with param serie:true)
+ ([dab34c0a](https://github.com/ocombe/ocLazyLoad/commit/dab34c0a3513061665850f68d983c1f2729f5f5a),
+ [#166](https://github.com/ocombe/ocLazyLoad/issues/166))
+
+
 <a name="1.0.0-beta.1"></a>
 # 1.0.0-beta.1 (2015-04-16)
 
