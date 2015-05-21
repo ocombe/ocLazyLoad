@@ -219,7 +219,7 @@
                 regInvokes[moduleName][type] = {};
             }
             var onInvoke = function onInvoke(invokeName, signature) {
-                if (angular.isUndefined(regInvokes[moduleName][type][invokeName])) {
+                if (!regInvokes[moduleName][type].hasOwnProperty(invokeName)) {
                     regInvokes[moduleName][type][invokeName] = [];
                 }
                 if (regInvokes[moduleName][type][invokeName].indexOf(signature) === -1) {
