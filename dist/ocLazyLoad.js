@@ -791,6 +791,7 @@
                         el.src = params.cache === false ? cacheBuster(path) : path;
                         break;
                     default:
+                        filesCache.remove(path);
                         deferred.reject(new Error("Requested type \"" + type + "\" is not known. Could not inject \"" + path + "\""));
                         break;
                 }
@@ -799,9 +800,11 @@
                     el.onload = el.onreadystatechange = null;
                     loaded = 1;
                     $delegate._broadcast("ocLazyLoad.fileLoaded", path);
+                    filesCache.remove(path);
                     deferred.resolve();
                 };
                 el.onerror = function () {
+                    filesCache.remove(path);
                     deferred.reject(new Error("Unable to load " + path));
                 };
                 el.async = params.serie ? 0 : 1;
