@@ -979,7 +979,13 @@
                     promises.push(jsDeferred.promise);
                 }
 
-                if (params.serie && params.files.length > 0) {
+                if (promises.length === 0) {
+                    var deferred = $q.defer(),
+                        err = "Error: no file to load has been found, if you're trying to load an existing module you should use the 'inject' method instead of 'load'.";
+                    $delegate._$log.error(err);
+                    deferred.reject(err);
+                    return deferred.promise;
+                } else if (params.serie && params.files.length > 0) {
                     return $q.all(promises).then(function () {
                         return $delegate.filesLoader(config, params);
                     });
