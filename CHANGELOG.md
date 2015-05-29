@@ -1,3 +1,32 @@
+<a name="1.0.0"></a>
+# 1.0.0 (2015-05-29)
+
+
+## Bug Fixes
+
+- use parent element instead of head to insert files in native loaded
+ ([ad4276a3](https://github.com/ocombe/ocLazyLoad/commit/ad4276a39cddf8ebfd8f247690e98fc306c2d3bb),
+ [#164](https://github.com/ocombe/ocLazyLoad/issues/164))
+- don't compile text nodes in the directive
+ ([8900e493](https://github.com/ocombe/ocLazyLoad/commit/8900e493b8245084f4871d129250ffc54e565639),
+ [#168](https://github.com/ocombe/ocLazyLoad/issues/168))
+- files cache should be cleaned upon resolution of the promise
+ ([9a186c93](https://github.com/ocombe/ocLazyLoad/commit/9a186c93ccb72c63a45e40c6c1e86319d9d004fa),
+ [#189](https://github.com/ocombe/ocLazyLoad/issues/189))
+- reject promise when calling 'load' instead of 'inject'
+ ([31595472](https://github.com/ocombe/ocLazyLoad/commit/315954729aaa609d43aa7eb7750e8804cff9bf70),
+ [#147](https://github.com/ocombe/ocLazyLoad/issues/147))
+- make inject work as a standalone function when no params are given
+ ([499bd72d](https://github.com/ocombe/ocLazyLoad/commit/499bd72ddaf6addbf2c649a48776bd2b6ff35227),
+ [#171](https://github.com/ocombe/ocLazyLoad/issues/171))
+- guard against null-refs when parsing Safari user-agents
+ ([818aa5d0](https://github.com/ocombe/ocLazyLoad/commit/818aa5d0ddaa3909109d42b38f8921e9d4b18cda),
+ [#188](https://github.com/ocombe/ocLazyLoad/issues/188))
+- checking if we're not registering a component with a reserved name (such at `toString`)
+ ([7362ca49](https://github.com/ocombe/ocLazyLoad/commit/7362ca493384c5b14e203b9c013085cbcab980f8 ),
+ [#184](https://github.com/ocombe/ocLazyLoad/issues/184))
+
+
 <a name="1.0.0-beta.2"></a>
 # 1.0.0-beta.2 (2015-04-20)
 
