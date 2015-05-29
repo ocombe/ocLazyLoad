@@ -729,7 +729,14 @@
                     }, function (moduleName) {
                         if (angular.isDefined(moduleName)) {
                             $ocLazyLoad.load(moduleName).then(function () {
-                                $animate.enter($compile(content)($scope), $element);
+                                $animate.enter(content, $element);
+                                var contents = element.contents();
+                                angular.forEach(contents, function (content) {
+                                    if (content.nodeType !== 3) {
+                                        // 3 is a text node
+                                        $compile(content)($scope);
+                                    }
+                                });
                             });
                         }
                     }, true);
