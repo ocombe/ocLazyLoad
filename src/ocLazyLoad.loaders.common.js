@@ -76,7 +76,7 @@
                         insertBeforeElem = element[0];
                     }
                 }
-                anchor.insertBefore(el, insertBeforeElem);
+                insertBeforeElem.parentNode.insertBefore(el, insertBeforeElem);
 
                 /*
                  The event load or readystatechange doesn't fire in:
