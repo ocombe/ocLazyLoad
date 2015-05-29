@@ -97,9 +97,9 @@
                             // Android < 4.4
                             var androidVersion = parseFloat(ua.slice(ua.indexOf("android") + 8));
                             useCssLoadPatch = androidVersion < 4.4;
-                        } else if (ua.indexOf("safari") > -1 && ua.indexOf("chrome") == -1 && ua.indexOf("phantomjs") == -1) {
-                            var safariVersion = parseFloat(ua.match(/version\/([\.\d]+)/i)[1]);
-                            useCssLoadPatch = safariVersion < 6;
+                        } else if (ua.indexOf("safari") > -1) {
+                            var versionMatch = ua.match(/version\/([\.\d]+)/i);
+                            useCssLoadPatch = versionMatch && versionMatch[1] && parseFloat(versionMatch[1]) < 6;
                         }
                     }
 
