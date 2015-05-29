@@ -577,7 +577,9 @@
                  * @param moduleName
                  * @param localParams
                  */
-                inject: function inject(moduleName, localParams) {
+                inject: function inject(moduleName) {
+                    var localParams = arguments[1] === undefined ? {} : arguments[1];
+
                     var self = this,
                         deferred = $q.defer();
                     if (angular.isDefined(moduleName) && moduleName !== null) {
