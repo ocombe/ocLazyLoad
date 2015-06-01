@@ -1,3 +1,13 @@
+<a name="1.0.1"></a>
+# 1.0.1 (2015-06-01)
+
+
+## Bug Fixes
+
+- don't remove filecache for files that were successfully loaded
+ ([e2ed37c0](https://github.com/ocombe/ocLazyLoad/commit/e2ed37c0eff32d34419af6851bfc355e7fb6f3ad))
+
+
 <a name="1.0.0"></a>
 # 1.0.0 (2015-05-29)
 
