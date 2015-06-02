@@ -10,6 +10,7 @@
     "example": "examples"
   },
   "scripts": {
+    "bower": "bower install",
     "test": "karma start karma.conf.js",
     "test-dev": "karma start karma.conf.js --single-run=false",
     "build": "gulp build-minify"
@@ -30,6 +31,7 @@
     "url": "https://github.com/ocombe/ocLazyLoad/issues"
   },
   "devDependencies": {
+    "bower": "~1.4.1",
     "gulp": "~3.9.0",
     "gulp-babel": "~5.1.0",
     "gulp-clean": "~0.3.1",
