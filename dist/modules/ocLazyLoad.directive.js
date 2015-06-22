@@ -1,15 +1,15 @@
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").directive("ocLazyLoad", ["$ocLazyLoad", "$compile", "$animate", "$parse", function ($ocLazyLoad, $compile, $animate, $parse) {
+    angular.module('oc.lazyLoad').directive('ocLazyLoad', ["$ocLazyLoad", "$compile", "$animate", "$parse", function ($ocLazyLoad, $compile, $animate, $parse) {
         return {
-            restrict: "A",
+            restrict: 'A',
             terminal: true,
             priority: 1000,
             compile: function compile(element, attrs) {
                 // we store the content and remove it before compilation
                 var content = element[0].innerHTML;
-                element.html("");
+                element.html('');
 
                 return function ($scope, $element, $attr) {
                     var model = $parse($attr.ocLazyLoad);

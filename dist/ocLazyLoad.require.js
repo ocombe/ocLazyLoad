@@ -6,9 +6,9 @@
  * @author Olivier Combe <olivier.combe@gmail.com>
  */
 (function (angular, window) {
-    "use strict";
+    'use strict';
 
-    var regModules = ["ng", "oc.lazyLoad"],
+    var regModules = ['ng', 'oc.lazyLoad'],
         regInvokes = {},
         regConfigs = [],
         modulesToLoad = [],
@@ -17,9 +17,9 @@
         runBlocks = {},
         justLoaded = [];
 
-    var ocLazyLoad = angular.module("oc.lazyLoad", ["ng"]);
+    var ocLazyLoad = angular.module('oc.lazyLoad', ['ng']);
 
-    ocLazyLoad.provider("$ocLazyLoad", ["$controllerProvider", "$provide", "$compileProvider", "$filterProvider", "$injector", "$animateProvider", function ($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
+    ocLazyLoad.provider('$ocLazyLoad', ["$controllerProvider", "$provide", "$compileProvider", "$filterProvider", "$injector", "$animateProvider", function ($controllerProvider, $provide, $compileProvider, $filterProvider, $injector, $animateProvider) {
         var modules = {},
             providers = {
             $controllerProvider: $controllerProvider,
@@ -68,7 +68,7 @@
             // this is probably useless now because we override angular.bootstrap
             if (modulesToLoad.length === 0) {
                 var elements = [element],
-                    names = ["ng:app", "ng-app", "x-ng-app", "data-ng-app"],
+                    names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
                     NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/,
                     append = function append(elm) {
                     return elm && elements.push(elm);
@@ -77,20 +77,20 @@
                 angular.forEach(names, function (name) {
                     names[name] = true;
                     append(document.getElementById(name));
-                    name = name.replace(":", "\\:");
+                    name = name.replace(':', '\\:');
                     if (element[0].querySelectorAll) {
-                        angular.forEach(element[0].querySelectorAll("." + name), append);
-                        angular.forEach(element[0].querySelectorAll("." + name + "\\:"), append);
-                        angular.forEach(element[0].querySelectorAll("[" + name + "]"), append);
+                        angular.forEach(element[0].querySelectorAll('.' + name), append);
+                        angular.forEach(element[0].querySelectorAll('.' + name + '\\:'), append);
+                        angular.forEach(element[0].querySelectorAll('[' + name + ']'), append);
                     }
                 });
 
                 angular.forEach(elements, function (elm) {
                     if (modulesToLoad.length === 0) {
-                        var className = " " + element.className + " ";
+                        var className = ' ' + element.className + ' ';
                         var match = NG_APP_CLASS_REGEXP.exec(className);
                         if (match) {
-                            modulesToLoad.push((match[2] || "").replace(/\s+/g, ","));
+                            modulesToLoad.push((match[2] || '').replace(/\s+/g, ','));
                         } else {
                             angular.forEach(elm.attributes, function (attr) {
                                 if (modulesToLoad.length === 0 && names[attr.name]) {
@@ -103,7 +103,7 @@
             }
 
             if (modulesToLoad.length === 0 && !((window.jasmine || window.mocha) && angular.isDefined(angular.mock))) {
-                console.error("No module found during bootstrap, unable to init ocLazyLoad. You should always use the ng-app directive or angular.boostrap when you use ocLazyLoad.");
+                console.error('No module found during bootstrap, unable to init ocLazyLoad. You should always use the ng-app directive or angular.boostrap when you use ocLazyLoad.');
             }
 
             var addReg = function addReg(moduleName) {
@@ -196,7 +196,7 @@
                     }
                     _invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);
                     _invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
-                    broadcast(newModule ? "ocLazyLoad.moduleLoaded" : "ocLazyLoad.moduleReloaded", moduleName);
+                    broadcast(newModule ? 'ocLazyLoad.moduleLoaded' : 'ocLazyLoad.moduleReloaded', moduleName);
                     registerModules.pop();
                     justLoaded.push(moduleName);
                 }
@@ -225,7 +225,7 @@
                 if (regInvokes[moduleName][type][invokeName].indexOf(signature) === -1) {
                     newInvoke = true;
                     regInvokes[moduleName][type][invokeName].push(signature);
-                    broadcast("ocLazyLoad.componentLoaded", [moduleName, type, invokeName]);
+                    broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
                 }
             };
 
@@ -277,21 +277,21 @@
                         if (providers.hasOwnProperty(args[0])) {
                             provider = providers[args[0]];
                         } else {
-                            throw new Error("unsupported provider " + args[0]);
+                            throw new Error('unsupported provider ' + args[0]);
                         }
                     }
                     var isNew = _registerInvokeList(args, moduleName);
-                    if (args[1] !== "invoke") {
+                    if (args[1] !== 'invoke') {
                         if (isNew && angular.isDefined(provider)) {
                             provider[args[1]].apply(provider, args[2]);
                         }
                     } else {
                         // config block
                         var callInvoke = function callInvoke(fct) {
-                            var invoked = regConfigs.indexOf("" + moduleName + "-" + fct);
+                            var invoked = regConfigs.indexOf('' + moduleName + '-' + fct);
                             if (invoked === -1 || reconfig) {
                                 if (invoked === -1) {
-                                    regConfigs.push("" + moduleName + "-" + fct);
+                                    regConfigs.push('' + moduleName + '-' + fct);
                                 }
                                 if (angular.isDefined(provider)) {
                                     provider[args[1]].apply(provider, args[2]);
@@ -316,7 +316,7 @@
             var moduleName = null;
             if (angular.isString(module)) {
                 moduleName = module;
-            } else if (angular.isObject(module) && module.hasOwnProperty("name") && angular.isString(module.name)) {
+            } else if (angular.isObject(module) && module.hasOwnProperty('name') && angular.isString(module.name)) {
                 moduleName = module.name;
             }
             return moduleName;
@@ -329,7 +329,7 @@
             try {
                 return ngModuleFct(moduleName);
             } catch (e) {
-                if (/No module/.test(e) || e.message.indexOf("$injector:nomod") > -1) {
+                if (/No module/.test(e) || e.message.indexOf('$injector:nomod') > -1) {
                     return false;
                 }
             }
@@ -337,18 +337,18 @@
 
         this.$get = ["$log", "$rootElement", "$rootScope", "$cacheFactory", "$q", function ($log, $rootElement, $rootScope, $cacheFactory, $q) {
             var instanceInjector,
-                filesCache = $cacheFactory("ocLazyLoad");
+                filesCache = $cacheFactory('ocLazyLoad');
 
             if (!debug) {
                 $log = {};
-                $log.error = angular.noop;
-                $log.warn = angular.noop;
-                $log.info = angular.noop;
+                $log['error'] = angular.noop;
+                $log['warn'] = angular.noop;
+                $log['info'] = angular.noop;
             }
 
             // Make this lazy because when $get() is called the instance injector hasn't been assigned to the rootElement yet
             providers.getInstanceInjector = function () {
-                return instanceInjector ? instanceInjector : instanceInjector = $rootElement.data("$injector") || angular.injector();
+                return instanceInjector ? instanceInjector : instanceInjector = $rootElement.data('$injector') || angular.injector();
             };
 
             broadcast = function broadcast(eventName, params) {
@@ -399,7 +399,7 @@
                  */
                 getModuleConfig: function getModuleConfig(moduleName) {
                     if (!angular.isString(moduleName)) {
-                        throw new Error("You need to give the name of the module to get");
+                        throw new Error('You need to give the name of the module to get');
                     }
                     if (!modules[moduleName]) {
                         return null;
@@ -414,7 +414,7 @@
                  */
                 setModuleConfig: function setModuleConfig(moduleConfig) {
                     if (!angular.isObject(moduleConfig)) {
-                        throw new Error("You need to give the module config object to set");
+                        throw new Error('You need to give the module config object to set');
                     }
                     modules[moduleConfig.name] = moduleConfig;
                     return moduleConfig;
@@ -424,7 +424,7 @@
                  * Returns the list of loaded modules
                  * @returns {string[]}
                  */
-                getModules: function () {
+                getModules: function getModules() {
                     return regModules;
                 },
 
@@ -453,7 +453,7 @@
                         }
                         return true;
                     } else {
-                        throw new Error("You need to define the module(s) name(s)");
+                        throw new Error('You need to define the module(s) name(s)');
                     }
                 },
 
@@ -474,8 +474,8 @@
                         return ngModuleFct(moduleName);
                     } catch (e) {
                         // this error message really suxx
-                        if (/No module/.test(e) || e.message.indexOf("$injector:nomod") > -1) {
-                            e.message = "The module \"" + stringify(moduleName) + "\" that you are trying to load does not exist. " + e.message;
+                        if (/No module/.test(e) || e.message.indexOf('$injector:nomod') > -1) {
+                            e.message = 'The module "' + stringify(moduleName) + '" that you are trying to load does not exist. ' + e.message;
                         }
                         throw e;
                     }
@@ -537,7 +537,7 @@
 
                             // If the module was redefined, advise via the console
                             if (diff.length !== 0) {
-                                self._$log.warn("Module \"", moduleName, "\" attempted to redefine configuration for dependency. \"", requireEntry.name, "\"\n Additional Files Loaded:", diff);
+                                self._$log.warn('Module "', moduleName, '" attempted to redefine configuration for dependency. "', requireEntry.name, '"\n Additional Files Loaded:', diff);
                             }
 
                             // Push everything to the file loader, it will weed out the duplicates.
@@ -547,7 +547,7 @@
                                     return self._loadDependencies(requireEntry);
                                 }));
                             } else {
-                                return reject(new Error("Error: New dependencies need to be loaded from external files (" + requireEntry.files + "), but no loader has been defined."));
+                                return reject(new Error('Error: New dependencies need to be loaded from external files (' + requireEntry.files + '), but no loader has been defined.'));
                             }
                             return;
                         } else if (angular.isArray(requireEntry)) {
@@ -555,10 +555,10 @@
                                 files: requireEntry
                             };
                         } else if (angular.isObject(requireEntry)) {
-                            if (requireEntry.hasOwnProperty("name") && requireEntry.name) {
+                            if (requireEntry.hasOwnProperty('name') && requireEntry['name']) {
                                 // The dependency doesn't exist in the module cache and is a new configuration, so store and push it.
                                 self.setModuleConfig(requireEntry);
-                                moduleCache.push(requireEntry.name);
+                                moduleCache.push(requireEntry['name']);
                             }
                         }
 
@@ -570,7 +570,7 @@
                                     return self._loadDependencies(requireEntry);
                                 }));
                             } else {
-                                return reject(new Error("Error: the module \"" + requireEntry.name + "\" is defined in external files (" + requireEntry.files + "), but no loader has been defined."));
+                                return reject(new Error('Error: the module "' + requireEntry.name + '" is defined in external files (' + requireEntry.files + '), but no loader has been defined.'));
                             }
                         }
                     });
@@ -708,19 +708,24 @@
         _addToLoadList(name);
         return ngModuleFct(name, requires, configFn);
     };
+
+    // CommonJS package manager support:
+    if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.exports === exports) {
+        module.exports = 'oc.lazyLoad';
+    }
 })(angular, window);
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").directive("ocLazyLoad", ["$ocLazyLoad", "$compile", "$animate", "$parse", function ($ocLazyLoad, $compile, $animate, $parse) {
+    angular.module('oc.lazyLoad').directive('ocLazyLoad', ["$ocLazyLoad", "$compile", "$animate", "$parse", function ($ocLazyLoad, $compile, $animate, $parse) {
         return {
-            restrict: "A",
+            restrict: 'A',
             terminal: true,
             priority: 1000,
             compile: function compile(element, attrs) {
                 // we store the content and remove it before compilation
                 var content = element[0].innerHTML;
-                element.html("");
+                element.html('');
 
                 return function ($scope, $element, $attr) {
                     var model = $parse($attr.ocLazyLoad);
@@ -746,13 +751,13 @@
     }]);
 })(angular);
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$q", "$window", "$interval", function ($delegate, $q, $window, $interval) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$q", "$window", "$interval", function ($delegate, $q, $window, $interval) {
             var uaCssChecked = false,
                 useCssLoadPatch = false,
-                anchor = $window.document.getElementsByTagName("head")[0] || $window.document.getElementsByTagName("body")[0];
+                anchor = $window.document.getElementsByTagName('head')[0] || $window.document.getElementsByTagName('body')[0];
 
             /**
              * Load a js/css file
@@ -768,13 +773,13 @@
                     filesCache = $delegate._getFilesCache(),
                     cacheBuster = function cacheBuster(url) {
                     var dc = new Date().getTime();
-                    if (url.indexOf("?") >= 0) {
-                        if (url.substring(0, url.length - 1) === "&") {
-                            return "" + url + "_dc=" + dc;
+                    if (url.indexOf('?') >= 0) {
+                        if (url.substring(0, url.length - 1) === '&') {
+                            return '' + url + '_dc=' + dc;
                         }
-                        return "" + url + "&_dc=" + dc;
+                        return '' + url + '&_dc=' + dc;
                     } else {
-                        return "" + url + "?_dc=" + dc;
+                        return '' + url + '?_dc=' + dc;
                     }
                 };
 
@@ -787,31 +792,31 @@
 
                 // Switch in case more content types are added later
                 switch (type) {
-                    case "css":
-                        el = $window.document.createElement("link");
-                        el.type = "text/css";
-                        el.rel = "stylesheet";
+                    case 'css':
+                        el = $window.document.createElement('link');
+                        el.type = 'text/css';
+                        el.rel = 'stylesheet';
                         el.href = params.cache === false ? cacheBuster(path) : path;
                         break;
-                    case "js":
-                        el = $window.document.createElement("script");
+                    case 'js':
+                        el = $window.document.createElement('script');
                         el.src = params.cache === false ? cacheBuster(path) : path;
                         break;
                     default:
                         filesCache.remove(path);
-                        deferred.reject(new Error("Requested type \"" + type + "\" is not known. Could not inject \"" + path + "\""));
+                        deferred.reject(new Error('Requested type "' + type + '" is not known. Could not inject "' + path + '"'));
                         break;
                 }
-                el.onload = el.onreadystatechange = function (e) {
-                    if (el.readyState && !/^c|loade/.test(el.readyState) || loaded) return;
-                    el.onload = el.onreadystatechange = null;
+                el.onload = el['onreadystatechange'] = function (e) {
+                    if (el['readyState'] && !/^c|loade/.test(el['readyState']) || loaded) return;
+                    el.onload = el['onreadystatechange'] = null;
                     loaded = 1;
-                    $delegate._broadcast("ocLazyLoad.fileLoaded", path);
+                    $delegate._broadcast('ocLazyLoad.fileLoaded', path);
                     deferred.resolve();
                 };
                 el.onerror = function () {
                     filesCache.remove(path);
-                    deferred.reject(new Error("Unable to load " + path));
+                    deferred.reject(new Error('Unable to load ' + path));
                 };
                 el.async = params.serie ? 0 : 1;
 
@@ -830,20 +835,20 @@
                  - Android < 4.4 (default mobile browser)
                  - Safari < 6    (desktop browser)
                  */
-                if (type == "css") {
+                if (type == 'css') {
                     if (!uaCssChecked) {
                         var ua = $window.navigator.userAgent.toLowerCase();
 
                         // iOS < 6
                         if (/iP(hone|od|ad)/.test($window.navigator.platform)) {
                             var v = $window.navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
-                            var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join("."));
+                            var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
                             useCssLoadPatch = iOSVersion < 6;
-                        } else if (ua.indexOf("android") > -1) {
+                        } else if (ua.indexOf('android') > -1) {
                             // Android < 4.4
-                            var androidVersion = parseFloat(ua.slice(ua.indexOf("android") + 8));
+                            var androidVersion = parseFloat(ua.slice(ua.indexOf('android') + 8));
                             useCssLoadPatch = androidVersion < 4.4;
-                        } else if (ua.indexOf("safari") > -1) {
+                        } else if (ua.indexOf('safari') > -1) {
                             var versionMatch = ua.match(/version\/([\.\d]+)/i);
                             useCssLoadPatch = versionMatch && versionMatch[1] && parseFloat(versionMatch[1]) < 6;
                         }
@@ -873,10 +878,10 @@
     }]);
 })(angular);
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$q", function ($delegate, $q) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$q", function ($delegate, $q) {
             /**
              * The function that loads new files
              * @param config
@@ -918,23 +923,23 @@
                             if ((m = /[.](css|less|html|htm|js)?((\?|#).*)?$/.exec(path)) !== null) {
                                 // Detect file type via file extension
                                 file_type = m[1];
-                            } else if (!$delegate.jsLoader.hasOwnProperty("ocLazyLoadLoader") && $delegate.jsLoader.hasOwnProperty("load")) {
+                            } else if (!$delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader') && $delegate.jsLoader.hasOwnProperty('load')) {
                                 // requirejs
-                                file_type = "js";
+                                file_type = 'js';
                             } else {
-                                $delegate._$log.error("File type could not be determined. " + path);
+                                $delegate._$log.error('File type could not be determined. ' + path);
                                 return;
                             }
                         }
 
-                        if ((file_type === "css" || file_type === "less") && cssFiles.indexOf(path) === -1) {
+                        if ((file_type === 'css' || file_type === 'less') && cssFiles.indexOf(path) === -1) {
                             cssFiles.push(path);
-                        } else if ((file_type === "html" || file_type === "htm") && templatesFiles.indexOf(path) === -1) {
+                        } else if ((file_type === 'html' || file_type === 'htm') && templatesFiles.indexOf(path) === -1) {
                             templatesFiles.push(path);
-                        } else if (file_type === "js" || jsFiles.indexOf(path) === -1) {
+                        } else if (file_type === 'js' || jsFiles.indexOf(path) === -1) {
                             jsFiles.push(path);
                         } else {
-                            $delegate._$log.error("File type is not valid. " + path);
+                            $delegate._$log.error('File type is not valid. ' + path);
                         }
                     } else if (cachePromise) {
                         promises.push(cachePromise);
@@ -952,7 +957,7 @@
                 if (cssFiles.length > 0) {
                     var cssDeferred = $q.defer();
                     $delegate.cssLoader(cssFiles, function (err) {
-                        if (angular.isDefined(err) && $delegate.cssLoader.hasOwnProperty("ocLazyLoadLoader")) {
+                        if (angular.isDefined(err) && $delegate.cssLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             cssDeferred.reject(err);
                         } else {
@@ -965,7 +970,7 @@
                 if (templatesFiles.length > 0) {
                     var templatesDeferred = $q.defer();
                     $delegate.templatesLoader(templatesFiles, function (err) {
-                        if (angular.isDefined(err) && $delegate.templatesLoader.hasOwnProperty("ocLazyLoadLoader")) {
+                        if (angular.isDefined(err) && $delegate.templatesLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             templatesDeferred.reject(err);
                         } else {
@@ -978,7 +983,7 @@
                 if (jsFiles.length > 0) {
                     var jsDeferred = $q.defer();
                     $delegate.jsLoader(jsFiles, function (err) {
-                        if (angular.isDefined(err) && $delegate.jsLoader.hasOwnProperty("ocLazyLoadLoader")) {
+                        if (angular.isDefined(err) && $delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             jsDeferred.reject(err);
                         } else {
@@ -990,7 +995,7 @@
 
                 if (promises.length === 0) {
                     var deferred = $q.defer(),
-                        err = "Error: no file to load has been found, if you're trying to load an existing module you should use the 'inject' method instead of 'load'.";
+                        err = 'Error: no file to load has been found, if you\'re trying to load an existing module you should use the \'inject\' method instead of \'load\'.';
                     $delegate._$log.error(err);
                     deferred.reject(err);
                     return deferred.promise;
@@ -999,7 +1004,7 @@
                         return $delegate.filesLoader(config, params);
                     });
                 } else {
-                    return $q.all(promises)["finally"](function (res) {
+                    return $q.all(promises)['finally'](function (res) {
                         $delegate.toggleWatch(false); // stop watching angular.module calls
                         return res;
                     });
@@ -1063,7 +1068,7 @@
 
                 if (config === null) {
                     var moduleName = self._getModuleName(module);
-                    errText = "Module \"" + (moduleName || "unknown") + "\" is not configured, cannot load.";
+                    errText = 'Module "' + (moduleName || 'unknown') + '" is not configured, cannot load.';
                     $delegate._$log.error(errText);
                     deferred.reject(new Error(errText));
                     return deferred.promise;
@@ -1107,10 +1112,10 @@
     }]);
 })(angular);
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$q", function ($delegate, $q) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$q", function ($delegate, $q) {
             /**
              * cssLoader function
              * @type Function
@@ -1122,7 +1127,7 @@
             $delegate.cssLoader = function (paths, callback, params) {
                 var promises = [];
                 angular.forEach(paths, function (path) {
-                    promises.push($delegate.buildElement("css", path, params));
+                    promises.push($delegate.buildElement('css', path, params));
                 });
                 $q.all(promises).then(function () {
                     callback();
@@ -1137,10 +1142,10 @@
     }]);
 })(angular);
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$q", function ($delegate, $q) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$q", function ($delegate, $q) {
             /**
              * jsLoader function
              * @type Function
@@ -1156,10 +1161,10 @@
     }]);
 })(angular);
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$templateCache", "$q", "$http", function ($delegate, $templateCache, $q, $http) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$templateCache", "$q", "$http", function ($delegate, $templateCache, $q, $http) {
             /**
              * templatesLoader function
              * @type Function
@@ -1178,7 +1183,7 @@
                     $http.get(url, params).success(function (data) {
                         if (angular.isString(data) && data.length > 0) {
                             angular.forEach(angular.element(data), function (node) {
-                                if (node.nodeName === "SCRIPT" && node.type === "text/ng-template") {
+                                if (node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
                                     $templateCache.put(node.id, node.innerHTML);
                                 }
                             });
@@ -1188,7 +1193,7 @@
                         }
                         deferred.resolve();
                     }).error(function (err) {
-                        deferred.reject(new Error("Unable to load template file \"" + url + "\": " + err));
+                        deferred.reject(new Error('Unable to load template file "' + url + '": ' + err));
                     });
                 });
                 return $q.all(promises).then(function () {
@@ -1211,7 +1216,7 @@ if (!Array.prototype.indexOf) {
                 // 1. Let O be the result of calling ToObject passing
                 //    the this value as the argument.
                 if (this == null) {
-                        throw new TypeError("\"this\" is null or not defined");
+                        throw new TypeError('"this" is null or not defined');
                 }
 
                 var O = Object(this);

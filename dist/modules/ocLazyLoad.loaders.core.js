@@ -1,8 +1,8 @@
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$q", function ($delegate, $q) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$q", function ($delegate, $q) {
             /**
              * The function that loads new files
              * @param config
@@ -44,23 +44,23 @@
                             if ((m = /[.](css|less|html|htm|js)?((\?|#).*)?$/.exec(path)) !== null) {
                                 // Detect file type via file extension
                                 file_type = m[1];
-                            } else if (!$delegate.jsLoader.hasOwnProperty("ocLazyLoadLoader") && $delegate.jsLoader.hasOwnProperty("load")) {
+                            } else if (!$delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader') && $delegate.jsLoader.hasOwnProperty('load')) {
                                 // requirejs
-                                file_type = "js";
+                                file_type = 'js';
                             } else {
-                                $delegate._$log.error("File type could not be determined. " + path);
+                                $delegate._$log.error('File type could not be determined. ' + path);
                                 return;
                             }
                         }
 
-                        if ((file_type === "css" || file_type === "less") && cssFiles.indexOf(path) === -1) {
+                        if ((file_type === 'css' || file_type === 'less') && cssFiles.indexOf(path) === -1) {
                             cssFiles.push(path);
-                        } else if ((file_type === "html" || file_type === "htm") && templatesFiles.indexOf(path) === -1) {
+                        } else if ((file_type === 'html' || file_type === 'htm') && templatesFiles.indexOf(path) === -1) {
                             templatesFiles.push(path);
-                        } else if (file_type === "js" || jsFiles.indexOf(path) === -1) {
+                        } else if (file_type === 'js' || jsFiles.indexOf(path) === -1) {
                             jsFiles.push(path);
                         } else {
-                            $delegate._$log.error("File type is not valid. " + path);
+                            $delegate._$log.error('File type is not valid. ' + path);
                         }
                     } else if (cachePromise) {
                         promises.push(cachePromise);
@@ -78,7 +78,7 @@
                 if (cssFiles.length > 0) {
                     var cssDeferred = $q.defer();
                     $delegate.cssLoader(cssFiles, function (err) {
-                        if (angular.isDefined(err) && $delegate.cssLoader.hasOwnProperty("ocLazyLoadLoader")) {
+                        if (angular.isDefined(err) && $delegate.cssLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             cssDeferred.reject(err);
                         } else {
@@ -91,7 +91,7 @@
                 if (templatesFiles.length > 0) {
                     var templatesDeferred = $q.defer();
                     $delegate.templatesLoader(templatesFiles, function (err) {
-                        if (angular.isDefined(err) && $delegate.templatesLoader.hasOwnProperty("ocLazyLoadLoader")) {
+                        if (angular.isDefined(err) && $delegate.templatesLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             templatesDeferred.reject(err);
                         } else {
@@ -104,7 +104,7 @@
                 if (jsFiles.length > 0) {
                     var jsDeferred = $q.defer();
                     $delegate.jsLoader(jsFiles, function (err) {
-                        if (angular.isDefined(err) && $delegate.jsLoader.hasOwnProperty("ocLazyLoadLoader")) {
+                        if (angular.isDefined(err) && $delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader')) {
                             $delegate._$log.error(err);
                             jsDeferred.reject(err);
                         } else {
@@ -116,7 +116,7 @@
 
                 if (promises.length === 0) {
                     var deferred = $q.defer(),
-                        err = "Error: no file to load has been found, if you're trying to load an existing module you should use the 'inject' method instead of 'load'.";
+                        err = 'Error: no file to load has been found, if you\'re trying to load an existing module you should use the \'inject\' method instead of \'load\'.';
                     $delegate._$log.error(err);
                     deferred.reject(err);
                     return deferred.promise;
@@ -125,7 +125,7 @@
                         return $delegate.filesLoader(config, params);
                     });
                 } else {
-                    return $q.all(promises)["finally"](function (res) {
+                    return $q.all(promises)['finally'](function (res) {
                         $delegate.toggleWatch(false); // stop watching angular.module calls
                         return res;
                     });
@@ -189,7 +189,7 @@
 
                 if (config === null) {
                     var moduleName = self._getModuleName(module);
-                    errText = "Module \"" + (moduleName || "unknown") + "\" is not configured, cannot load.";
+                    errText = 'Module "' + (moduleName || 'unknown') + '" is not configured, cannot load.';
                     $delegate._$log.error(errText);
                     deferred.reject(new Error(errText));
                     return deferred.promise;

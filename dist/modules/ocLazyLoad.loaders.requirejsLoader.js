@@ -1,8 +1,8 @@
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$q", function ($delegate, $q) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$q", function ($delegate, $q) {
             /**
              * jsLoader function
              * @type Function

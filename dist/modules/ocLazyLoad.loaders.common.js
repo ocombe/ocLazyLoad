@@ -1,11 +1,11 @@
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$q", "$window", "$interval", function ($delegate, $q, $window, $interval) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$q", "$window", "$interval", function ($delegate, $q, $window, $interval) {
             var uaCssChecked = false,
                 useCssLoadPatch = false,
-                anchor = $window.document.getElementsByTagName("head")[0] || $window.document.getElementsByTagName("body")[0];
+                anchor = $window.document.getElementsByTagName('head')[0] || $window.document.getElementsByTagName('body')[0];
 
             /**
              * Load a js/css file
@@ -21,13 +21,13 @@
                     filesCache = $delegate._getFilesCache(),
                     cacheBuster = function cacheBuster(url) {
                     var dc = new Date().getTime();
-                    if (url.indexOf("?") >= 0) {
-                        if (url.substring(0, url.length - 1) === "&") {
-                            return "" + url + "_dc=" + dc;
+                    if (url.indexOf('?') >= 0) {
+                        if (url.substring(0, url.length - 1) === '&') {
+                            return '' + url + '_dc=' + dc;
                         }
-                        return "" + url + "&_dc=" + dc;
+                        return '' + url + '&_dc=' + dc;
                     } else {
-                        return "" + url + "?_dc=" + dc;
+                        return '' + url + '?_dc=' + dc;
                     }
                 };
 
@@ -40,31 +40,31 @@
 
                 // Switch in case more content types are added later
                 switch (type) {
-                    case "css":
-                        el = $window.document.createElement("link");
-                        el.type = "text/css";
-                        el.rel = "stylesheet";
+                    case 'css':
+                        el = $window.document.createElement('link');
+                        el.type = 'text/css';
+                        el.rel = 'stylesheet';
                         el.href = params.cache === false ? cacheBuster(path) : path;
                         break;
-                    case "js":
-                        el = $window.document.createElement("script");
+                    case 'js':
+                        el = $window.document.createElement('script');
                         el.src = params.cache === false ? cacheBuster(path) : path;
                         break;
                     default:
                         filesCache.remove(path);
-                        deferred.reject(new Error("Requested type \"" + type + "\" is not known. Could not inject \"" + path + "\""));
+                        deferred.reject(new Error('Requested type "' + type + '" is not known. Could not inject "' + path + '"'));
                         break;
                 }
-                el.onload = el.onreadystatechange = function (e) {
-                    if (el.readyState && !/^c|loade/.test(el.readyState) || loaded) return;
-                    el.onload = el.onreadystatechange = null;
+                el.onload = el['onreadystatechange'] = function (e) {
+                    if (el['readyState'] && !/^c|loade/.test(el['readyState']) || loaded) return;
+                    el.onload = el['onreadystatechange'] = null;
                     loaded = 1;
-                    $delegate._broadcast("ocLazyLoad.fileLoaded", path);
+                    $delegate._broadcast('ocLazyLoad.fileLoaded', path);
                     deferred.resolve();
                 };
                 el.onerror = function () {
                     filesCache.remove(path);
-                    deferred.reject(new Error("Unable to load " + path));
+                    deferred.reject(new Error('Unable to load ' + path));
                 };
                 el.async = params.serie ? 0 : 1;
 
@@ -83,20 +83,20 @@
                  - Android < 4.4 (default mobile browser)
                  - Safari < 6    (desktop browser)
                  */
-                if (type == "css") {
+                if (type == 'css') {
                     if (!uaCssChecked) {
                         var ua = $window.navigator.userAgent.toLowerCase();
 
                         // iOS < 6
                         if (/iP(hone|od|ad)/.test($window.navigator.platform)) {
                             var v = $window.navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
-                            var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join("."));
+                            var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
                             useCssLoadPatch = iOSVersion < 6;
-                        } else if (ua.indexOf("android") > -1) {
+                        } else if (ua.indexOf('android') > -1) {
                             // Android < 4.4
-                            var androidVersion = parseFloat(ua.slice(ua.indexOf("android") + 8));
+                            var androidVersion = parseFloat(ua.slice(ua.indexOf('android') + 8));
                             useCssLoadPatch = androidVersion < 4.4;
-                        } else if (ua.indexOf("safari") > -1) {
+                        } else if (ua.indexOf('safari') > -1) {
                             var versionMatch = ua.match(/version\/([\.\d]+)/i);
                             useCssLoadPatch = versionMatch && versionMatch[1] && parseFloat(versionMatch[1]) < 6;
                         }

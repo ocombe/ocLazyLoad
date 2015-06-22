@@ -1,8 +1,8 @@
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$q", function ($delegate, $q) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$q", function ($delegate, $q) {
             /**
              * jsLoader function
              * @type Function
@@ -14,7 +14,7 @@
             $delegate.jsLoader = function (paths, callback, params) {
                 var promises = [];
                 angular.forEach(paths, function (path) {
-                    promises.push($delegate.buildElement("js", path, params));
+                    promises.push($delegate.buildElement('js', path, params));
                 });
                 $q.all(promises).then(function () {
                     callback();

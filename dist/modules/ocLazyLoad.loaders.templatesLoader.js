@@ -1,8 +1,8 @@
 (function (angular) {
-    "use strict";
+    'use strict';
 
-    angular.module("oc.lazyLoad").config(["$provide", function ($provide) {
-        $provide.decorator("$ocLazyLoad", ["$delegate", "$templateCache", "$q", "$http", function ($delegate, $templateCache, $q, $http) {
+    angular.module('oc.lazyLoad').config(["$provide", function ($provide) {
+        $provide.decorator('$ocLazyLoad', ["$delegate", "$templateCache", "$q", "$http", function ($delegate, $templateCache, $q, $http) {
             /**
              * templatesLoader function
              * @type Function
@@ -21,7 +21,7 @@
                     $http.get(url, params).success(function (data) {
                         if (angular.isString(data) && data.length > 0) {
                             angular.forEach(angular.element(data), function (node) {
-                                if (node.nodeName === "SCRIPT" && node.type === "text/ng-template") {
+                                if (node.nodeName === 'SCRIPT' && node.type === 'text/ng-template') {
                                     $templateCache.put(node.id, node.innerHTML);
                                 }
                             });
@@ -31,7 +31,7 @@
                         }
                         deferred.resolve();
                     }).error(function (err) {
-                        deferred.reject(new Error("Unable to load template file \"" + url + "\": " + err));
+                        deferred.reject(new Error('Unable to load template file "' + url + '": ' + err));
                     });
                 });
                 return $q.all(promises).then(function () {
