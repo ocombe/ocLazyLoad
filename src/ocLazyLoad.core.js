@@ -677,4 +677,9 @@
         return ngModuleFct(name, requires, configFn);
     };
 
+    // CommonJS package manager support:
+    if(typeof module !== 'undefined' && typeof exports !== 'undefined' && module.exports === exports) {
+        module.exports = 'oc.lazyLoad';
+    }
+
 })(angular, window);
