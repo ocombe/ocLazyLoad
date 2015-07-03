@@ -71,7 +71,7 @@
                     names[name] = true;
                     append(document.getElementById(name));
                     name = name.replace(':', '\\:');
-                    if(element[0].querySelectorAll) {
+                    if(typeof(element[0]) !== 'undefined' && element[0].querySelectorAll) {
                         angular.forEach(element[0].querySelectorAll(`.${ name }`), append);
                         angular.forEach(element[0].querySelectorAll(`.${ name }\\:`), append);
                         angular.forEach(element[0].querySelectorAll(`[${ name }]`), append);
