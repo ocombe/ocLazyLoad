@@ -1,3 +1,19 @@
+<a name="1.0.2"></a>
+# 1.0.2 (2015-07-10)
+
+
+## Bug Fixes
+
+- add extra condition to improve karma testing
+ ([f0c33aae](https://github.com/ocombe/ocLazyLoad/commit/f0c33aaea84511a276dd946dd48bfe2cb20d1e73))
+
+
+## Features
+
+- add interoperability with CommonJS
+ ([b0536ad4](https://github.com/ocombe/ocLazyLoad/commit/b0536ad4104467922c36bcf55a8a072343d102bc))
+
+
 <a name="1.0.1"></a>
 # 1.0.1 (2015-06-01)
 

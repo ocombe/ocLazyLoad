@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v1.0.1
+ * @version v1.0.2
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -78,7 +78,7 @@
                     names[name] = true;
                     append(document.getElementById(name));
                     name = name.replace(':', '\\:');
-                    if (element[0].querySelectorAll) {
+                    if (typeof element[0] !== 'undefined' && element[0].querySelectorAll) {
                         angular.forEach(element[0].querySelectorAll('.' + name), append);
                         angular.forEach(element[0].querySelectorAll('.' + name + '\\:'), append);
                         angular.forEach(element[0].querySelectorAll('[' + name + ']'), append);
