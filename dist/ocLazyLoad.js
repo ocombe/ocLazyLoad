@@ -177,7 +177,8 @@
                     if (!moduleName || justLoaded.indexOf(moduleName) !== -1) {
                         continue;
                     }
-                    var newModule = regModules.indexOf(moduleName) === -1;
+                    // new if not registered, and not a config name
+                    var newModule = regModules.indexOf(moduleName) === -1 && !modules[moduleName];
                     moduleFn = ngModuleFct(moduleName);
                     if (newModule) {
                         // new module
@@ -288,10 +289,10 @@
                     } else {
                         // config block
                         var callInvoke = function callInvoke(fct) {
-                            var invoked = regConfigs.indexOf('' + moduleName + '-' + fct);
+                            var invoked = regConfigs.indexOf(moduleName + '-' + fct);
                             if (invoked === -1 || reconfig) {
                                 if (invoked === -1) {
-                                    regConfigs.push('' + moduleName + '-' + fct);
+                                    regConfigs.push(moduleName + '-' + fct);
                                 }
                                 if (angular.isDefined(provider)) {
                                     provider[args[1]].apply(provider, args[2]);
@@ -526,6 +527,8 @@
                                 return;
                             }
                             requireEntry = config;
+                            // ignore the name because it's probably not a real module name
+                            config.name = undefined;
                         }
 
                         // Check if this dependency has been loaded previously
@@ -551,9 +554,21 @@
                             }
                             return;
                         } else if (angular.isArray(requireEntry)) {
-                            requireEntry = {
-                                files: requireEntry
-                            };
+                            var files = [];
+                            angular.forEach(requireEntry, function (entry) {
+                                // let's check if the entry is a file name or a config name
+                                var config = self.getModuleConfig(entry);
+                                if (config === null) {
+                                    files.push(entry);
+                                } else if (config.files) {
+                                    files = files.concat(config.files);
+                                }
+                            });
+                            if (files.length > 0) {
+                                requireEntry = {
+                                    files: files
+                                };
+                            }
                         } else if (angular.isObject(requireEntry)) {
                             if (requireEntry.hasOwnProperty('name') && requireEntry['name']) {
                                 // The dependency doesn't exist in the module cache and is a new configuration, so store and push it.
@@ -585,7 +600,7 @@
                  * @param localParams
                  */
                 inject: function inject(moduleName) {
-                    var localParams = arguments[1] === undefined ? {} : arguments[1];
+                    var localParams = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
                     var self = this,
                         deferred = $q.defer();
@@ -617,8 +632,8 @@
                                 if (modulesToLoad.length > 0) {
                                     loadNext(modulesToLoad.shift()); // load the next in list
                                 } else {
-                                    deferred.resolve(res); // everything has been loaded, resolve
-                                }
+                                        deferred.resolve(res); // everything has been loaded, resolve
+                                    }
                             }, function error(err) {
                                 deferred.reject(err);
                             });
@@ -775,11 +790,11 @@
                     var dc = new Date().getTime();
                     if (url.indexOf('?') >= 0) {
                         if (url.substring(0, url.length - 1) === '&') {
-                            return '' + url + '_dc=' + dc;
+                            return url + '_dc=' + dc;
                         }
-                        return '' + url + '&_dc=' + dc;
+                        return url + '&_dc=' + dc;
                     } else {
-                        return '' + url + '?_dc=' + dc;
+                        return url + '?_dc=' + dc;
                     }
                 };
 
@@ -844,9 +859,9 @@
                             var v = $window.navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
                             var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
                             useCssLoadPatch = iOSVersion < 6;
-                        } else if (ua.indexOf('android') > -1) {
+                        } else if (ua.indexOf("android") > -1) {
                             // Android < 4.4
-                            var androidVersion = parseFloat(ua.slice(ua.indexOf('android') + 8));
+                            var androidVersion = parseFloat(ua.slice(ua.indexOf("android") + 8));
                             useCssLoadPatch = androidVersion < 4.4;
                         } else if (ua.indexOf('safari') > -1) {
                             var versionMatch = ua.match(/version\/([\.\d]+)/i);
@@ -889,7 +904,7 @@
              * @returns {*}
              */
             $delegate.filesLoader = function filesLoader(config) {
-                var params = arguments[1] === undefined ? {} : arguments[1];
+                var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
                 var cssFiles = [],
                     templatesFiles = [],
@@ -995,7 +1010,7 @@
 
                 if (promises.length === 0) {
                     var deferred = $q.defer(),
-                        err = 'Error: no file to load has been found, if you\'re trying to load an existing module you should use the \'inject\' method instead of \'load\'.';
+                        err = "Error: no file to load has been found, if you're trying to load an existing module you should use the 'inject' method instead of 'load'.";
                     $delegate._$log.error(err);
                     deferred.reject(err);
                     return deferred.promise;
@@ -1018,7 +1033,7 @@
              * @returns promise
              */
             $delegate.load = function (originalModule) {
-                var originalParams = arguments[1] === undefined ? {} : arguments[1];
+                var originalParams = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
                 var self = this,
                     config = null,
@@ -1221,65 +1236,65 @@
 })(angular);
 // Array.indexOf polyfill for IE8
 if (!Array.prototype.indexOf) {
-        Array.prototype.indexOf = function (searchElement, fromIndex) {
-                var k;
+    Array.prototype.indexOf = function (searchElement, fromIndex) {
+        var k;
 
-                // 1. Let O be the result of calling ToObject passing
-                //    the this value as the argument.
-                if (this == null) {
-                        throw new TypeError('"this" is null or not defined');
-                }
+        // 1. Let O be the result of calling ToObject passing
+        //    the this value as the argument.
+        if (this == null) {
+            throw new TypeError('"this" is null or not defined');
+        }
 
-                var O = Object(this);
+        var O = Object(this);
 
-                // 2. Let lenValue be the result of calling the Get
-                //    internal method of O with the argument "length".
-                // 3. Let len be ToUint32(lenValue).
-                var len = O.length >>> 0;
+        // 2. Let lenValue be the result of calling the Get
+        //    internal method of O with the argument "length".
+        // 3. Let len be ToUint32(lenValue).
+        var len = O.length >>> 0;
 
-                // 4. If len is 0, return -1.
-                if (len === 0) {
-                        return -1;
-                }
+        // 4. If len is 0, return -1.
+        if (len === 0) {
+            return -1;
+        }
 
-                // 5. If argument fromIndex was passed let n be
-                //    ToInteger(fromIndex); else let n be 0.
-                var n = +fromIndex || 0;
+        // 5. If argument fromIndex was passed let n be
+        //    ToInteger(fromIndex); else let n be 0.
+        var n = +fromIndex || 0;
 
-                if (Math.abs(n) === Infinity) {
-                        n = 0;
-                }
+        if (Math.abs(n) === Infinity) {
+            n = 0;
+        }
 
-                // 6. If n >= len, return -1.
-                if (n >= len) {
-                        return -1;
-                }
+        // 6. If n >= len, return -1.
+        if (n >= len) {
+            return -1;
+        }
 
-                // 7. If n >= 0, then Let k be n.
-                // 8. Else, n<0, Let k be len - abs(n).
-                //    If k is less than 0, then let k be 0.
-                k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+        // 7. If n >= 0, then Let k be n.
+        // 8. Else, n<0, Let k be len - abs(n).
+        //    If k is less than 0, then let k be 0.
+        k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
 
-                // 9. Repeat, while k < len
-                while (k < len) {
-                        // a. Let Pk be ToString(k).
-                        //   This is implicit for LHS operands of the in operator
-                        // b. Let kPresent be the result of calling the
-                        //    HasProperty internal method of O with argument Pk.
-                        //   This step can be combined with c
-                        // c. If kPresent is true, then
-                        //    i.  Let elementK be the result of calling the Get
-                        //        internal method of O with the argument ToString(k).
-                        //   ii.  Let same be the result of applying the
-                        //        Strict Equality Comparison Algorithm to
-                        //        searchElement and elementK.
-                        //  iii.  If same is true, return k.
-                        if (k in O && O[k] === searchElement) {
-                                return k;
-                        }
-                        k++;
-                }
-                return -1;
-        };
+        // 9. Repeat, while k < len
+        while (k < len) {
+            // a. Let Pk be ToString(k).
+            //   This is implicit for LHS operands of the in operator
+            // b. Let kPresent be the result of calling the
+            //    HasProperty internal method of O with argument Pk.
+            //   This step can be combined with c
+            // c. If kPresent is true, then
+            //    i.  Let elementK be the result of calling the Get
+            //        internal method of O with the argument ToString(k).
+            //   ii.  Let same be the result of applying the
+            //        Strict Equality Comparison Algorithm to
+            //        searchElement and elementK.
+            //  iii.  If same is true, return k.
+            if (k in O && O[k] === searchElement) {
+                return k;
+            }
+            k++;
+        }
+        return -1;
+    };
 }
 //# sourceMappingURL=ocLazyLoad.js.map

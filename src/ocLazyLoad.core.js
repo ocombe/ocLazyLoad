@@ -164,7 +164,8 @@
                     if(!moduleName || justLoaded.indexOf(moduleName) !== -1) {
                         continue;
                     }
-                    var newModule = regModules.indexOf(moduleName) === -1;
+                    // new if not registered, and not a config name
+                    var newModule = regModules.indexOf(moduleName) === -1 && !modules[moduleName];
                     moduleFn = ngModuleFct(moduleName);
                     if(newModule) { // new module
                         regModules.push(moduleName);
@@ -504,6 +505,8 @@
                                 return;
                             }
                             requireEntry = config;
+                            // ignore the name because it's probably not a real module name
+                            config.name = undefined;
                         }
 
                         // Check if this dependency has been loaded previously
@@ -524,9 +527,21 @@
                             }
                             return;
                         } else if(angular.isArray(requireEntry)) {
-                            requireEntry = {
-                                files: requireEntry
-                            };
+                            var files = [];
+                            angular.forEach(requireEntry, entry => {
+                                // let's check if the entry is a file name or a config name
+                                var config = self.getModuleConfig(entry);
+                                if (config === null) {
+                                    files.push(entry);
+                                } else if(config.files) {
+                                    files = files.concat(config.files);
+                                }
+                            });
+                            if(files.length > 0) {
+                                requireEntry = {
+                                    files: files
+                                };
+                            }
                         } else if(angular.isObject(requireEntry)) {
                             if(requireEntry.hasOwnProperty('name') && requireEntry['name']) {
                                 // The dependency doesn't exist in the module cache and is a new configuration, so store and push it.

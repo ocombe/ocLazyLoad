@@ -189,5 +189,5 @@ gulp.task('updateBower', function() {
 });
 
 gulp.task('release', ['karma'], function(done) {
-    runSequence('promptBump', 'updatePackage', 'updateBower', 'changelog', 'build-files', done);
+    runSequence('promptBump', 'updatePackage', 'updateBower', 'changelog', 'build-minify', done);
 });
