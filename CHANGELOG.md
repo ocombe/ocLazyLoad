@@ -1,3 +1,14 @@
+<a name="1.0.3"></a>
+# 1.0.3 (2015-07-24)
+
+
+## Bug Fixes
+
+- check for config names when needed
+ ([023e4bb1](https://github.com/ocombe/ocLazyLoad/commit/023e4bb1e43a922ac4b9a4ef09ff475f1fec867a),
+ [#214](https://github.com/ocombe/ocLazyLoad/issues/214), [#198](https://github.com/ocombe/ocLazyLoad/issues/198))
+
+
 <a name="1.0.2"></a>
 # 1.0.2 (2015-07-10)
 
