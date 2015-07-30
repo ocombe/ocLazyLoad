@@ -170,7 +170,7 @@
                     if (!angular.isString(moduleName)) {
                         moduleName = getModuleName(moduleName);
                     }
-                    if (!moduleName || justLoaded.indexOf(moduleName) !== -1 || realModules.indexOf(moduleName) === -1) {
+                    if (!moduleName || justLoaded.indexOf(moduleName) !== -1 || modules[moduleName] && realModules.indexOf(moduleName) === -1) {
                         continue;
                     }
                     // new if not registered

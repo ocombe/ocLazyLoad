@@ -1,3 +1,16 @@
+<a name="1.0.4"></a>
+# 1.0.4 (2015-07-30)
+
+
+## Bug Fixes
+
+- don't let unmet dependencies slip through (thank you unit tests!)
+ ([23eb666d](https://github.com/ocombe/ocLazyLoad/commit/23eb666d6627416e40aaa97783b9e81ec7153fe9))
+- don't try to call angular.module on config names
+ ([52219f92](https://github.com/ocombe/ocLazyLoad/commit/52219f923319e0856da47a6bce064b6ffb361641),
+ [#217](https://github.com/ocombe/ocLazyLoad/issues/217), [#218](https://github.com/ocombe/ocLazyLoad/issues/218))
+
+
 <a name="1.0.3"></a>
 # 1.0.3 (2015-07-24)
 

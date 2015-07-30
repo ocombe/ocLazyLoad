@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v1.0.3
+ * @version v1.0.4
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -177,7 +177,7 @@
                     if (!angular.isString(moduleName)) {
                         moduleName = getModuleName(moduleName);
                     }
-                    if (!moduleName || justLoaded.indexOf(moduleName) !== -1 || realModules.indexOf(moduleName) === -1) {
+                    if (!moduleName || justLoaded.indexOf(moduleName) !== -1 || modules[moduleName] && realModules.indexOf(moduleName) === -1) {
                         continue;
                     }
                     // new if not registered
