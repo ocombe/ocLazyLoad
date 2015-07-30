@@ -4,7 +4,8 @@
     var regModules = ['ng', 'oc.lazyLoad'],
         regInvokes = {},
         regConfigs = [],
-        modulesToLoad = [],
+        modulesToLoad = [], // modules to load from angular.module or other sources
+        realModules = [], // real modules called from angular.module
         recordDeclarations = [],
         broadcast = angular.noop,
         runBlocks = {},
@@ -161,13 +162,13 @@
                     if(!angular.isString(moduleName)) {
                         moduleName = getModuleName(moduleName);
                     }
-                    if(!moduleName || justLoaded.indexOf(moduleName) !== -1) {
+                    if(!moduleName || justLoaded.indexOf(moduleName) !== -1 || realModules.indexOf(moduleName) === -1) {
                         continue;
                     }
-                    // new if not registered, and not a config name
-                    var newModule = regModules.indexOf(moduleName) === -1 && !modules[moduleName];
+                    // new if not registered
+                    var newModule = regModules.indexOf(moduleName) === -1;
                     moduleFn = ngModuleFct(moduleName);
-                    if(newModule) { // new module
+                    if (newModule) {
                         regModules.push(moduleName);
                         _register(providers, moduleFn.requires, params);
                     }
@@ -675,20 +676,23 @@
     angular.bootstrap = function(element, modules, config) {
         // we use slice to make a clean copy
         angular.forEach(modules.slice(), module => {
-            _addToLoadList(module, true);
+            _addToLoadList(module, true, true);
         });
         return bootstrapFct(element, modules, config);
     };
 
-    var _addToLoadList = function _addToLoadList(name, force) {
+    var _addToLoadList = function _addToLoadList(name, force, real) {
         if((recordDeclarations.length > 0 || force) && angular.isString(name) && modulesToLoad.indexOf(name) === -1) {
             modulesToLoad.push(name);
+            if(real) {
+                realModules.push(name);
+            }
         }
     };
 
     var ngModuleFct = angular.module;
     angular.module = function(name, requires, configFn) {
-        _addToLoadList(name);
+        _addToLoadList(name, false, true);
         return ngModuleFct(name, requires, configFn);
     };
 
