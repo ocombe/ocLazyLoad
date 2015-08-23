@@ -24,3 +24,4 @@ deploy:
     tags: true
     all_branches: true
     repo: ocombe/ocLazyLoad
+sudo: false
