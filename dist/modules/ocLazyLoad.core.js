@@ -27,7 +27,8 @@
         },
             debug = false,
             events = false,
-            moduleCache = [];
+            moduleCache = [],
+            modulePromises = {};
 
         moduleCache.push = function (value) {
             if (this.indexOf(value) === -1) {
@@ -284,10 +285,10 @@
                     } else {
                         // config block
                         var callInvoke = function callInvoke(fct) {
-                            var invoked = regConfigs.indexOf(moduleName + '-' + fct);
+                            var invoked = regConfigs.indexOf('' + moduleName + '-' + fct);
                             if (invoked === -1 || reconfig) {
                                 if (invoked === -1) {
-                                    regConfigs.push(moduleName + '-' + fct);
+                                    regConfigs.push('' + moduleName + '-' + fct);
                                 }
                                 if (angular.isDefined(provider)) {
                                     provider[args[1]].apply(provider, args[2]);
@@ -595,7 +596,7 @@
                  * @param localParams
                  */
                 inject: function inject(moduleName) {
-                    var localParams = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                    var localParams = arguments[1] === undefined ? {} : arguments[1];
 
                     var self = this,
                         deferred = $q.defer();
@@ -614,6 +615,7 @@
                         var res = modulesToLoad.slice(); // clean copy
                         var loadNext = function loadNext(moduleName) {
                             moduleCache.push(moduleName);
+                            modulePromises[moduleName] = deferred.promise;
                             self._loadDependencies(moduleName, localParams).then(function success() {
                                 try {
                                     justLoaded = [];
@@ -627,8 +629,8 @@
                                 if (modulesToLoad.length > 0) {
                                     loadNext(modulesToLoad.shift()); // load the next in list
                                 } else {
-                                        deferred.resolve(res); // everything has been loaded, resolve
-                                    }
+                                    deferred.resolve(res); // everything has been loaded, resolve
+                                }
                             }, function error(err) {
                                 deferred.reject(err);
                             });
@@ -636,6 +638,8 @@
 
                         // load the first in list
                         loadNext(modulesToLoad.shift());
+                    } else if (localParams && localParams.name && modulePromises[localParams.name]) {
+                        return modulePromises[localParams.name];
                     } else {
                         deferred.resolve();
                     }

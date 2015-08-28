@@ -23,11 +23,11 @@
                     var dc = new Date().getTime();
                     if (url.indexOf('?') >= 0) {
                         if (url.substring(0, url.length - 1) === '&') {
-                            return url + '_dc=' + dc;
+                            return '' + url + '_dc=' + dc;
                         }
-                        return url + '&_dc=' + dc;
+                        return '' + url + '&_dc=' + dc;
                     } else {
-                        return url + '?_dc=' + dc;
+                        return '' + url + '?_dc=' + dc;
                     }
                 };
 
@@ -92,9 +92,9 @@
                             var v = $window.navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
                             var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
                             useCssLoadPatch = iOSVersion < 6;
-                        } else if (ua.indexOf("android") > -1) {
+                        } else if (ua.indexOf('android') > -1) {
                             // Android < 4.4
-                            var androidVersion = parseFloat(ua.slice(ua.indexOf("android") + 8));
+                            var androidVersion = parseFloat(ua.slice(ua.indexOf('android') + 8));
                             useCssLoadPatch = androidVersion < 4.4;
                         } else if (ua.indexOf('safari') > -1) {
                             var versionMatch = ua.match(/version\/([\.\d]+)/i);

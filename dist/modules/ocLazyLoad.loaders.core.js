@@ -10,7 +10,7 @@
              * @returns {*}
              */
             $delegate.filesLoader = function filesLoader(config) {
-                var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                var params = arguments[1] === undefined ? {} : arguments[1];
 
                 var cssFiles = [],
                     templatesFiles = [],
@@ -116,7 +116,7 @@
 
                 if (promises.length === 0) {
                     var deferred = $q.defer(),
-                        err = "Error: no file to load has been found, if you're trying to load an existing module you should use the 'inject' method instead of 'load'.";
+                        err = 'Error: no file to load has been found, if you\'re trying to load an existing module you should use the \'inject\' method instead of \'load\'.';
                     $delegate._$log.error(err);
                     deferred.reject(err);
                     return deferred.promise;
@@ -139,7 +139,7 @@
              * @returns promise
              */
             $delegate.load = function (originalModule) {
-                var originalParams = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                var originalParams = arguments[1] === undefined ? {} : arguments[1];
 
                 var self = this,
                     config = null,
