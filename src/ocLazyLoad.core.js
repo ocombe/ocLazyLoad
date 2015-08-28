@@ -25,7 +25,8 @@
             },
             debug = false,
             events = false,
-            moduleCache = [];
+            moduleCache = [],
+            modulePromises = {};
 
         moduleCache.push = function(value) {
             if(this.indexOf(value) === -1) {
@@ -588,6 +589,7 @@
                         var res = modulesToLoad.slice(); // clean copy
                         var loadNext = function loadNext(moduleName) {
                             moduleCache.push(moduleName);
+                            modulePromises[moduleName] = deferred.promise;
                             self._loadDependencies(moduleName, localParams).then(function success() {
                                 try {
                                     justLoaded = [];
@@ -610,6 +612,8 @@
 
                         // load the first in list
                         loadNext(modulesToLoad.shift());
+                    } else if (localParams && localParams.name && modulePromises[localParams.name]) {
+                        return modulePromises[localParams.name];
                     } else {
                         deferred.resolve();
                     }
