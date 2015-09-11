@@ -4,10 +4,10 @@
 
 ## Bug Fixes
 - loading a module with dependencies with multiple oc-lazy-load directives
- ([098e391b](https://github.com/ocombe/ocLazyLoad/commit/098e391b0e084997c95a3125e66a41484a257cc1)),
+ ([098e391b](https://github.com/ocombe/ocLazyLoad/commit/098e391b0e084997c95a3125e66a41484a257cc1),
  [#213](https://github.com/ocombe/ocLazyLoad/issues/213))
 - changing semver dependency for Angular
- ([30626401](https://github.com/ocombe/ocLazyLoad/commit/30626401664d1be8fc748bb53c88f39cb58742c0)),
+ ([30626401](https://github.com/ocombe/ocLazyLoad/commit/30626401664d1be8fc748bb53c88f39cb58742c0),
  [#195](https://github.com/ocombe/ocLazyLoad/issues/195))
 
 
