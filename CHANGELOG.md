@@ -1,3 +1,22 @@
+<a name="1.0.5"></a>
+# 1.0.5 (2015-09-11)
+
+
+## Bug Fixes
+- loading a module with dependencies with multiple oc-lazy-load directives
+ ([098e391b](https://github.com/ocombe/ocLazyLoad/commit/098e391b0e084997c95a3125e66a41484a257cc1)),
+ [#213](https://github.com/ocombe/ocLazyLoad/issues/213))
+- changing semver dependency for Angular
+ ([30626401](https://github.com/ocombe/ocLazyLoad/commit/30626401664d1be8fc748bb53c88f39cb58742c0)),
+ [#195](https://github.com/ocombe/ocLazyLoad/issues/195))
+
+
+## Features
+
+- optimise signature calls and onInvoke function
+ ([c56e727e](https://github.com/ocombe/ocLazyLoad/commit/c56e727ef832c591920c58a32646c5a8f05f655c))
+
+
 <a name="1.0.4"></a>
 # 1.0.4 (2015-07-30)
 
