@@ -8,7 +8,7 @@
             priority: 1000,
             compile: function compile(element, attrs) {
                 // we store the content and remove it before compilation
-                var content = element[0].innerHTML;
+                var content = element.contents();
                 element.html('');
 
                 return function ($scope, $element, $attr) {
@@ -18,14 +18,7 @@
                     }, function (moduleName) {
                         if (angular.isDefined(moduleName)) {
                             $ocLazyLoad.load(moduleName).then(function () {
-                                $animate.enter(content, $element);
-                                var contents = element.contents();
-                                angular.forEach(contents, function (content) {
-                                    if (content.nodeType !== 3) {
-                                        // 3 is a text node
-                                        $compile(content)($scope);
-                                    }
-                                });
+                                $animate.enter($compile(content)($scope), $element);
                             });
                         }
                     }, true);
