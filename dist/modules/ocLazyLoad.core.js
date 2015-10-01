@@ -610,9 +610,11 @@
                  * Inject new modules into Angular
                  * @param moduleName
                  * @param localParams
+                 * @param real
                  */
                 inject: function inject(moduleName) {
                     var localParams = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                    var real = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
                     var self = this,
                         deferred = $q.defer();
@@ -620,11 +622,11 @@
                         if (angular.isArray(moduleName)) {
                             var promisesList = [];
                             angular.forEach(moduleName, function (module) {
-                                promisesList.push(self.inject(module));
+                                promisesList.push(self.inject(moduleName, localParams, real));
                             });
                             return $q.all(promisesList);
                         } else {
-                            self._addToLoadList(self._getModuleName(moduleName), true);
+                            self._addToLoadList(self._getModuleName(moduleName), true, real);
                         }
                     }
                     if (modulesToLoad.length > 0) {

@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v1.0.5
+ * @version v1.0.6
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -617,9 +617,11 @@
                  * Inject new modules into Angular
                  * @param moduleName
                  * @param localParams
+                 * @param real
                  */
                 inject: function inject(moduleName) {
                     var localParams = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                    var real = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
                     var self = this,
                         deferred = $q.defer();
@@ -627,11 +629,11 @@
                         if (angular.isArray(moduleName)) {
                             var promisesList = [];
                             angular.forEach(moduleName, function (module) {
-                                promisesList.push(self.inject(module));
+                                promisesList.push(self.inject(moduleName, localParams, real));
                             });
                             return $q.all(promisesList);
                         } else {
-                            self._addToLoadList(self._getModuleName(moduleName), true);
+                            self._addToLoadList(self._getModuleName(moduleName), true, real);
                         }
                     }
                     if (modulesToLoad.length > 0) {
@@ -1123,7 +1125,7 @@
 
                 // if someone used an external loader and called the load function with just the module name
                 if (angular.isUndefined(config.files) && angular.isDefined(config.name) && $delegate.moduleExists(config.name)) {
-                    return $delegate.inject(config.name, localParams);
+                    return $delegate.inject(config.name, localParams, true);
                 }
 
                 $delegate.filesLoader(config, localParams).then(function () {

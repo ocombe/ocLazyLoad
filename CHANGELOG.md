@@ -1,3 +1,17 @@
+<a name="1.0.6"></a>
+# 1.0.6 (2015-10-01)
+
+
+## Bug Fixes
+- calling inject from loaders should pass the "real" module param
+ ([953584e8](https://github.com/ocombe/ocLazyLoad/commit/953584e8989de7ed1c2166ca193c899bad8a3478),
+ [#221](https://github.com/ocombe/ocLazyLoad/issues/221))
+- directive compile original contents after dependency is loaded.
+ ([a48e3ceb](https://github.com/ocombe/ocLazyLoad/commit/a48e3ceba1945e74478a0a7f964f9aa84e027799),
+ [#168](https://github.com/ocombe/ocLazyLoad/issues/168),
+ [#194](https://github.com/ocombe/ocLazyLoad/issues/194))
+
+
 <a name="1.0.5"></a>
 # 1.0.5 (2015-09-11)
 
