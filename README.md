@@ -21,3 +21,6 @@ Lazy load modules & components in AngularJS
 - Use the embedded async loader or use your own (requireJS, ...)
 - Load js (angular or not) / css / templates files
 - Compatible with AngularJS 1.2.x/1.3.x/1.4.x
+
+## Looking for help
+I'm looking for contributors to help me maintain the code (I'm gonna switch to Angular 2 soon, and I won't be much more invested in Angular 1 & ocLazyLoad). If you're interested, send me a tweet [@OCombe](https://twitter.com/OCombe) or an email: [olivier.combe@gmail.com](mailto:olivier.combe@gmail.com) !
