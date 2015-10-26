@@ -18,7 +18,12 @@
                     }, moduleName => {
                         if(angular.isDefined(moduleName)) {
                             $ocLazyLoad.load(moduleName).then(() => {
-                                $animate.enter($compile(content)($scope), $element);
+                                // Attach element contents to DOM and then compile them.
+                                // This prevents an issue where IE invalidates saved element objects (HTMLCollections)
+                                // of the compiled contents when attaching to the parent DOM.
+                                var contentElement = angular.element(content);
+                                $animate.enter(contentElement, $element);
+                                $compile(contentElement)($scope);    
                             });
                         }
                     }, true);
