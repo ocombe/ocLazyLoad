@@ -431,5 +431,27 @@ describe('Module: oc.lazyLoad', function() {
                 throw err;
             });
         });
+
+        it('should attach and then compile an element', function(done) {
+            var fileToLoad = lazyLoadUrl + 'myContainer.js';
+            var scope = $rootScope.$new();
+            var interval;
+
+            $ocLazyLoad.load(fileToLoad).then(function success(res) {
+              scope.fileToLoad = fileToLoad;
+                var element = $compile('<div oc-lazy-load="fileToLoad"><my-container></my-container></div>')(scope);
+                setTimeout(function() {
+                    // Should be able to save an element during compilation and reference
+                    // it after the element has been attached to the parent DOM.
+                    // IE throws "Invalid calling object" if the element is compiled and then attached.
+                    expect(scope.vm.highlanders.length).toBe(1);
+
+                    window.clearInterval(interval);
+                    done();
+                }, interval * 2);
+            });
+
+            interval = triggerDigests();
+        });
     });
 });
