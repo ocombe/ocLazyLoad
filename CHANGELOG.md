@@ -1,3 +1,14 @@
+<a name="1.0.8"></a>
+# 1.0.8 (2015-11-02)
+
+
+## Bug Fixes
+
+- better fix for $compile problems in IE
+ ([ed4d425b](https://github.com/ocombe/ocLazyLoad/commit/ed4d425bfcf746901e2b956172c6a0b71e237bae),
+ [#261](https://github.com/ocombe/ocLazyLoad/issues/261))
+
+
 <a name="1.0.7"></a>
 # 1.0.7 (2015-11-02)
 
