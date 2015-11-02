@@ -1,3 +1,17 @@
+<a name="1.0.7"></a>
+# 1.0.7 (2015-11-02)
+
+
+## Bug Fixes
+
+- requirejs error callback
+ ([11130942](https://github.com/ocombe/ocLazyLoad/commit/11130942ab3dbed497a64ab7eac5175e9b3597c4))
+- infinite loop in inject
+ ([70859980](https://github.com/ocombe/ocLazyLoad/commit/70859980d0537780c46e5a096d8c3c9cff86de83))
+- IE "Invalid calling object" error (attach to DOM and then compile)
+ ([d99ab925](https://github.com/ocombe/ocLazyLoad/commit/d99ab92533ef4bdfa334926307af9f32097592a3))
+
+
 <a name="1.0.6"></a>
 # 1.0.6 (2015-10-01)
 

@@ -44,7 +44,7 @@
                             if ((m = /[.](css|less|html|htm|js)?((\?|#).*)?$/.exec(path)) !== null) {
                                 // Detect file type via file extension
                                 file_type = m[1];
-                            } else if (!$delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader') && $delegate.jsLoader.hasOwnProperty('load')) {
+                            } else if (!$delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader') && $delegate.jsLoader.hasOwnProperty('requirejs')) {
                                 // requirejs
                                 file_type = 'js';
                             } else {
@@ -104,7 +104,7 @@
                 if (jsFiles.length > 0) {
                     var jsDeferred = $q.defer();
                     $delegate.jsLoader(jsFiles, function (err) {
-                        if (angular.isDefined(err) && $delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader')) {
+                        if (angular.isDefined(err) && ($delegate.jsLoader.hasOwnProperty("ocLazyLoadLoader") || $delegate.jsLoader.hasOwnProperty("requirejs"))) {
                             $delegate._$log.error(err);
                             jsDeferred.reject(err);
                         } else {

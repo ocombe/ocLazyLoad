@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v1.0.6
+ * @version v1.0.7
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -629,7 +629,7 @@
                         if (angular.isArray(moduleName)) {
                             var promisesList = [];
                             angular.forEach(moduleName, function (module) {
-                                promisesList.push(self.inject(moduleName, localParams, real));
+                                promisesList.push(self.inject(module, localParams, real));
                             });
                             return $q.all(promisesList);
                         } else {
@@ -963,7 +963,7 @@
                             if ((m = /[.](css|less|html|htm|js)?((\?|#).*)?$/.exec(path)) !== null) {
                                 // Detect file type via file extension
                                 file_type = m[1];
-                            } else if (!$delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader') && $delegate.jsLoader.hasOwnProperty('load')) {
+                            } else if (!$delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader') && $delegate.jsLoader.hasOwnProperty('requirejs')) {
                                 // requirejs
                                 file_type = 'js';
                             } else {
@@ -1023,7 +1023,7 @@
                 if (jsFiles.length > 0) {
                     var jsDeferred = $q.defer();
                     $delegate.jsLoader(jsFiles, function (err) {
-                        if (angular.isDefined(err) && $delegate.jsLoader.hasOwnProperty('ocLazyLoadLoader')) {
+                        if (angular.isDefined(err) && ($delegate.jsLoader.hasOwnProperty("ocLazyLoadLoader") || $delegate.jsLoader.hasOwnProperty("requirejs"))) {
                             $delegate._$log.error(err);
                             jsDeferred.reject(err);
                         } else {
@@ -1194,7 +1194,10 @@
              * @param params object config parameters
              * because the user can overwrite jsLoader and it will probably not use promises :(
              */
-            $delegate.jsLoader = require;
+            $delegate.jsLoader = function (paths, callback, params) {
+                require(paths, callback, callback, params);
+            };
+            $delegate.jsLoader.requirejs = true;
 
             return $delegate;
         }]);

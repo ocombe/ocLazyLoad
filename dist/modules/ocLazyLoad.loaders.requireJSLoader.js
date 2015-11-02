@@ -11,7 +11,10 @@
              * @param params object config parameters
              * because the user can overwrite jsLoader and it will probably not use promises :(
              */
-            $delegate.jsLoader = require;
+            $delegate.jsLoader = function (paths, callback, params) {
+                require(paths, callback, callback, params);
+            };
+            $delegate.jsLoader.requirejs = true;
 
             return $delegate;
         }]);
