@@ -1,4 +1,4 @@
-requirejs.config({
+require.config({
   baseUrl: 'js/',
   paths: {
     'jquery': 'jquery',
@@ -17,6 +17,6 @@ requirejs.config({
 });
 
 // Start the main app logic.
-requirejs(['test'], function() {
+require(['test'], function() {
   angular.bootstrap(document.body, ['test']);
 });

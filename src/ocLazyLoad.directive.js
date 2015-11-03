@@ -1,14 +1,14 @@
 (angular => {
     'use strict';
 
-    angular.module('oc.lazyLoad').directive('ocLazyLoad', function($ocLazyLoad, $compile, $animate, $parse) {
+    angular.module('oc.lazyLoad').directive('ocLazyLoad', function($ocLazyLoad, $compile, $animate, $parse, $timeout) {
         return {
             restrict: 'A',
             terminal: true,
             priority: 1000,
             compile: function(element, attrs) {
                 // we store the content and remove it before compilation
-                var content = element.contents();
+                var content = element[0].innerHTML;
                 element.html('');
 
                 return function($scope, $element, $attr) {
@@ -18,7 +18,12 @@
                     }, moduleName => {
                         if(angular.isDefined(moduleName)) {
                             $ocLazyLoad.load(moduleName).then(() => {
-                                $animate.enter($compile(content)($scope), $element);
+                                // Attach element contents to DOM and then compile them.
+                                // This prevents an issue where IE invalidates saved element objects (HTMLCollections)
+                                // of the compiled contents when attaching to the parent DOM.
+                                $animate.enter(content, $element);
+                                // get the new content & compile it
+                                $compile($element.contents())($scope);
                             });
                         }
                     }, true);
