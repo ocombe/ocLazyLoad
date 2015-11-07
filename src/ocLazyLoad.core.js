@@ -187,8 +187,8 @@
                     if(angular.isDefined(runBlocks[moduleName]) && (newModule || params.rerun)) {
                         tempRunBlocks = tempRunBlocks.concat(runBlocks[moduleName]);
                     }
-                    _invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);
-                    _invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
+                    _invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig, params.renew);
+                    _invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig, params.renew); // angular 1.3+
                     broadcast(newModule ? 'ocLazyLoad.moduleLoaded' : 'ocLazyLoad.moduleReloaded', moduleName);
                     registerModules.pop();
                     justLoaded.push(moduleName);
@@ -264,7 +264,7 @@
             return newInvoke;
         }
 
-        function _invokeQueue(providers, queue, moduleName, reconfig) {
+        function _invokeQueue(providers, queue, moduleName, reconfig, renew) {
             if(!queue) {
                 return;
             }
@@ -282,7 +282,7 @@
                     }
                     var isNew = _registerInvokeList(args, moduleName);
                     if(args[1] !== 'invoke') {
-                        if(isNew && angular.isDefined(provider)) {
+                        if((isNew || renew) && angular.isDefined(provider)) {
                             provider[args[1]].apply(provider, args[2]);
                         }
                     } else { // config block
