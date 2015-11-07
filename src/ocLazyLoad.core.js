@@ -187,8 +187,8 @@
                     if(angular.isDefined(runBlocks[moduleName]) && (newModule || params.rerun)) {
                         tempRunBlocks = tempRunBlocks.concat(runBlocks[moduleName]);
                     }
-                    _invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig, params.renew);
-                    _invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig, params.renew); // angular 1.3+
+                    _invokeQueue(providers, moduleFn._invokeQueue, moduleName, params.reconfig);
+                    _invokeQueue(providers, moduleFn._configBlocks, moduleName, params.reconfig); // angular 1.3+
                     broadcast(newModule ? 'ocLazyLoad.moduleLoaded' : 'ocLazyLoad.moduleReloaded', moduleName);
                     registerModules.pop();
                     justLoaded.push(moduleName);
@@ -205,6 +205,7 @@
             var invokeList = args[2][0],
                 type = args[1],
                 newInvoke = false;
+
             if(angular.isUndefined(regInvokes[moduleName])) {
                 regInvokes[moduleName] = {};
             }
@@ -264,7 +265,7 @@
             return newInvoke;
         }
 
-        function _invokeQueue(providers, queue, moduleName, reconfig, renew) {
+        function _invokeQueue(providers, queue, moduleName, reconfig) {
             if(!queue) {
                 return;
             }
@@ -282,7 +283,7 @@
                     }
                     var isNew = _registerInvokeList(args, moduleName);
                     if(args[1] !== 'invoke') {
-                        if((isNew || renew) && angular.isDefined(provider)) {
+                        if(isNew && angular.isDefined(provider)) {
                             provider[args[1]].apply(provider, args[2]);
                         }
                     } else { // config block
@@ -685,7 +686,21 @@
                  * @param force
                  * @private
                  */
-                _addToLoadList: _addToLoadList
+                _addToLoadList: _addToLoadList,
+                
+                /**
+                 * Ungerister modules
+                 * @param modules
+                 */
+                unregister: function(modules) {
+                    if(angular.isDefined(modules)) {
+                        if(angular.isArray(modules)) {
+                            angular.forEach(modules, module => {
+                                regInvokes[module]=undefined;
+                            });
+                        }
+                    }
+                },
             };
         };
 
