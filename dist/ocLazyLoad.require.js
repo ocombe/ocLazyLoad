@@ -1210,17 +1210,9 @@
              * because the user can overwrite jsLoader and it will probably not use promises :(
              */
             $delegate.jsLoader = function (paths, callback, params) {
-                var promises = [];
-                angular.forEach(paths, function (path) {
-                    promises.push($delegate.buildElement('js', path, params));
-                });
-                $q.all(promises).then(function () {
-                    callback();
-                }, function (err) {
-                    callback(err);
-                });
+                require(paths, callback, callback, params);
             };
-            $delegate.jsLoader.ocLazyLoadLoader = true;
+            $delegate.jsLoader.requirejs = true;
 
             return $delegate;
         }]);
