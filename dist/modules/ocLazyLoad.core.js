@@ -712,7 +712,21 @@
                  * @param force
                  * @private
                  */
-                _addToLoadList: _addToLoadList
+                _addToLoadList: _addToLoadList,
+
+                /**
+                 * Unregister modules (you shouldn't have to use this)
+                 * @param modules
+                 */
+                _unregister: function _unregister(modules) {
+                    if (angular.isDefined(modules)) {
+                        if (angular.isArray(modules)) {
+                            angular.forEach(modules, function (module) {
+                                regInvokes[module] = undefined;
+                            });
+                        }
+                    }
+                }
             };
         }];
 
