@@ -1,3 +1,21 @@
+<a name="1.0.9"></a>
+# 1.0.9 (2015-11-24)
+
+
+## Bug Fixes
+
+- success callback for requirejs wrapper
+ ([fd9df8d1](https://github.com/ocombe/ocLazyLoad/commit/fd9df8d1507bb4f0c690ef3781b04a15f3b8eb6b),
+ [#260](https://github.com/ocombe/ocLazyLoad/issues/260))
+ 
+ 
+## Features
+
+- adding `_unregister` internal function
+ ([5aba0dc7](https://github.com/ocombe/ocLazyLoad/commit/5aba0dc77b1fa4f1a1a27419cbc8a54d614a728c),
+ [#265](https://github.com/ocombe/ocLazyLoad/issues/265))
+
+
 <a name="1.0.8"></a>
 # 1.0.8 (2015-11-02)
 
