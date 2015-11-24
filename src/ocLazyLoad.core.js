@@ -205,6 +205,7 @@
             var invokeList = args[2][0],
                 type = args[1],
                 newInvoke = false;
+
             if(angular.isUndefined(regInvokes[moduleName])) {
                 regInvokes[moduleName] = {};
             }
@@ -685,7 +686,21 @@
                  * @param force
                  * @private
                  */
-                _addToLoadList: _addToLoadList
+                _addToLoadList: _addToLoadList,
+                
+                /**
+                 * Ungerister modules
+                 * @param modules
+                 */
+                unregister: function(modules) {
+                    if(angular.isDefined(modules)) {
+                        if(angular.isArray(modules)) {
+                            angular.forEach(modules, module => {
+                                regInvokes[module]=undefined;
+                            });
+                        }
+                    }
+                },
             };
         };
 
