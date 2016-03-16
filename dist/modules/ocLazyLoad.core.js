@@ -447,6 +447,14 @@
                 },
 
                 /**
+                 * Returns the default value to use for script type attribute
+                 * @returns {string}
+                 */
+                getDefaultScriptType: function getModules() {
+                    return defaultScriptType;
+                },
+
+                /**
                  * Let you check if a module has been loaded into Angular or not
                  * @param modulesNames String/Object a module name, or a list of module names
                  * @returns {boolean}
