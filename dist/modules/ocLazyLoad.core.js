@@ -28,7 +28,8 @@
             debug = false,
             events = false,
             moduleCache = [],
-            modulePromises = {};
+            modulePromises = {},
+            defaultScriptType = 'application/javascript';
 
         moduleCache.push = function (value) {
             if (this.indexOf(value) === -1) {
@@ -54,6 +55,10 @@
 
             if (angular.isDefined(config.events)) {
                 events = config.events;
+            }
+
+            if (angular.isDefined(config.defaultScriptType)) {
+                defaultScriptType = config.defaultScriptType;
             }
         };
 
