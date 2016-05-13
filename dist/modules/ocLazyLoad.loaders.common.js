@@ -64,6 +64,7 @@
                 };
                 el.onerror = function () {
                     filesCache.remove(path);
+                    $delegate._broadcast('ocLazyLoad.fileLoadFailed', path);
                     deferred.reject(new Error('Unable to load ' + path));
                 };
                 el.async = params.serie ? 0 : 1;
