@@ -19,7 +19,7 @@
 
                 $delegate.toggleWatch(true); // start watching angular.module calls
 
-                angular.extend(params, config);
+                params = angular.extend({}, $delegate._getModuleDefaults(), params, config);
 
                 var pushFile = function(path) {
                     var file_type = null, m;

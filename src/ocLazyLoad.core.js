@@ -26,7 +26,8 @@
             debug = false,
             events = false,
             moduleCache = [],
-            modulePromises = {};
+            modulePromises = {},
+            moduleDefaults = {};
 
         moduleCache.push = function(value) {
             if(this.indexOf(value) === -1) {
@@ -52,6 +53,10 @@
 
             if(angular.isDefined(config.events)) {
                 events = config.events;
+            }
+
+            if(angular.isDefined(config.moduleDefaults)) {
+                moduleDefaults = config.moduleDefaults;
             }
         };
 
@@ -370,6 +375,15 @@
                 _broadcast: broadcast,
 
                 _$log: $log,
+
+                /**
+                 * Returns module configuration defaults
+                 * @returns {object}
+                 * @private
+                 */
+                _getModuleDefaults: function getModuleDefaults() {
+                    return moduleDefaults;
+                },
 
                 /**
                  * Returns the files cache used by the loaders to store the files currently loading
