@@ -96,6 +96,16 @@ describe('Module: oc.lazyLoad', function() {
             expect($ocLazyLoad.getModuleConfig('test2')).toEqual({name: 'test2'}); // check if set worked
         });
 
+        it('default cacheBuster should add a query paramater to the url', function() {
+            spyOn(Date, 'now').and.returnValue(123);
+            expect($ocLazyLoad.cacheBuster('/some/url')).toBe('/some/url?_dc=123');
+        });
+
+        it('default cacheBuster should support url that already have a query parameter', function() {
+            spyOn(Date, 'now').and.returnValue(123);
+            expect($ocLazyLoad.cacheBuster('/some/url?q=foo')).toBe('/some/url?q=foo&_dc=123');
+        });
+
         it('should be able to lazy load a module', function(done) {
             var interval = triggerDigests(),
                 templateUrl = lazyLoadUrl + 'test.html',

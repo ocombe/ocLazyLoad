@@ -19,17 +19,7 @@
                     el,
                     loaded,
                     filesCache = $delegate._getFilesCache(),
-                    cacheBuster = function cacheBuster(url) {
-                        var dc = new Date().getTime();
-                        if(url.indexOf('?') >= 0) {
-                            if(url.substring(0, url.length - 1) === '&') {
-                                return `${ url }_dc=${ dc }`;
-                            }
-                            return `${ url }&_dc=${ dc }`;
-                        } else {
-                            return `${ url }?_dc=${ dc }`;
-                        }
-                    };
+                    cacheBuster = $delegate.cacheBuster;
 
                 // Store the promise early so the file load can be detected by other parallel lazy loads
                 // (ie: multiple routes on one page) a 'true' value isn't sufficient
