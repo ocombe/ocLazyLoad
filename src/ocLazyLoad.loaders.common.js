@@ -60,7 +60,7 @@
                     el.onload = el['onreadystatechange'] = null;
                     loaded = 1;
                     $delegate._broadcast('ocLazyLoad.fileLoaded', path);
-                    deferred.resolve();
+                    deferred.resolve(el);
                 };
                 el.onerror = function() {
                     filesCache.remove(path);
