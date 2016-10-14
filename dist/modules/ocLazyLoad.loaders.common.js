@@ -19,17 +19,7 @@
                     el,
                     loaded,
                     filesCache = $delegate._getFilesCache(),
-                    cacheBuster = function cacheBuster(url) {
-                    var dc = new Date().getTime();
-                    if (url.indexOf('?') >= 0) {
-                        if (url.substring(0, url.length - 1) === '&') {
-                            return url + '_dc=' + dc;
-                        }
-                        return url + '&_dc=' + dc;
-                    } else {
-                        return url + '?_dc=' + dc;
-                    }
-                };
+                    cacheBuster = $delegate.cacheBuster;
 
                 // Store the promise early so the file load can be detected by other parallel lazy loads
                 // (ie: multiple routes on one page) a 'true' value isn't sufficient
@@ -79,6 +69,7 @@
 
                 /*
                  The event load or readystatechange doesn't fire in:
+                 - PhantomJS 1.9 (headless webkit browser)
                  - iOS < 6       (default mobile browser)
                  - Android < 4.4 (default mobile browser)
                  - Safari < 6    (desktop browser)
@@ -87,16 +78,20 @@
                     if (!uaCssChecked) {
                         var ua = $window.navigator.userAgent.toLowerCase();
 
-                        // iOS < 6
-                        if (/iP(hone|od|ad)/.test($window.navigator.platform)) {
+                        if (ua.indexOf('phantomjs/1.9') > -1) {
+                            // PhantomJS ~1.9
+                            useCssLoadPatch = true;
+                        } else if (/iP(hone|od|ad)/.test($window.navigator.platform)) {
+                            // iOS < 6
                             var v = $window.navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
                             var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
                             useCssLoadPatch = iOSVersion < 6;
-                        } else if (ua.indexOf("android") > -1) {
+                        } else if (ua.indexOf('android') > -1) {
                             // Android < 4.4
-                            var androidVersion = parseFloat(ua.slice(ua.indexOf("android") + 8));
+                            var androidVersion = parseFloat(ua.slice(ua.indexOf('android') + 8));
                             useCssLoadPatch = androidVersion < 4.4;
                         } else if (ua.indexOf('safari') > -1) {
+                            // Safari < 6
                             var versionMatch = ua.match(/version\/([\.\d]+)/i);
                             useCssLoadPatch = versionMatch && versionMatch[1] && parseFloat(versionMatch[1]) < 6;
                         }

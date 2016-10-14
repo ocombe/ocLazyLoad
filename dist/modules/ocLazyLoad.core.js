@@ -25,6 +25,17 @@
             $injector: $injector,
             $animateProvider: $animateProvider
         },
+            cacheBuster = function cacheBuster(url) {
+            var dc = Date.now();
+            if (url.indexOf('?') >= 0) {
+                if (url.substring(0, url.length - 1) === '&') {
+                    return url + '_dc=' + dc;
+                }
+                return url + '&_dc=' + dc;
+            } else {
+                return url + '?_dc=' + dc;
+            }
+        },
             debug = false,
             events = false,
             moduleCache = [],
@@ -54,6 +65,10 @@
 
             if (angular.isDefined(config.events)) {
                 events = config.events;
+            }
+
+            if (angular.isDefined(config.cacheBuster)) {
+                cacheBuster = config.cacheBuster;
             }
         };
 
@@ -392,6 +407,13 @@
                 _getFilesCache: function getFilesCache() {
                     return filesCache;
                 },
+
+                /**
+                 * Used to generate urls to invalidate the cache
+                 * @param url
+                 * @returns {string}
+                 */
+                cacheBuster: cacheBuster,
 
                 /**
                  * Let the service know that it should monitor angular.module because files are loading

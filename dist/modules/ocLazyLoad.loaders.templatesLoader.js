@@ -18,6 +18,11 @@
                 angular.forEach(paths, function (url) {
                     var deferred = $q.defer();
                     promises.push(deferred.promise);
+
+                    if (params.cache === false) {
+                        url = $delegate.cacheBuster(url);
+                    }
+
                     $http.get(url, params).success(function (data) {
                         if (angular.isString(data) && data.length > 0) {
                             angular.forEach(angular.element(data), function (node) {
