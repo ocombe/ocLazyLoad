@@ -15,6 +15,8 @@
                 var promises = [],
                     filesCache = $delegate._getFilesCache();
 
+                params = angular.extend({}, $delegate._getModuleDefaults(), params);
+
                 angular.forEach(paths, function (url) {
                     var deferred = $q.defer();
                     promises.push(deferred.promise);

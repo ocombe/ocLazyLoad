@@ -35,7 +35,8 @@
             debug = false,
             events = false,
             moduleCache = [],
-            modulePromises = {};
+            modulePromises = {},
+            moduleDefaults = {};
 
         moduleCache.push = function (value) {
             if (this.indexOf(value) === -1) {
@@ -61,6 +62,10 @@
 
             if (angular.isDefined(config.events)) {
                 events = config.events;
+            }
+
+            if (angular.isDefined(config.moduleDefaults)) {
+                moduleDefaults = config.moduleDefaults;
             }
         };
 
@@ -391,6 +396,15 @@
                 _broadcast: broadcast,
 
                 _$log: $log,
+
+                /**
+                 * Returns module configuration defaults
+                 * @returns {object}
+                 * @private
+                 */
+                _getModuleDefaults: function getModuleDefaults() {
+                    return moduleDefaults;
+                },
 
                 /**
                  * Returns the files cache used by the loaders to store the files currently loading
@@ -885,6 +899,7 @@
 
                 /*
                  The event load or readystatechange doesn't fire in:
+                 - PhantomJS 1.9 (headless webkit browser)
                  - iOS < 6       (default mobile browser)
                  - Android < 4.4 (default mobile browser)
                  - Safari < 6    (desktop browser)
@@ -893,16 +908,20 @@
                     if (!uaCssChecked) {
                         var ua = $window.navigator.userAgent.toLowerCase();
 
-                        // iOS < 6
-                        if (/iP(hone|od|ad)/.test($window.navigator.platform)) {
+                        if (ua.indexOf('phantomjs/1.9') > -1) {
+                            // PhantomJS ~1.9
+                            useCssLoadPatch = true;
+                        } else if (/iP(hone|od|ad)/.test($window.navigator.platform)) {
+                            // iOS < 6
                             var v = $window.navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
                             var iOSVersion = parseFloat([parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)].join('.'));
                             useCssLoadPatch = iOSVersion < 6;
-                        } else if (ua.indexOf("android") > -1) {
+                        } else if (ua.indexOf('android') > -1) {
                             // Android < 4.4
-                            var androidVersion = parseFloat(ua.slice(ua.indexOf("android") + 8));
+                            var androidVersion = parseFloat(ua.slice(ua.indexOf('android') + 8));
                             useCssLoadPatch = androidVersion < 4.4;
                         } else if (ua.indexOf('safari') > -1) {
+                            // Safari < 6
                             var versionMatch = ua.match(/version\/([\.\d]+)/i);
                             useCssLoadPatch = versionMatch && versionMatch[1] && parseFloat(versionMatch[1]) < 6;
                         }
@@ -954,7 +973,7 @@
 
                 $delegate.toggleWatch(true); // start watching angular.module calls
 
-                angular.extend(params, config);
+                params = angular.extend({}, $delegate._getModuleDefaults(), params, config);
 
                 var pushFile = function pushFile(path) {
                     var file_type = null,
@@ -1233,6 +1252,8 @@
             $delegate.templatesLoader = function (paths, callback, params) {
                 var promises = [],
                     filesCache = $delegate._getFilesCache();
+
+                params = angular.extend({}, $delegate._getModuleDefaults(), params);
 
                 angular.forEach(paths, function (url) {
                     var deferred = $q.defer();
