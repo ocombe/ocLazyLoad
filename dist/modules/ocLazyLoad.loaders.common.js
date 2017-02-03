@@ -48,6 +48,7 @@
                         break;
                     case 'js':
                         el = $window.document.createElement('script');
+                        el.type = angular.isDefined(params.scriptType) ? params.scriptType : this.getDefaultScriptType();
                         el.src = params.cache === false ? cacheBuster(path) : path;
                         break;
                     default:
