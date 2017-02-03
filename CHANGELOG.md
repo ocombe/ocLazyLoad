@@ -1,3 +1,22 @@
+<a name="1.0.10"></a>
+# 1.1.0 (2017-02-03)
+
+
+## Bug Fixes
+
+- resolve the loader with created elements
+ ([3351e44d](https://github.com/ocombe/ocLazyLoad/commit/3351e44d2d76b7599eadfe59dec5a5674b1aff69), [#292](https://github.com/ocombe/ocLazyLoad/pull/292))
+- ensure CSS loader uses loading patch for PhantomJS 1.9 ([54d68e92](https://github.com/ocombe/ocLazyLoad/commit/54d68e92f83b1c9f5eba805a764c147566843544), [#280](https://github.com/ocombe/ocLazyLoad/pull/280))
+
+
+## Features
+
+- angular 1.6 compatibility
+ ([17d372fc](https://github.com/ocombe/ocLazyLoad/commit/17d372fce194a840a0d23f7a8b417601f769f52a),
+ [#377](https://github.com/ocombe/ocLazyLoad/issues/377))
+- allow hot reloading via systemjs-hot-reloader ([94088482](https://github.com/ocombe/ocLazyLoad/commit/94088482aad2bba0f49c3d873886e993bcdfa13c), [#291](https://github.com/ocombe/ocLazyLoad/pull/291))
+
+
 <a name="1.0.9"></a>
 # 1.0.9 (2015-11-24)
 

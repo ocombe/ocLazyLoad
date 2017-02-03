@@ -1,6 +1,6 @@
 {
   "name": "oclazyload",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Load modules on demand (lazy load) with angularJS",
   "main": "dist/ocLazyLoad.js",
   "homepage": "https://github.com/ocombe/ocLazyLoad",
