@@ -211,7 +211,11 @@
 
                 // if someone used an external loader and called the load function with just the module name
                 if (angular.isUndefined(config.files) && angular.isDefined(config.name) && $delegate.moduleExists(config.name)) {
-                    return $delegate.inject(config.name, localParams, true);
+                    return $delegate.inject(config.name, localParams, true).then(function (res) {
+                        deferred.resolve(res);
+                    }, function (err) {
+                        deferred.reject(err);
+                    });
                 }
 
                 $delegate.filesLoader(config, localParams).then(function () {
