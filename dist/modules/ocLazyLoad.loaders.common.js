@@ -79,17 +79,17 @@
 
                 /*
                  The event load or readystatechange doesn't fire in:
-                 - PhantomJS 1.9 (headless webkit browser)
-                 - iOS < 6       (default mobile browser)
-                 - Android < 4.4 (default mobile browser)
-                 - Safari < 6    (desktop browser)
+                 - PhantomJS 1.9 - 2.1.1 (headless webkit browser)
+                 - iOS < 6               (default mobile browser)
+                 - Android < 4.4         (default mobile browser)
+                 - Safari < 6            (desktop browser)
                  */
                 if (type == 'css') {
                     if (!uaCssChecked) {
                         var ua = $window.navigator.userAgent.toLowerCase();
 
-                        if (ua.indexOf('phantomjs/1.9') > -1) {
-                            // PhantomJS ~1.9
+                        if (ua.indexOf('phantomjs') > -1) {
+                            // PhantomJS ~1.9 - 2.1.1
                             useCssLoadPatch = true;
                         } else if (/iP(hone|od|ad)/.test($window.navigator.platform)) {
                             // iOS < 6
