@@ -27,6 +27,15 @@
                         file_type = path.type;
                         path = path.path;
                     }
+                    var cdnPrefix = $delegate._getCdnPrefix();
+                    var separator = cdnPrefix.endsWith('/')
+                        ? ''
+                        : '/';
+                    if (path.startsWith('/')) {
+                        path = path.slice(1);
+                    }
+                    path = `${cdnPrefix}${separator}${path}`;
+
                     cachePromise = filesCache.get(path);
                     if(angular.isUndefined(cachePromise) || params.cache === false) {
 

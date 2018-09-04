@@ -26,7 +26,8 @@
             debug = false,
             events = false,
             moduleCache = [],
-            modulePromises = {};
+            modulePromises = {},
+            cdnPrefix = '';
 
         moduleCache.push = function(value) {
             if(this.indexOf(value) === -1) {
@@ -52,6 +53,10 @@
 
             if(angular.isDefined(config.events)) {
                 events = config.events;
+            }
+
+            if(angular.isDefined(config.cdn)) {
+                cdnPrefix = config.cdn;
             }
         };
 
@@ -453,6 +458,8 @@
                         throw new Error('You need to define the module(s) name(s)');
                     }
                 },
+
+                _getCdnPrefix: () => cdnPrefix,
 
                 /**
                  * Given a module, return its name
