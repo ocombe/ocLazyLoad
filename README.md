@@ -1,5 +1,6 @@
 <a href="https://oclazyload.readme.io" target="_blank">ocLazyLoad</a> [![Build Status](https://travis-ci.org/ocombe/ocLazyLoad.svg)](https://travis-ci.org/ocombe/ocLazyLoad)
 ==========
+> THIS REPO EDIT: added easy CDN register. Read the pull request: https://github.com/ocombe/ocLazyLoad/pull/428
 
 Lazy load modules & components in AngularJS
 
